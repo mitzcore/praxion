@@ -1,0 +1,36 @@
+[project]
+name = "praxion"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.162.0",
+    "httpx>=0.28.1",
+    "numpy>=2.5.4",
+    "openai>=1.60",
+    "pydantic>=2",
+    "python-dotenv>=1.2.4",
+    "scipy>=1.18.1",
+    "sse-starlette>=3.6.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1",
+    "ruff>=0.17.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "live: spends real Meta API credits (skipped without key)",
+  "docker: requires a running Docker daemon",
+  "slow: long-running",
+]
+addopts = "-ra"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"

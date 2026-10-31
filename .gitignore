@@ -1,0 +1,33 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# node
+frontend/node_modules/
+frontend/dist/
+
+# run outputs: live run bundles ARE the evidence and are committed (≈260 MB total).
+# Mock/fixture runs and the benchmark cache are not.
+artifacts/runs/bench-fixture-*/
+artifacts/runs/*mock*/
+artifacts/benchmarks/cache/
+artifacts/batch_logs/
+*.sqlite
+*.db
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+artifacts/demo/

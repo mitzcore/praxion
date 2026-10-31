@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<title>Praxion — Autonomous Controller Discovery | Architecture & Flow</title>
+<style>
+:root{--bg:#09111e;--panel:#101c2e;--panel2:#142238;--stroke:#2b3d55;--muted:#a5b6ca;--text:#edf5ff;--violet:#aa9eff;--cyan:#68d6e6;--green:#7be5b6;--amber:#f4c677;--red:#ffa6a6;--blue:#8cbaff;--shadow:0 20px 70px rgba(0,0,0,.25)}
+*{box-sizing:border-box} html{scroll-behavior:smooth}body{margin:0;color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:radial-gradient(900px 520px at 9% -8%,#193058 0%,transparent 77%),radial-gradient(720px 450px at 91% 5%,#242148 0%,transparent 78%),var(--bg);line-height:1.5}
+button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}a{color:var(--cyan)}.wrap{max-width:1440px;margin:auto;padding:38px 38px 72px}.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--cyan);font-weight:800;text-transform:uppercase}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:24px}.hero h1{font-size:clamp(34px,4vw,56px);letter-spacing:-.05em;line-height:1.1;margin:10px 0 13px;font-weight:820}.hero h1 span{color:var(--cyan)}.subtitle{color:#b6c8dc;font-size:16px;max-width:865px;margin:0}.topbadge{white-space:nowrap;border:1px solid #52657b;color:#d5e3f6;background:#13233a;padding:9px 13px;border-radius:100px;font-size:12px;font-weight:750;margin-top:5px}.shortpitch{display:flex;gap:14px;align-items:flex-start;padding:17px 20px;border:1px solid #2f5b67;background:linear-gradient(95deg,#11313c,#13233a 70%);border-radius:15px;margin:24px 0 28px;box-shadow:var(--shadow)}.shortpitch .bulb{font-size:22px}.shortpitch strong{font-size:15px}.shortpitch p{margin:4px 0 0;color:#bdd3dc;font-size:14px}.section-title{font-weight:800;font-size:20px;letter-spacing:-.025em;margin:0 0 4px}.section-caption{margin:0;color:var(--muted);font-size:13px}.introline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:17px}.controls{display:flex;gap:7px;flex-wrap:wrap}.phasebtn{border:1px solid #33445d;background:#101e33;color:#bacbdb;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:750;transition:all .15s}.phasebtn:hover{border-color:#83a3c5;color:white}.phasebtn.active{background:#204759;border-color:#62cce0;color:#e2fcff}.diagram-panel{background:linear-gradient(160deg,#101c2f 0%,#0f192b 65%,#0e1828 100%);border:1px solid #293d56;border-radius:18px;padding:26px 26px 28px;box-shadow:var(--shadow);overflow:hidden}.diagram-caption{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#9fb3cb;font-size:11px;font-weight:740;letter-spacing:.11em;text-transform:uppercase;margin-bottom:20px}.live-dot{display:inline-block;height:7px;width:7px;border-radius:100%;background:var(--green);margin-right:7px;box-shadow:0 0 0 4px #7be5b617}.lane-label{font-size:10px;font-weight:800;color:#829ebd;letter-spacing:.15em;text-transform:uppercase;margin:18px 0 8px;display:flex;align-items:center;gap:12px}.lane-label:after{content:"";height:1px;flex:1;background:#24364e}.flow-row{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:stretch;gap:0}.flow-row.short{grid-template-columns:1fr 44px 1.1fr 44px 1.1fr 1fr}.flow-node{position:relative;min-height:128px;overflow:hidden;border-radius:12px;border:1px solid #36506a;padding:17px 16px 14px;background:linear-gradient(150deg,#192a43,#122138);display:flex;flex-direction:column;gap:6px;box-shadow:0 5px 14px #040a1422;transition:filter .2s,border-color .2s,box-shadow .2s,transform .2s}.flow-node .tag{font-size:10px;text-transform:uppercase;letter-spacing:.11em;font-weight:800;color:#8da6c5}.flow-node strong{font-size:15px;line-height:1.25}.flow-node p{font-size:12px;color:#bdcada;margin:0;line-height:1.5}.flow-node .number{position:absolute;right:12px;top:11px;font-size:11px;color:#748aa6;font-weight:800}.flow-node.muse{background:linear-gradient(150deg,#26244a,#1a2544);border-color:#6c65b1}.flow-node.muse .tag{color:#b6a8ff}.flow-node.gate{background:linear-gradient(150deg,#3b2c22,#211f23);border-color:#8b663d}.flow-node.gate .tag{color:var(--amber)}.flow-node.green{background:linear-gradient(150deg,#19382e,#17292c);border-color:#457a66}.flow-node.green .tag{color:var(--green)}.flow-node.active{border-color:#8defff;box-shadow:0 0 0 2px #5bdcea55,0 0 30px #4fddf22c;transform:translateY(-2px)}.flow-node.dim{filter:saturate(.55) brightness(.77)}.flow-arrow{display:flex;align-items:center;justify-content:center;font-size:26px;color:#69b4d0;font-weight:300}.flow-arrow.soft{color:#647f9f}.inline-branches{border:1px solid #344e66;border-radius:12px;padding:10px;background:#0f1c2e;display:grid;grid-template-columns:1fr;gap:7px;min-height:128px}.mini-node{border:1px solid #366577;border-radius:8px;padding:7px 10px;background:#142b3b;min-height:53px}.mini-node b{display:block;font-size:12px}.mini-node small{display:block;font-size:10px;color:#a9bfce;line-height:1.35;margin-top:2px}.mini-node.optional{border-color:#686181;background:#262339}.branch-note{display:flex;align-items:center;justify-content:center;color:#85a5c4;gap:12px;padding:13px 0 1px;font-size:11px;font-weight:750;letter-spacing:.02em}.branch-note:before,.branch-note:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#3e6a83,transparent)}.turn-arrow{display:flex;gap:11px;align-items:center;justify-content:center;margin:11px 0 8px;color:#a5cfe2;font-size:12px;font-weight:800}.turn-arrow .icon{display:inline-grid;place-items:center;border:1px solid #49748c;background:#153044;width:27px;height:27px;border-radius:50%;font-size:15px}.flow-note{padding:14px 16px;border-radius:12px;background:#132840;border:1px dashed #3a7292;display:flex;gap:12px;align-items:center;justify-content:space-between;color:#d0e7ef;font-size:13px;margin:16px 0 3px}.flow-note b{color:#82e7fa}.feedback{margin:14px 0 15px;padding:12px 16px;border:1px dashed #45657b;border-radius:10px;display:flex;gap:12px;align-items:center;justify-content:space-between;background:#102236}.feedback span{color:#d1e1f1;font-size:12px}.feedback strong{color:var(--cyan)}.arrow-return{font-size:23px;color:var(--cyan);font-weight:800}.bottomline{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.side{border:1px solid #30455d;border-radius:13px;background:#152237;padding:16px 18px}.side h3{margin:0 0 7px;font-size:13px}.side p{margin:0;color:#afc2d9;font-size:12px}.flag{font-size:10px;font-weight:800;color:#ddc388;letter-spacing:.08em;text-transform:uppercase}.phase-detail{border:1px solid #3a576e;background:linear-gradient(110deg,#142d40,#131f35);padding:19px 22px;border-radius:14px;display:grid;grid-template-columns:190px 1fr;gap:20px;margin:17px 0 30px;align-items:center}.phase-detail h3{margin:4px 0;font-size:17px}.phase-detail p{color:#c3d1e2;font-size:13px;margin:0}.section-below{margin-top:33px}.columns{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:14px}.card{border:1px solid #304761;background:#101c2f;border-radius:15px;padding:21px 23px}.card h3{margin:0 0 13px;font-size:16px}.checklist{padding:0;margin:0;list-style:none}.checklist li{position:relative;padding:0 0 14px 27px;color:#c4d2e4;font-size:13px}.checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}.checklist li:last-child{padding-bottom:0}.checklist strong{color:#f0f7ff}.metric{display:flex;align-items:start;justify-content:space-between;gap:8px;padding:12px 0;border-bottom:1px solid #273950}.metric:last-child{border-bottom:0}.metric strong{color:white;font-size:13px}.metric p{margin:4px 0 0;font-size:11px;color:#9db5cc}.metric .value{white-space:nowrap;color:var(--green);font-size:16px;font-weight:850}.strict{color:var(--amber)!important}.demo{margin-top:17px;border:1px solid #416780;border-radius:14px;padding:19px 22px;background:#102a3c}.demo h3{margin:0 0 8px;font-size:15px}.demo p{margin:0;color:#c6d9e4;font-size:13px}.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 0}.moment{padding:12px 10px;background:#18354a;border-radius:9px;border:1px solid #37617b;color:#d5e9f3;font-weight:750;font-size:11px;line-height:1.5}.moment em{display:block;font-size:10px;color:#8ecce6;font-style:normal;margin-bottom:5px}.footer{margin-top:30px;color:#8da2bb;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.footer b{color:#c0d6e7}.flow-node:hover{border-color:#8fbbd4}.flow-node:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}.nodehelp{color:#7796ad;font-size:11px;margin:0}
+@media(max-width:1120px){.wrap{padding:26px 20px 50px}.diagram-panel{overflow:auto}.diagram-inner{min-width:1080px}.introline{align-items:start;flex-direction:column}.topbadge{margin-top:0}}@media(max-width:700px){.hero{flex-direction:column}.hero h1{font-size:37px}.phase-detail{grid-template-columns:1fr;gap:7px}.columns{grid-template-columns:1fr}.timeline{grid-template-columns:repeat(2,1fr)}.bottomline{grid-template-columns:1fr}.diagram-panel{padding:18px}.shortpitch{padding:13px}}
+@media print{body{background:white;color:#17243b}.wrap{max-width:100%;padding:10px}.diagram-panel,.card,.demo,.phase-detail{box-shadow:none;break-inside:avoid}.controls{display:none}.diagram-panel{overflow:visible}.diagram-inner{min-width:0}.flow-node{color:#fff}.footer{color:#555}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">META HACKATHON · PUSH THE FRONTIER · SYSTEM DESIGN</div>
+      <h1>Prax<span>ion</span></h1>
+      <p class="subtitle">An AI agent that discovers how an unfamiliar physical system behaves, <b>writes its own controller</b>, tests it against evidence, and repairs its controller when the machine changes.</p>
+    </div>
+    <div class="topbadge">MVP 1 SIMULATOR → MVP 2 RASPBERRY PI</div>
+  </header>
+  <div class="shortpitch">
+    <span class="bulb">✦</span>
+    <div><strong>Core breakthrough to prove: Muse generates working, executable controller code from experiments—not prewritten control templates.</strong><p>The same agent interface can later connect to other physical systems, but generality beyond the tested machine is a future hypothesis, not a proven claim.</p></div>
+  </div>
+
+  <section aria-labelledby="chart-heading">
+    <div class="introline">
+      <div><h2 class="section-title" id="chart-heading">One integrated architecture & execution flow</h2><p class="section-caption">Select a phase to spotlight what runs, why it matters, and how the feedback loops connect.</p></div>
+      <nav class="controls" aria-label="Highlight workflow phase">
+        <button type="button" class="phasebtn active" data-phase="all" aria-pressed="true">Entire system</button>
+        <button type="button" class="phasebtn" data-phase="discover" aria-pressed="false">1 · Discover</button>
+        <button type="button" class="phasebtn" data-phase="author" aria-pressed="false">2 · Write controller</button>
+        <button type="button" class="phasebtn" data-phase="verify" aria-pressed="false">3 · Verify & run</button>
+        <button type="button" class="phasebtn" data-phase="repair" aria-pressed="false">4 · Self-repair</button>
+      </nav>
+    </div>
+
+    <div class="diagram-panel">
+      <div class="diagram-inner">
+        <div class="diagram-caption"><span><span class="live-dot"></span>ARCHITECTURE: LEARNING LOOP + CONTROL LOOP</span><span>Cloud AI thinks between experiments · Local controller acts continuously</span></div>
+        <div class="lane-label">Human intent → Agent reasoning</div>
+        <div class="flow-row">
+          <div class="flow-node" tabindex="0" data-phases="discover" data-detail="goal"><span class="number">01</span><span class="tag">Human objective</span><strong>Goal + safety limits</strong><p>“Keep water level at 60%, avoid overflow, minimize pump energy.”</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node" tabindex="0" data-phases="discover repair" data-detail="orchestrator"><span class="number">02</span><span class="tag">Python / FastAPI</span><strong>Experiment orchestrator</strong><p>Runs the state machine, budgets, retries, audit events and approvals.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node muse" tabindex="0" data-phases="discover author repair" data-detail="muse"><span class="number">03</span><span class="tag">Meta Model API · Cloud</span><strong>Muse Wonder / Muse Spark</strong><p>Hypothesize → design tests → author code → diagnose and revise.</p></div>
+          <span class="flow-arrow soft">↔</span>
+          <div class="flow-node" tabindex="0" data-phases="discover author verify repair" data-detail="dashboard"><span class="number">UI</span><span class="tag">Evidence dashboard</span><strong>Timeline + code diffs + charts</strong><p>Every real tool call, measurement, failure, version, and metric.</p></div>
+        </div>
+
+        <div class="turn-arrow"><span class="icon">↓</span> <span>MUSE PROPOSES BOUNDED EXPERIMENTS TO LEARN UNSEEN DYNAMICS</span> <span class="icon">↓</span></div>
+        <div class="lane-label">Loop A: Discover the black-box machine</div>
+        <div class="flow-row">
+          <div class="flow-node muse" tabindex="0" data-phases="discover" data-detail="proposal"><span class="number">04</span><span class="tag">Muse tool call</span><strong>Propose safe experiment</strong><p>Choose pump power, duration and a hypothesis to test. No hidden plant constants.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node gate" tabindex="0" data-phases="discover verify repair" data-detail="guard"><span class="number">05</span><span class="tag">Trusted deterministic code</span><strong>Safety / action validator</strong><p>Clamps allowed actions, enforces time limits, budgets and emergency stop.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node" tabindex="0" data-phases="discover verify repair" data-detail="adapter"><span class="number">06</span><span class="tag">Shared device abstraction</span><strong>PlantAdapter</strong><p><code>observe()</code> · <code>apply_input()</code> · <code>reset()</code></p></div>
+          <span class="flow-arrow">→</span>
+          <div class="inline-branches">
+            <div class="mini-node"><b>🧪 MVP 1 · Simulated water tank</b><small>Hidden pump gain, leak, lag, noise and disturbance.</small></div>
+            <div class="mini-node optional"><b>🔌 MVP 2 · Raspberry Pi (optional)</b><small>Real water-level sensor + low-voltage pump + independent interlock.</small></div>
+          </div>
+        </div>
+        <div class="feedback"><span class="arrow-return">↰</span><span><strong>Closed feedback loop:</strong> plant readings → time-series telemetry → prediction errors → orchestrator → Muse's next hypothesis or experiment.</span><span class="arrow-return">↻</span></div>
+
+        <div class="turn-arrow"><span class="icon">↓</span> <span>MUSE HAS ENOUGH EVIDENCE TO GENERATE A NEW EXECUTABLE POLICY</span> <span class="icon">↓</span></div>
+        <div class="lane-label">Loop B: Write, verify and promote the controller</div>
+        <div class="flow-row">
+          <div class="flow-node muse" tabindex="0" data-phases="author repair" data-detail="code"><span class="number">07</span><span class="tag">Muse-authored source code</span><strong>controller_v1.py / v2.py</strong><p>Generates a new <code>control(obs, state)</code> function. Save complete source + diff.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node gate" tabindex="0" data-phases="author verify repair" data-detail="sandbox"><span class="number">08</span><span class="tag">Untrusted-code isolation</span><strong>Static checks + sandbox</strong><p>No filesystem, network, imports, subprocesses, or direct hardware access.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node green" tabindex="0" data-phases="verify repair" data-detail="eval"><span class="number">09</span><span class="tag">Independent tests</span><strong>Hidden-seed evaluator</strong><p>Safety, tracking error, time-in-band, energy, overrides, and baseline comparison.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node green" tabindex="0" data-phases="verify repair" data-detail="runtime"><span class="number">10</span><span class="tag">Fast local control loop</span><strong>Trusted controller runtime</strong><p>Only approved source; fixed-rate commands pass through the same safety gate.</p></div>
+        </div>
+        <div class="flow-note"><span>↩ <b>IF TESTS FAIL:</b> evaluator returns the actual failure trace → Muse edits the generated controller → sandbox and tests run again.</span><span aria-hidden="true">↻</span></div>
+
+        <div class="turn-arrow"><span class="icon">↓</span> <span>AFTER V1 WORKS, CHANGE THE SYSTEM AND PROVE AUTONOMOUS REPAIR</span> <span class="icon">↓</span></div>
+        <div class="lane-label">Loop C: Disturbance → Self-diagnosis → Controller v2</div>
+        <div class="flow-row">
+          <div class="flow-node" tabindex="0" data-phases="repair" data-detail="disturbance"><span class="number">11</span><span class="tag">Unknown change</span><strong>Introduce hidden disturbance</strong><p>Increase drainage or reduce pump effectiveness after v1 is frozen.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node" tabindex="0" data-phases="repair" data-detail="drift"><span class="number">12</span><span class="tag">Observed evidence</span><strong>Detect control degradation</strong><p>Tracking error grows. Record before/after traces and request diagnosis.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node muse" tabindex="0" data-phases="repair" data-detail="revise"><span class="number">13</span><span class="tag">Meta Muse revises logic</span><strong>Author Controller V2</strong><p>New code changes how the system responds; not just a generated explanation.</p></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node green" tabindex="0" data-phases="repair verify" data-detail="compare"><span class="number">14</span><span class="tag">Objective release gate</span><strong>Re-test → compare → promote</strong><p>Same held-out disturbances for V1 and V2. Deploy only if approved.</p></div>
+        </div>
+        <div class="flow-note"><span><b>REPEATABLE LEARNING:</b> Muse plans and codes at low frequency; the approved controller + hard safety supervisor keep the physical loop independent of cloud connectivity.</span><span aria-hidden="true">∞</span></div>
+        <div class="bottomline">
+          <div class="side"><h3>⏱ Two different operating speeds</h3><p><b>Muse / cloud:</b> between bounded experiments or revision cycles (seconds or longer). <b>Local control:</b> fixed interval, such as 0.2–1 second; never wait for Muse to enforce safety.</p></div>
+          <div class="side"><h3>🔒 Non-negotiable boundary</h3><p>Raw Muse-generated code cannot command physical GPIO directly. Sandbox, approval, action limits, and hardware protections remain outside the model.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-detail" aria-live="polite">
+      <div><div class="eyebrow" id="phase-label">Interactive architecture</div><h3 id="phase-title">One system, three feedback loops</h3></div>
+      <p id="phase-copy">Discover unknown dynamics through experiments; have Muse write a real controller; independently evaluate and deploy it; then intentionally change the machine and verify that Muse can generate a better revision. Click a phase or component to explore.</p>
+    </div>
+  </section>
+
+  <section class="section-below" aria-label="Proposed MVP acceptance gates">
+    <h2 class="section-title">What counts as success or failure?</h2>
+    <p class="section-caption">Frozen, proposed engineering acceptance gates from the implementation plan—not measured results. Report actual failures as well as successes.</p>
+    <div class="columns">
+      <div class="card">
+        <h3>MVP 1 · Simulation (required)</h3>
+        <div class="metric"><div><strong>Experiment discovery</strong><p>Real Muse tool calls, logged hypotheses, distinct bounded experiments, and saved source artifact.</p></div><div class="value">≥3 tests</div></div>
+        <div class="metric"><div><strong>Controller quality on unseen episodes</strong><p>Correct finite commands, zero hard-level violations, and at least 70% time within target band after settling.</p></div><div class="value">8 / 10</div></div>
+        <div class="metric"><div><strong>Evidence-based self-repair</strong><p>V2 must be meaningfully different code and reduce post-disturbance mean absolute error versus frozen V1.</p></div><div class="value">≥20%<br><span style="font-size:11px">in 3 / 5</span></div></div>
+        <div class="metric"><div><strong>Independent safety gate</strong><p>No unauthorized actions, no bypassing the guard, no deploying an untested candidate.</p></div><div class="value strict">0 breaches</div></div>
+      </div>
+      <div class="card">
+        <h3>MVP 2 · Raspberry Pi (optional)</h3>
+        <ul class="checklist">
+          <li><strong>Same PlantAdapter:</strong> swap simulator for a physical level sensor and low-voltage pump without rewriting Muse's reasoning loop.</li>
+          <li><strong>Physical proof:</strong> a reviewed, approved controller runs in short bounded tests and controls measured water level.</li>
+          <li><strong>Fail safe:</strong> pump shuts off for emergency stop, sensor faults, and runtime failure; independent protection required.</li>
+          <li><strong>Honest boundary:</strong> never call a simulated controller physically validated until real sensors and actuator have been tested.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo">
+      <h3>🎬 The winning demo sequence (what viewers actually see)</h3>
+      <p>Show live, authentic model calls, controller source changes, and evaluation evidence. Do not rely on a scripted replay pretending to be live.</p>
+      <div class="timeline">
+        <div class="moment"><em>01 · UNKNOWN</em>Fresh water-tank system; no controller given to Muse.</div>
+        <div class="moment"><em>02 · DISCOVER</em>Muse proposes experiments; real traces reveal machine response.</div>
+        <div class="moment"><em>03 · BUILD</em>Muse generates <code>controller_v1.py</code> and tests it.</div>
+        <div class="moment"><em>04 · BREAK</em>Introduce an undisclosed leak; V1 becomes worse.</div>
+        <div class="moment"><em>05 · REPAIR</em>Muse writes V2. Show code diff + V1/V2 chart + pass/fail results.</div>
+      </div>
+    </div>
+    <div class="footer"><span><b>Praxion</b> · Architecture grounded in PRAXION_IMPLEMENTATION_PLAN.md</span><span>Standalone HTML · No external scripts · Open locally · Illustrative design, not a claim of implementation success</span></div>
+  </section>
+</main>
+<script>
+(() => {
+ const phaseInfo = {
+  all: ['Interactive architecture','One system, three feedback loops','Discover unknown dynamics through experiments; have Muse write a real controller; independently evaluate and deploy it; then intentionally change the machine and verify that Muse can generate a better revision. Click a phase or component to explore.'],
+  discover:['PHASE 1 · DISCOVERY','Learn without a machine manual','Muse sees only controls and permitted sensor readings. It proposes bounded experiments, receives actual observations, and refines its hypotheses; the simulator’s hidden physics is never supplied to the agent.'],
+  author:['PHASE 2 · SYNTHESIS','Write a new executable controller','Using experimental evidence, Muse authors a complete Python control function. Store the raw source, version hash, rationale and diff. The code must originate from Muse, not be a prewritten PID implementation disguised as discovery.'],
+  verify:['PHASE 3 · VALIDATION','Independent tests decide if the controller is usable','Static safety checks, isolated execution, hidden evaluation seeds, and quantitative release criteria determine whether V1 or V2 is approved. Local control executes without depending on cloud response time.'],
+  repair:['PHASE 4 · ADAPTATION','Break assumptions, then watch Muse repair the control logic','Freeze V1 and secretly alter tank drainage or pump performance. Detect tracking degradation, ask Muse to investigate evidence, generate V2 and prove improvement on the same held-out disturbances.']
+ };
+ const detailInfo = {
+  goal:['Human contract','Set the target water level and immutable constraints; the goal is not full machine autonomy without safeguards.'],
+  orchestrator:['Workflow orchestrator','Tracks the workflow state, experiments, budgets, retries, controller versions, audit events, drift triggers and model calls.'],
+  muse:['Meta Muse agent','Calls permitted tools, hypothesizes unknown dynamics, chooses experiments, authors controller code and revises it from measured failures.'],
+  dashboard:['Evidence dashboard','Show raw telemetry, tool calls, v1/v2 code diff, hidden-test metrics and failed runs so the demo cannot be mistaken for a scripted animation.'],
+  proposal:['Experiment design','Muse selects a pump-power input and experiment duration to learn something useful while staying within the provided safe bounds.'],
+  guard:['Trusted safety supervisor','Rejects unsafe or disallowed actions. Overrides count against candidates; a guard saving a bad controller does not make that controller safe.'],
+  adapter:['Plant abstraction','A stable interface exposes only observations and bounded inputs. Switch between simulated plant and optional Pi hardware without changing the agent.'],
+  code:['Muse-generated controller artifact','Save the complete `control(obs, state)` code exactly as returned by Muse, along with v1/v2 lineage and meaningful differences.'],
+  sandbox:['Restricted controller execution','Validate syntax and allowed AST operations; run candidate code with strict resource limits, no hardware, no arbitrary imports, filesystem or network.'],
+  eval:['Held-out benchmark','Run deterministic hidden seeds, track control error, time-in-band, energy use, safety events and override counts. Compare to an ordinary baseline.'],
+  runtime:['Local deterministic runtime','Only an approved controller issues fixed-rate actions. The safety supervisor retains final authority on every action.'],
+  disturbance:['Hidden change in dynamics','Alter pump effectiveness or drainage after V1 is fixed; withhold the cause from Muse and expose the measured consequences only.'],
+  drift:['Detect a model mismatch','Observe worsening error and tell Muse what happened through traces, not through the secret simulator parameters.'],
+  revise:['Muse repairs generated code','Muse makes a substantive logic change to control policy V2 and explains the measured evidence that motivated it.'],
+  compare:['Objective release decision','Re-test V2 on the same preselected disturbance scenarios as V1. If the improvement and safety gates fail, do not promote it.']
+ };
+ const buttons=[...document.querySelectorAll('.phasebtn')];
+ const nodes=[...document.querySelectorAll('.flow-node')];
+ const title=document.getElementById('phase-title'), copy=document.getElementById('phase-copy'), label=document.getElementById('phase-label');
+ function setPhase(phase){
+  buttons.forEach(b=>{const a=b.dataset.phase===phase;b.classList.toggle('active',a);b.setAttribute('aria-pressed',a?'true':'false');});
+  nodes.forEach(n=>{n.classList.toggle('dim',phase!=='all'&&!n.dataset.phases.split(' ').includes(phase));n.classList.toggle('active',phase!=='all'&&n.dataset.phases.split(' ').includes(phase));});
+  [label.textContent,title.textContent,copy.textContent]=phaseInfo[phase];
+ }
+ buttons.forEach(b=>b.addEventListener('click',()=>setPhase(b.dataset.phase)));
+ nodes.forEach(n=>{
+  function show(){const [t,d]=detailInfo[n.dataset.detail]||[];if(!t)return;label.textContent='COMPONENT DETAIL';title.textContent=t;copy.textContent=d;nodes.forEach(x=>x.classList.remove('active'));n.classList.add('active');}
+  n.addEventListener('click',show);
+  n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show();}});
+ });
+})();
+</script>
+</body>
+</html>
