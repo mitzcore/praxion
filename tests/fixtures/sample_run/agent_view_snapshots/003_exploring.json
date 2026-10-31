@@ -1,0 +1,479 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 10,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 13.0,
+  "y": 0.459
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 8.0,
+   "uncertainty_targeted": "Magnitude of positive gain and response lag from a mid-level step, needed to size any future controller.",
+   "expected_observation": "If positive gain with modest lag is correct, y should start rising within 1-3 s from ~0.38 and move monotonically toward ~0.5-0.6 over the 8 s hold, with no spike toward the limit.",
+   "verdict": "approved; worst-case bound 0.782",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.3816
+    ],
+    [
+     0.2,
+     0.3718
+    ],
+    [
+     0.4,
+     0.3745
+    ],
+    [
+     0.6,
+     0.3659
+    ],
+    [
+     0.8,
+     0.3606
+    ],
+    [
+     1.0,
+     0.3514
+    ],
+    [
+     1.2,
+     0.3469
+    ],
+    [
+     1.4,
+     0.3457
+    ],
+    [
+     1.6,
+     0.3392
+    ],
+    [
+     1.8,
+     0.3368
+    ],
+    [
+     2.0,
+     0.3312
+    ],
+    [
+     2.2,
+     0.3265
+    ],
+    [
+     2.4,
+     0.3266
+    ],
+    [
+     2.6,
+     0.3194
+    ],
+    [
+     2.8,
+     0.3158
+    ],
+    [
+     3.0,
+     0.3209
+    ],
+    [
+     3.2,
+     0.3213
+    ],
+    [
+     3.4,
+     0.3181
+    ],
+    [
+     3.6,
+     0.3175
+    ],
+    [
+     3.8,
+     0.3181
+    ],
+    [
+     4.0,
+     0.3171
+    ],
+    [
+     4.2,
+     0.3121
+    ],
+    [
+     4.4,
+     0.3146
+    ],
+    [
+     4.6,
+     0.3211
+    ],
+    [
+     4.8,
+     0.314
+    ],
+    [
+     5.0,
+     0.3217
+    ],
+    [
+     5.2,
+     0.3198
+    ],
+    [
+     5.4,
+     0.3189
+    ],
+    [
+     5.6,
+     0.3186
+    ],
+    [
+     5.8,
+     0.3262
+    ],
+    [
+     6.0,
+     0.3268
+    ],
+    [
+     6.2,
+     0.3223
+    ],
+    [
+     6.4,
+     0.3228
+    ],
+    [
+     6.6,
+     0.3223
+    ],
+    [
+     6.8,
+     0.3247
+    ],
+    [
+     7.0,
+     0.3235
+    ],
+    [
+     7.2,
+     0.3248
+    ],
+    [
+     7.4,
+     0.3272
+    ],
+    [
+     7.6,
+     0.332
+    ],
+    [
+     7.8,
+     0.3275
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "status": "completed",
+   "command_u": 0.9,
+   "duration_s": 5.0,
+   "uncertainty_targeted": "Magnitude and direction of gain at high input and steady-state input needed to hold 0.6, which E1 put in doubt by settling near 0.32 at u=0.5.",
+   "expected_observation": "If positive gain is correct, y should stop decaying and rise within 1-3 s from ~0.34 toward ~0.45-0.55 over the 5 s hold; if gain is zero/negative, y will stay flat or keep decaying toward ~0.32.",
+   "verdict": "approved; worst-case bound 0.787",
+   "t_start": 8.0,
+   "samples": [
+    [
+     8.0,
+     0.337
+    ],
+    [
+     8.1,
+     0.3271
+    ],
+    [
+     8.2,
+     0.3331
+    ],
+    [
+     8.3,
+     0.33
+    ],
+    [
+     8.4,
+     0.3354
+    ],
+    [
+     8.5,
+     0.3342
+    ],
+    [
+     8.6,
+     0.3304
+    ],
+    [
+     8.7,
+     0.3343
+    ],
+    [
+     8.8,
+     0.3342
+    ],
+    [
+     8.9,
+     0.3333
+    ],
+    [
+     9.0,
+     0.339
+    ],
+    [
+     9.1,
+     0.3392
+    ],
+    [
+     9.2,
+     0.338
+    ],
+    [
+     9.3,
+     0.3392
+    ],
+    [
+     9.4,
+     0.3441
+    ],
+    [
+     9.5,
+     0.341
+    ],
+    [
+     9.6,
+     0.3451
+    ],
+    [
+     9.7,
+     0.3513
+    ],
+    [
+     9.8,
+     0.3533
+    ],
+    [
+     9.9,
+     0.3558
+    ],
+    [
+     10.0,
+     0.3541
+    ],
+    [
+     10.1,
+     0.3554
+    ],
+    [
+     10.2,
+     0.3613
+    ],
+    [
+     10.3,
+     0.359
+    ],
+    [
+     10.4,
+     0.3694
+    ],
+    [
+     10.5,
+     0.3724
+    ],
+    [
+     10.6,
+     0.3756
+    ],
+    [
+     10.7,
+     0.3766
+    ],
+    [
+     10.8,
+     0.3873
+    ],
+    [
+     10.9,
+     0.379
+    ],
+    [
+     11.0,
+     0.3842
+    ],
+    [
+     11.1,
+     0.3863
+    ],
+    [
+     11.2,
+     0.3906
+    ],
+    [
+     11.3,
+     0.394
+    ],
+    [
+     11.4,
+     0.3961
+    ],
+    [
+     11.5,
+     0.4004
+    ],
+    [
+     11.6,
+     0.4002
+    ],
+    [
+     11.7,
+     0.4098
+    ],
+    [
+     11.8,
+     0.4088
+    ],
+    [
+     11.9,
+     0.4122
+    ],
+    [
+     12.0,
+     0.4226
+    ],
+    [
+     12.1,
+     0.4237
+    ],
+    [
+     12.2,
+     0.426
+    ],
+    [
+     12.3,
+     0.4323
+    ],
+    [
+     12.4,
+     0.4342
+    ],
+    [
+     12.5,
+     0.4366
+    ],
+    [
+     12.6,
+     0.4381
+    ],
+    [
+     12.7,
+     0.4483
+    ],
+    [
+     12.8,
+     0.4505
+    ],
+    [
+     12.9,
+     0.4523
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases y (positive steady-state gain).",
+   "confidence": 0.55,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "Response to a step in u shows lag/delay of 1-5 s and settles within ~15 s.",
+   "confidence": 0.45,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "There is a dead zone with negligible inflow for u below ~0.1.",
+   "confidence": 0.3,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0, y decays on its own toward near zero.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear for u in [0.2, 0.8].",
+   "confidence": 0.3,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state input needed to hold y=0.6 is in range u=0.4-0.7.",
+   "confidence": 0.2,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise standard deviation is less than 0.02.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}
