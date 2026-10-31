@@ -1,0 +1,988 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793422902.094551,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive gain): a sustained u=0.5 will raise y above its starting value.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir drains on its own and y decays measurably, at a rate to be measured.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "There is a dead zone at low u (some u>0 below which y does not rise).",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "There is a non-negligible delay/lag (>1s) between a u step and the y response.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "The steady-state response is approximately linear in u across input levels.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "The steady-state input needed to hold target y=0.6 lies within [0,1], plausibly 0.2-0.8.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor noise is small relative to the 0.10-wide target band (std <0.02).",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H8",
+    "statement": "The response timescale is such that y changes measurably within 10s at u=0.5.",
+    "confidence": 0.6,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793422930.5907059,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive gain): a sustained u=0.5 will raise y above its starting value.",
+    "confidence": 0.35,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir drains on its own and y decays measurably, at a rate to be measured.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is a dead zone at low u (some u>0 below which y does not rise).",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "There is a non-negligible delay/lag (>1s) between a u step and the y response.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "The steady-state response is approximately linear in u across input levels.",
+    "confidence": 0.35,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "The steady-state input needed to hold target y=0.6 lies within [0,1], plausibly 0.2-0.8.",
+    "confidence": 0.25,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor noise is small relative to the 0.10-wide target band (std <0.02).",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "The response timescale is such that y changes measurably within 10s at u=0.5.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793422981.229385,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793423054.664841,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt; u=1 produces a clearly positive net rate at y around 0.2-0.35.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s once lagged inflow has decayed; a near-constant drain remains a competing explanation because E3 slope was roughly 0.02/s over much of the decay.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold near u about 0.25-0.30, approximately inflow=0.11*max(0,u-0.27), explaining why u=0.5 has only a small late net slope while u=1 has a much larger slope.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent delay of about 1 s plus a first-order lag of order 1.5-3 s, rather than instantaneously: E2 was flat for about 1 s, E3 kept rising about 1.8 s after u was set to 0, and E1 bottomed only after several seconds.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y, so sustained changes larger than about 0.02 over at least 1 s are meaningful.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is linear in u with no dead zone across u=0.5 to 1.0; this is weakened because the inferred inflow ratio between u=1 and u=0.5 is greater than the factor of two predicted by linearity, after allowing for drain.",
+    "confidence": 0.2,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8; this is not yet established and a constant-drain model would instead predict no such finite steady state.",
+    "confidence": 0.35,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "After the lag, net slope at u=1 and y about 0.25-0.35 is about +0.03 to +0.05/s, whereas at u=0.5 and y about 0.17 it is about 0 to +0.006/s.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793423105.7984772,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt; u=1 produces a clearly positive net rate at y around 0.2-0.35.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s once lagged inflow has decayed. This is weakened by E3, where decay slope remained near 0.02/s at low y, and by E4, where the initial slope at y about 0.11 was also near -0.02/s.",
+    "confidence": 0.35,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold roughly in the range u=0.20-0.35, approximately inflow proportional to max(0,u-threshold), explaining why u=0.5 has only a small late net slope while u=1 has a much larger slope.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent delay of about 1-2 s plus a first-order lag of order 1.5-3 s, rather than instantaneously. E4 was especially clean: from a settled u=0 state, y stayed near its minimum for about 2 s after u=1 began and then rose with increasing slope.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y, so sustained changes larger than about 0.02 over at least 1 s are meaningful.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is linear in u with no dead zone across u=0.5 to 1.0. This is weakened because the inferred inflow ratio between u=1 and u=0.5 is greater than the factor of two predicted by linearity, after allowing for plausible drain.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8. This remains poorly established because a constant-drain model would instead predict a much lower holding input and no comparable finite steady state.",
+    "confidence": 0.3,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "After the lag, net slope at u=1 and y about 0.19-0.35 is about +0.03 to +0.05/s, whereas at u=0.5 and y about 0.17 it is about 0 to +0.006/s. E4 gave a late u=1 slope of roughly +0.04/s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Drain is approximately constant at about 0.018-0.025/s over y roughly 0.11-0.40, rather than proportional to y. This is supported by E4's initial low-y slope and by E3's late decay, but it is not yet separated cleanly from proportional drain plus residual lagged inflow.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793423199.1529,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt; u=1 produces a clearly positive net rate at y around 0.2-0.35.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s. E5 further weakens this: at u=0.5 y rose to and flattened near 0.39 rather than falling toward the ~0.17 equilibrium this model predicted.",
+    "confidence": 0.12,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold roughly in the range u=0.20-0.35, approximately inflow proportional to max(0,u-threshold). This is now strongly weakened: u=0.5 sustains y near 0.39 in E5, implying inflow at u=0.5 is roughly half the u=1 inflow rather than one-third or less.",
+    "confidence": 0.12,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent delay of about 1-2 s plus a first-order lag of order 1.5-3 s, rather than instantaneously. E5 supports a lagged inflow state: after stepping down from u=1 to u=0.5, y initially kept rising quickly and its slope then decayed over several seconds.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y, so sustained changes larger than about 0.02 over at least 1 s are meaningful.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is approximately linear in u with no or only a small dead zone across u=0.5 to 1.0. E5 strengthens this: the implied inflow ratio u=1 versus u=0.5 is about 2-2.1, although a threshold below roughly 0.1 remains possible.",
+    "confidence": 0.68,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8. E5 makes this unlikely because u=0.5 already approximately balances drain near y=0.39.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "After the lag, net slope at u=1 and y about 0.19-0.35 is about +0.03 to +0.05/s. At u=0.5, late net slope is about 0 to +0.006/s at y about 0.17 in E1 and about +0.003 to +0.007/s at y about 0.39-0.40 in E5; E5's faster initial rise is attributable to residual lagged inflow from u=1.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Drain is approximately constant at about 0.018-0.025/s over y roughly 0.11-0.40, rather than proportional to y. This still explains much of E3/E4, but E5 suggests drain near y=0.39 may be closer to 0.030/s if u=0.5 inflow is about 0.033/s.",
+    "confidence": 0.38,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Drain increases weakly or sublinearly with level, for example D(y) approximately 0.020+0.025*y or approximately 0.05*sqrt(y), from about 0.023/s at y=0.11 to about 0.030-0.033/s at y=0.40. Combined with approximately linear inflow of about 0.065-0.068/s at u=1, this fits the late slopes of E1-E5 better than either purely proportional or purely constant drain.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "The effective equilibrium for u=0.5 is above y=0.39, plausibly about 0.42-0.50, and the steady input needed to hold y=0.6 is plausibly about u=0.50-0.65 rather than 0.8-0.9. This remains uncertain because drain has never been observed above y=0.42 and E5 may not have fully settled.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793423313.7132642,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt; u=1 produces a clearly positive net rate at y around 0.2-0.47 after the lag.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s. This remains strongly weakened: E3 decayed almost linearly rather than slowing at low y, and E5 rose/flattened near y=0.39 at u=0.5 rather than falling toward the low equilibrium predicted by this model.",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold roughly in the range u=0.20-0.35, approximately inflow proportional to max(0,u-threshold). This remains strongly weakened because u=0.5 sustains y near 0.39 in E5, implying inflow at u=0.5 is roughly half the u=1 inflow rather than one-third or less.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent pure delay of about 1-1.5 s plus a first-order lag with time constant roughly 1.5-3.5 s, rather than instantaneously. E6 supports this: stepping from u=0.5 to u=1 at y=0.398 left y almost flat near 0.40 for about 1-1.5 s before it began rising, as in the clean step of E4.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y on short timescales, so sustained changes larger than about 0.02 over at least 1 s, or regression slopes over several seconds, are meaningful. E6's 0.1 s samples jitter around the trend by roughly this amount.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is approximately linear in u with no or only a small dead zone across u=0.5 to 1.0. The implied inflow ratio between u=1 and u=0.5 is about 2, although a threshold below roughly 0.1 and inflow levels below u=0.5 remain untested directly.",
+    "confidence": 0.68,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus strong-dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8. This remains unlikely because u=0.5 already approximately balances or exceeds drain near y=0.39 in E5.",
+    "confidence": 0.07,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "After the lag, net slope at u=1 and y about 0.19-0.35 is about +0.03 to +0.05/s in E2/E4. At u=0.5, the late net slope is about 0 to +0.006/s at y about 0.17 in E1 and about +0.003 to +0.007/s at y about 0.39-0.40 in E5. In E6, at u=1 and y about 0.40-0.47, the slope over the final roughly 2 s was only about +0.018 to +0.022/s, but that interval was still lag-transitional and is not a clean steady-state slope.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Drain is approximately constant at about 0.020-0.025/s over y roughly 0.11-0.40, rather than proportional to y. E3's nearly straight-line u=0 decay is the main support. E6 does not cleanly extend this to y=0.47: it is consistent with constant drain only if the u=1 inflow was still well below its steady value late in E6.",
+    "confidence": 0.34,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Drain increases weakly or sublinearly with level, for example from about 0.023/s at y=0.11 to about 0.030-0.038/s at y=0.40-0.47. Combined with approximately linear inflow of about 0.065-0.068/s at u=1, this can fit the late slopes of E5 and E6 if the lag is relatively fast, but E3's nearly constant u=0 decay slope opposes a strong level dependence.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "The steady input needed to hold y=0.6 is plausibly about u=0.40-0.60 rather than 0.8-0.9: the lower end follows if drain stays near 0.024/s and u=1 inflow is about 0.060-0.065/s, while the upper end follows if drain rises to about 0.035-0.039/s at y=0.6. This remains insufficiently resolved because no steady measurement has been made above y=0.47 and no candidate holding input below u=0.5 has been tested.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H12",
+    "statement": "E6's lower late slope at higher y is primarily due to an incomplete lag transition, with the effective lag time constant toward the upper end of the H4 range, rather than primarily due to drain increasing with y. This competes directly with H10 and is confounded in the 4 s E6 record because only about 2.5 s elapsed after the apparent delay before the experiment ended.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E4",
+     "E5",
+     "E6"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793423395.0041862,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt; u=1 produces a clearly positive net rate at y around 0.2-0.47 after the lag, and stepping down to u=0.4 in E7 eventually produced a negative net rate at y near 0.5.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s. This remains weakened: E3 decayed almost linearly rather than slowing proportionally at low y, although E7's fall at u=0.4 and y near 0.5 is qualitatively compatible with a level-dependent drain.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold roughly in the range u=0.20-0.35, approximately inflow proportional to max(0,u-threshold). This is further weakened by E7: u=0.4 supplied enough inflow to make the late net slope only about -0.009/s at y near 0.5, rather than the much larger negative slope expected if u=0.4 were barely above a high threshold.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent pure delay of about 1-1.5 s plus a first-order lag with time constant roughly 1.5-3.5 s, with full settling taking several seconds, rather than instantaneously. E7 strongly supports this: after stepping down from u=1 to u=0.4, y first rose from 0.470 to about 0.529 over roughly 3-4 s before falling.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y on short timescales, so sustained changes larger than about 0.02 over at least 1 s, or regression slopes over several seconds, are meaningful. E7's samples jitter around the late falling trend by roughly this amount.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is approximately linear in u with no or only a small dead zone across u=0.4 to 1.0, although inputs below u=0.4 remain untested directly. Under level-dependent-drain models, E7's u=0.4 late slope and E5's u=0.5 late slope imply an inflow ratio near the 0.8 ratio of the commands.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus strong-dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8. This remains unlikely because u=0.5 already approximately balances drain near y=0.39 in E5 and u=0.4 nearly balances drain near y=0.5 in E7.",
+    "confidence": 0.04,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Measured late net slopes: at u=1 and y about 0.19-0.35, about +0.03 to +0.05/s in E2/E4; at u=0.5, about 0 to +0.006/s at y about 0.17 in E1 and about +0.003 to +0.007/s at y about 0.39-0.40 in E5; in E6 at u=1 the final roughly 2 s slope was about +0.018 to +0.022/s but still lag-transitional; in E7 at u=0.4, after an initial rise to about 0.529, the slope over the final roughly 4 s was about -0.008 to -0.010/s at y about 0.49-0.52.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Drain is approximately constant at about 0.020-0.025/s over y roughly 0.11-0.40 and remains approximately constant at y near 0.5. E3 still supports near-constant drain at lower levels, but E7 weakens the extension to y near 0.5: with approximately linear inflow, constant drain would make u=0.4 nearly hold y near 0.5, whereas the observed late slope was about -0.009/s.",
+    "confidence": 0.16,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Drain increases weakly or sublinearly with level, from about 0.023/s at low y to roughly 0.032-0.036/s at y about 0.5. Combined with approximately linear inflow of about 0.065-0.075/s at u=1, this fits E7's observed late slope of about -0.009/s at u=0.4 and y near 0.5, which lay in the range predicted for this model before E7. E3's nearly constant low-level decay still limits how strong the level dependence can be below y=0.4.",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "The steady input needed to hold y=0.6 is plausibly about u=0.52-0.68 rather than 0.40-0.50 or 0.8-0.9. E7 shows u=0.4 is below the holding input even at y near 0.5, while model extrapolations from E5 and E7 give roughly u=0.53 for sublinear drain, u=0.60 for affine drain, and u=0.64 for proportional drain. This remains insufficiently resolved because no measurement has yet been made with y near 0.6.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H12",
+    "statement": "E6's lower late slope at higher y is primarily due to an incomplete lag transition, with the effective lag time constant toward the upper end of the H4 range, rather than primarily due to drain increasing with y. E7 weakens this as the main explanation: its late slope remained about -0.009/s after the initial lag-driven rise and several seconds of decline, supporting a real increase in drain or decrease in net inflow at higher y.",
+    "confidence": 0.28,
+    "evidence_refs": [
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H13",
+    "statement": "At y near 0.5, u=0.4 is below the local holding input: after lag effects had largely passed, E7's net slope was about -0.008 to -0.010/s, so the holding input at y=0.5 is greater than 0.4 and, for approximately linear inflow, plausibly around 0.5-0.6.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E5",
+     "E7"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E8",
+  "ts": 1793423494.227137,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Gain is positive: increasing u increases inflow and net dy/dt. u=1 produced clearly positive net rates at y around 0.2-0.47 after the lag in E2/E4/E6, stepping down to u=0.4 in E7 eventually produced a negative net rate near y=0.5, and stepping up from u=0.4 to u=0.6 in E8 changed the net slope from about -0.009/s to about -0.002/s at similar y.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the reservoir self-drains approximately proportionally to level, dy/dt approximately -k*y with k about 0.08-0.12/s. This remains weakened: E3 decayed at an almost constant rate rather than slowing proportionally at low y; E8 is only indirectly compatible because balancing u=0.6 at y approximately 0.47 could involve a larger drain there, but no direct high-level u=0 decay has been measured.",
+    "confidence": 0.12,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Effective inflow is strongly nonlinear with a dead zone or threshold roughly in the range u=0.20-0.35, approximately inflow proportional to max(0,u-threshold). This is further weakened by E7 and E8: u=0.4, 0.5 and 0.6 all supplied substantial inflow, and the slope improvement from u=0.4 to u=0.6 was only about +0.008/s, inconsistent with the much larger effective-input ratios a high threshold would imply when compared with u=1 at low y.",
+    "confidence": 0.03,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "The input acts through an apparent pure delay of about 1-1.5 s plus a first-order lag with time constant roughly 1.5-3.5 s, with full settling taking several seconds, rather than instantaneously. Large steps in E2-E7 strongly support this, including E7's continued rise for 3-4 s after stepping down from u=1 to u=0.4. E8's small 0.4-to-0.6 step showed no obvious transient, which is mildly weakening or indicates that a small lag transient was hidden by noise and by its near-zero final slope.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Sensor noise is small, roughly 0.005-0.010 in y on short timescales, so sustained changes larger than about 0.02 over at least 1 s, or regression slopes over several seconds, are meaningful. E8 jittered around an almost flat level with short-timescale scatter of roughly 0.006, supporting this.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Inflow is approximately linear in u with no or only a small dead zone across u=0.4 to 1.0, although inputs below u=0.4 remain untested directly. This is substantially weakened by E8: the net-slope change from E7 at u=0.4 to E8 at u=0.6 implies an incremental inflow gain of only about 0.04-0.05 per unit u near y=0.48, below the roughly 0.065-0.075 per unit inferred earlier from absolute u=1 slopes if drain at low y is about 0.022/s. A single linear inflow law plus the earlier drain estimates no longer fits all experiments well.",
+    "confidence": 0.48,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Under the proportional-drain plus strong-dead-zone model, holding y=0.6 requires high input around u=0.8-0.9 and the u=1 steady state is only about 0.7-0.8. The specific model remains unlikely because of E3 and because u=0.5 nearly balances at y approximately 0.39 in E5, although E8 raises the separate possibility that the holding input at 0.6 is above 0.6 for other reasons.",
+    "confidence": 0.07,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Measured late net slopes: at u=1 and y about 0.19-0.35, about +0.03 to +0.05/s in E2/E4; at u=0.5, about 0 to +0.006/s at y about 0.17 in E1 and about +0.003 to +0.007/s at y about 0.39-0.40 in E5; in E6 at u=1 the final roughly 2 s slope was about +0.018 to +0.022/s but still lag-transitional; in E7 at u=0.4, after an initial lag-driven rise to about 0.529, the slope over the final roughly 4 s was about -0.008 to -0.010/s at y about 0.49-0.52; in E8 at u=0.6, the overall slope was about -0.003 to 0.000/s at y about 0.46-0.48, with no clear delayed rise over 5.5 s.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Drain is approximately constant at about 0.020-0.025/s over y roughly 0.11-0.40 and remains approximately constant at y near 0.5. E3 supports near-constant drain at lower levels, and E7/E8 could fit an approximately constant drain near 0.025-0.030/s if the incremental inflow gain is only about 0.04-0.05 per unit, but that combination conflicts with the strong u=1 slopes at low y in E2/E4. The extension to y near 0.5 therefore remains uncertain.",
+    "confidence": 0.18,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4",
+     "E5",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Drain increases weakly or sublinearly with level, from about 0.023/s at low y to roughly 0.032-0.036/s at y about 0.5, combined with approximately linear inflow of about 0.065-0.075/s at u=1. This is substantially weakened by E8: it predicted a u=0.6 net slope of roughly +0.005 to +0.014/s at y approximately 0.47, whereas the observed slope was about -0.002/s and y did not rise toward 0.53-0.58. Fitting E8 under this family now requires drain near the top of or above the stated range, or lower inflow.",
+    "confidence": 0.38,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "The steady input needed to hold y=0.6 is plausibly about u=0.60-0.85 rather than below 0.55. E8 implies that u approximately 0.6 is already close to the holding input at y approximately 0.47 if its lag had largely settled, so the holding input at 0.6 should be at least about 0.6 if drain does not decrease with level; how far above 0.6 it lies depends on the unresolved drain shape and incremental gain above y=0.47. No measurement has yet been made with y near 0.6, so this remains a key unresolved uncertainty.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H12",
+    "statement": "E6's lower late slope at higher y is primarily due to an incomplete lag transition, with the effective lag time constant toward the upper end of the H4 range, rather than primarily due to drain increasing with y. E7 weakened this as the main explanation because its negative late slope persisted after the lag-driven rise, but E8 slightly revives lag as a partial explanation: if the 0.4-to-0.6 transition was still incomplete, the expected positive late slope under larger-gain models would be reduced, though by the end of 5.5 s some upward tendency would still be expected.",
+    "confidence": 0.32,
+    "evidence_refs": [
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H13",
+    "statement": "At y near 0.5, u=0.4 is below the local holding input: after lag effects had largely passed, E7's net slope was about -0.008 to -0.010/s. E8 reinforces the ordering at similar level, because increasing the input to u=0.6 brought the net slope close to zero rather than leaving the E7 decline unchanged.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E5",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H14",
+    "statement": "One resolution of the E8 tension is that drain rises more steeply above y approximately 0.4 than H10 assumed: drain at y approximately 0.47 could be about 0.035-0.045/s, so u=0.6 approximately balances there while u=1 still has a large positive net rate at low y. This would push the holding input at y=0.6 toward roughly 0.7-0.9 and makes direct measurement of the u=1 slope above y=0.47 important.",
+    "confidence": 0.4,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H15",
+    "statement": "An alternative resolution is that the incremental inflow gain between u=0.4 and u=0.6 near y approximately 0.48 is only about 0.04-0.05 per unit u, inferred from the slope change of about +0.008/s for a +0.2 change in u, while drain remains nearer 0.025-0.030/s. This fits E7/E8 and the near-constant E3 drain better, but it then requires either nonlinear inflow that is stronger again by u=1, an incomplete lag in E8, or revision of the absolute inflow inferred from E2/E4.",
+    "confidence": 0.4,
+    "evidence_refs": [
+     "E3",
+     "E5",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H16",
+    "statement": "The target y=0.6 is reachable with u=1, i.e. the u=1 steady-state level exceeds 0.6. This is supported indirectly by positive u=1 net slopes up to y approximately 0.47 in E6 and by u approximately 0.6 merely holding, rather than falling, at y approximately 0.47 in E8, but it has not been tested directly because no experiment has yet operated above y approximately 0.53. Steeply rising drain above 0.5 could still falsify it.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E2",
+     "E4",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   }
+  ]
+ }
+]

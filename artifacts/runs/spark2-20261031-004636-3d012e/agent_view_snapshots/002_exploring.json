@@ -1,0 +1,256 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 11,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 8.0,
+  "y": 0.337
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 8.0,
+   "uncertainty_targeted": "Gain magnitude and initial lag: first slope measurement discriminates zero-gain/dead-zone vs responsive system and is required to size any future holding input for target 0.6.",
+   "expected_observation": "If positive-gain with drain is correct, y rises from ~0.38 by ~0.1-0.2 over 8 s with measurable slope within 2-3 s, giving first rise-rate estimate; if flat, dead-zone or large lag is indicated.",
+   "verdict": "approved; worst-case bound 0.782",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.3816
+    ],
+    [
+     0.2,
+     0.3718
+    ],
+    [
+     0.4,
+     0.3745
+    ],
+    [
+     0.6,
+     0.3659
+    ],
+    [
+     0.8,
+     0.3606
+    ],
+    [
+     1.0,
+     0.3514
+    ],
+    [
+     1.2,
+     0.3469
+    ],
+    [
+     1.4,
+     0.3457
+    ],
+    [
+     1.6,
+     0.3392
+    ],
+    [
+     1.8,
+     0.3368
+    ],
+    [
+     2.0,
+     0.3312
+    ],
+    [
+     2.2,
+     0.3265
+    ],
+    [
+     2.4,
+     0.3266
+    ],
+    [
+     2.6,
+     0.3194
+    ],
+    [
+     2.8,
+     0.3158
+    ],
+    [
+     3.0,
+     0.3209
+    ],
+    [
+     3.2,
+     0.3213
+    ],
+    [
+     3.4,
+     0.3181
+    ],
+    [
+     3.6,
+     0.3175
+    ],
+    [
+     3.8,
+     0.3181
+    ],
+    [
+     4.0,
+     0.3171
+    ],
+    [
+     4.2,
+     0.3121
+    ],
+    [
+     4.4,
+     0.3146
+    ],
+    [
+     4.6,
+     0.3211
+    ],
+    [
+     4.8,
+     0.314
+    ],
+    [
+     5.0,
+     0.3217
+    ],
+    [
+     5.2,
+     0.3198
+    ],
+    [
+     5.4,
+     0.3189
+    ],
+    [
+     5.6,
+     0.3186
+    ],
+    [
+     5.8,
+     0.3262
+    ],
+    [
+     6.0,
+     0.3268
+    ],
+    [
+     6.2,
+     0.3223
+    ],
+    [
+     6.4,
+     0.3228
+    ],
+    [
+     6.6,
+     0.3223
+    ],
+    [
+     6.8,
+     0.3247
+    ],
+    [
+     7.0,
+     0.3235
+    ],
+    [
+     7.2,
+     0.3248
+    ],
+    [
+     7.4,
+     0.3272
+    ],
+    [
+     7.6,
+     0.332
+    ],
+    [
+     7.8,
+     0.3275
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases level y (positive steady-state gain).",
+   "confidence": 0.9,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "Response to a step in u shows lag/delay of 1-5 s before full slope is seen, not an instantaneous jump.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "There is a dead zone at low u (e.g., u < 0.1-0.2) where pump produces little or no rise.",
+   "confidence": 0.3,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0 the level decays on its own due to drainage.",
+   "confidence": 0.85,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear across u, i.e., doubling u roughly doubles rise from drain equilibrium.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state input needed to hold target 0.6 is in mid-range approx 0.4-0.7.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small relative to control band, e.g., std < 0.02 vs 0.10 band width.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

@@ -1,0 +1,1 @@
+Reservoir with large input dead-zone: u<=0.55-0.75 sinks (-0.015 to -0.018/s), u~0.75 holds, u>=0.8 rises (+0.019-0.028/s). Net gain ~0.02/s at u=1. Drain ~0.017-0.021/s at u=0. Lag nominal ~1.5-2.5s dead-time + ~3s time-constant, degraded ~4.5-5.5s dead-time + ~5-6s lag. Noise <0.02. Hold for y=0.6 ~0.72-0.80. Target 0.6 band 0.55-0.65, must rise 0.45 in <~22s at full power.

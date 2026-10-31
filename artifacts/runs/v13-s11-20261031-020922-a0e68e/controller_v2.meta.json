@@ -1,0 +1,20 @@
+{
+  "id": "v13-s11-20261031-020922-a0e68e-v2",
+  "run_id": "v13-s11-20261031-020922-a0e68e",
+  "version": 2,
+  "path": "artifacts/runs/v13-s11-20261031-020922-a0e68e/controller_v2.py",
+  "sha256": "3db8d5814fc90455d6fbb9f883264081d412f8148737b3b4f5ac3d3f5935cca5",
+  "parent_id": "v13-s11-20261031-020922-a0e68e-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:19:50.631128+00:00",
+  "byte_length": 3650,
+  "rationale": "Detuned for ~24 s deadtime while keeping nominal stability: Kp 0.80->0.22, Ki 0.12->0.018, filter 1.0->2.0 s, integral only when |e|<0.12 with +-0.18 authority and freeze on saturation, feedforward 0.50->0.54 base, feedback authority clamped to ff+0.20/ff-0.30, stricter high-y caps (0.65:0.50,0.70:0.35,0.75:0.20,0.80:0.05), asymmetric slew limit 0.05/s up / 0.10/s down. Targets delay-induced limit cycle, not gain/drain.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir with pump 0-1, drain to ~0 at u=0, convex static gain (u=0.3~0.10, u=0.5~0.64), lag ~8-10 s nominal plus now ~24 s transport deadtime, noise std <0.01, target 0.6 band 0.55-0.65, soft 0.85 hard 0.9 forces u=0.",
+    "predicted_behavior": "Nominal (Td~1 s): rise to 0.55-0.65 in ~20-25 s, in-band >=0.85 after 30 s, MAE ~0.02, no overrides/hard violations. Delayed (Td~24 s): monotonic slow approach, overshoot <0.75, no hard violations, no sustained oscillation, in-band fraction >>0.11 (target >0.5) and MAE <<0.24, energy lower because u stays near 0.54+-0.15 with slew limit.",
+    "diagnosis": "Same u now acts ~24 s later, gain/drain/noise unchanged. E14 u=0.5 for 16 s from 0 stays flat 0.0-0.01 slope -0.0002 vs E4 same u rose to 0.227 slope +0.0114. E15 continuation of same 0.5 stays flat until ~193.7 (~24.1 s after 169.6 step) then rises 0.02->0.139 slope +0.0162, matching discovery rise rate. E16 cut 0.5->0 at 201.6 keeps rising 0.136->0.333 peak at 224.0 (~22.4 s) then falls with slope -0.0116 matching discovery drain -0.0097. Discovery E2 rose within 0.2 s, so Td_old <1 s, Td_new ~24 s (+/-1 s). Noise <0.01 unchanged. Old controller therefore drives delay-induced limit cycle 0.03-0.89 period ~80 s with hard violations seen in monitoring after_change and post-change eval.",
+    "diagnosis_category": "response_slower"
+  }
+}

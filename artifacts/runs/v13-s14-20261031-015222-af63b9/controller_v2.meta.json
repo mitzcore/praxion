@@ -1,0 +1,20 @@
+{
+  "id": "v13-s14-20261031-015222-af63b9-v2",
+  "run_id": "v13-s14-20261031-015222-af63b9",
+  "version": 2,
+  "path": "artifacts/runs/v13-s14-20261031-015222-af63b9/controller_v2.py",
+  "sha256": "389b9b52792cee953ee6cbf0e10c588fdec382c6d922e5f547858554ba5cf665",
+  "parent_id": "v13-s14-20261031-015222-af63b9-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:03:44.544456+00:00",
+  "byte_length": 3646,
+  "rationale": "Replaced aggressive PID (KP 0.8, KI 0.045, KD 1.8) with delay-robust structure: KD removed, KP gain-scheduled 0.28 near band to 0.70 far, KI reduced to 0.012 with +/-0.18 limit and freeze when |e|>0.20, FF raised 0.55->0.59 with ultra-slow online re-estimation (kf 0.005, clamp 0.45-0.70), measurement filter lengthened 1.2s->2.5s, added asymmetric output rate limiter (up ~0.035/s near band, fast down when yf>0.70) and tightened high-level safety caps (0.78/0.72/0.68/0.64). This directly targets 22-23s deadtime while preserving far-error drive for nominal plant.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Water reservoir, y in [0,1] noisy ~0.02 std, target 0.6 band 0.55-0.65. Nonlinear positive gain: u=0.4 eq ~0.13, u=0.6 eq ~0.63+, u=0.8 eq ~0.7-0.9. Baseline deadtime 5-7s + tau 10-25s. Post-change: deadtime ~22-26s (quantified 22s flat in E12 183.1->205, 22s non-response E13-E14, onset E15 ~249), gain/drain/noise unchanged. Steady u to hold 0.6 ~0.59.",
+    "predicted_behavior": "Nominal (short delay): fill from 0.15-0.35 to band in ~25-35s, then hold 0.6 +/-0.02, in-band >0.95 after 30s, MAE ~0.015-0.025, energy similar to old. Delayed (~22s): stable without limit cycle, slow approach then hold with small offset, in-band ~0.70-0.85 vs old 0.59, MAE ~0.03-0.04 vs old 0.047, no hard violations/overrides, u near band varies <0.04/s, high cap prevents >0.80 excursions.",
+    "diagnosis": "Response became much slower (deadtime increase). Same commands produce same eventual direction and rate but ~22-23s later: E12 switch to 0 holds 0.69-0.70 for ~22s before falling; E13-E14 hold at 0.6 shows continued fall to 0 for 22s with no early rise; E15 only rises after ~25s then at 0.017/s identical to baseline 0.016-0.021/s. Drain rates (-0.022/s high, -0.013/s low) match baseline level-dependent drain, noise ~0.02 unchanged, large 0.69->0.24 and 0.22->0 swings prove no sensor offset. Old fast PI+D acts on 22s-stale y, over-pumps then over-cuts, producing growing oscillation and MAE 0.02->0.067.",
+    "diagnosis_category": "response_slower"
+  }
+}

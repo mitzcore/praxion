@@ -1,0 +1,1 @@
+Reservoir: dy/dt ~ (K*u - y)/tau with tau ~11-16s, K~1.1 (u_ss~0.53-0.535 holds 0.59-0.60), dead-time L: nominal 0.5-2s, degraded 7-10s. Rate <=0.08/s per u. Noise +/-0.015. Target 0.6 band 0.55-0.65, hard 0.9. Controller: ff=0.89*target, PI+D Kp0.28 Ki0.015 Kd0.6, filters 1.8s/4.0s, dose ch tau15s k0.07, caps on y_dose/y_pred/yf, up0.10/s down0.50/s.

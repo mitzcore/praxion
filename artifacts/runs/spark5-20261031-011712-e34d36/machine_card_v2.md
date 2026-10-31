@@ -1,0 +1,1 @@
+Reservoir: u in [0,1] pump, y in [0,1] noisy level, target 0.6 band 0.55-0.65, soft 0.85 hard 0.90 forces 0. Nominal: positive nonlinear gain, hold-u ~0.54 for 0.6, drain to ~0 at u=0 tau ~8s, lag 1-2s, noise <0.01. Changed: pure delay ~15s added, gain/drain/noise unchanged. Controller must be low-bandwidth, anti-windup, predictive cut.

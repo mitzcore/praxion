@@ -1,0 +1,6097 @@
+[
+ {
+  "id": "E1",
+  "phase": "discovery",
+  "u_before": 0.0,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.85,
+     "evidence_refs": []
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.6,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "Response has lag / first-order time constant 2-10 s and pure delay < 3 s, not instantaneous.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H4",
+     "statement": "There is a dead-zone: u below ~0.15 produces negligible rise.",
+     "confidence": 0.3,
+     "evidence_refs": []
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+     "confidence": 0.7,
+     "evidence_refs": []
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.4,
+     "evidence_refs": []
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is in u in [0.3, 0.7].",
+     "confidence": 0.3,
+     "evidence_refs": []
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ],
+   "uncertainty_targeted": "Gain magnitude and lag/time-constant plus noise level at a mid input, which sets controller gain, integral time and filtering needed to reach 0.6 without overshoot.",
+   "command_u": 0.5,
+   "duration_s": 10.0,
+   "safety_argument": "Worst-case with no drainage: 0.2273 + 0.10*0.5*10.0 = 0.7273, which is below soft limit 0.85 with ~0.12 margin.",
+   "expected_observation": "If positive-gain with lag hypothesis is right, y will rise gradually from ~0.23 by 0.1-0.3 over 10 s with 1-3 s lag, noisy +-0.02, staying well below 0.6.",
+   "ready_to_generate": false,
+   "readiness_justification": "Zero completed experiments: gain magnitude, lag, dead-zone, u=0 decay rate, linearity, hold-input for 0.6, and noise are all unresolved, so a controller cannot yet be designed.",
+   "operator_note": "Applying mid pump duty for 10 s to measure fill rate, lag and noise."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.727",
+   "u": 0.5,
+   "duration_s": 10.0
+  },
+  "status": "completed",
+  "t_start": 0.0,
+  "samples": [
+   {
+    "t": 0.0,
+    "y": 0.2273,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 0.2,
+    "y": 0.2153,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 0.4,
+    "y": 0.2167,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 0.6,
+    "y": 0.2081,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 0.8,
+    "y": 0.2044,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 1.0,
+    "y": 0.2038,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 1.2,
+    "y": 0.1944,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 1.4,
+    "y": 0.1933,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 1.6,
+    "y": 0.1908,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 1.8,
+    "y": 0.1912,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 2.0,
+    "y": 0.1812,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 2.2,
+    "y": 0.1789,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 2.4,
+    "y": 0.1845,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 2.6,
+    "y": 0.1862,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 2.8,
+    "y": 0.1781,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 3.0,
+    "y": 0.1692,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 3.2,
+    "y": 0.1745,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 3.4,
+    "y": 0.1665,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 3.6,
+    "y": 0.1697,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 3.8,
+    "y": 0.1569,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 4.0,
+    "y": 0.1632,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 4.2,
+    "y": 0.1759,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 4.4,
+    "y": 0.1684,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 4.6,
+    "y": 0.1676,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 4.8,
+    "y": 0.1664,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 5.0,
+    "y": 0.1694,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 5.2,
+    "y": 0.1563,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 5.4,
+    "y": 0.1771,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 5.6,
+    "y": 0.1731,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 5.8,
+    "y": 0.1787,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 6.0,
+    "y": 0.1675,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 6.2,
+    "y": 0.1599,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 6.4,
+    "y": 0.1719,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 6.6,
+    "y": 0.1745,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 6.8,
+    "y": 0.17,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 7.0,
+    "y": 0.1841,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 7.2,
+    "y": 0.1723,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 7.4,
+    "y": 0.1714,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 7.6,
+    "y": 0.1754,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 7.8,
+    "y": 0.17,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 8.0,
+    "y": 0.1781,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 8.2,
+    "y": 0.1778,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 8.4,
+    "y": 0.189,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 8.6,
+    "y": 0.1876,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 8.8,
+    "y": 0.1845,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 9.0,
+    "y": 0.1946,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 9.2,
+    "y": 0.1923,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 9.4,
+    "y": 0.2004,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 9.6,
+    "y": 0.1878,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   },
+   {
+    "t": 9.8,
+    "y": 0.1976,
+    "target": 0.6,
+    "u_requested": 0.5,
+    "u_applied": 0.5,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E2",
+  "phase": "discovery",
+  "u_before": 0.5,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response has lag / first-order time constant 2-10 s and pure delay < 3 s, not instantaneous.",
+     "confidence": 0.25,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "There is an effective dead-zone/minimum effective input: u=0.5 produces negligible rise within 10 s, so threshold may be >0.5.",
+     "confidence": 0.45,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.25,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+     "confidence": 0.4,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Gain magnitude and dead-zone upper bound and steady-state input needed for 0.6 by testing a second, higher amplitude that discriminates weak-gain vs high-threshold explanations for E1 flat response.",
+   "command_u": 0.8,
+   "duration_s": 8.0,
+   "safety_argument": "Current y=0.188, worst-case with no drainage is 0.188+0.10*0.8*8.0=0.828 which stays below soft limit 0.85 and hard cutoff 0.9.",
+   "expected_observation": "If higher-threshold positive-gain hypothesis is right, y will hold near 0.19 for 1-3 s then rise 0.05-0.15 over remaining time, staying below ~0.4 with +/-0.02 noise; if y stays flat or decays, threshold is >0.8 or time constant >>8 s.",
+   "ready_to_generate": false,
+   "readiness_justification": "Only 1 experiment completed, need at least 3; noise is partly resolved but gain magnitude, lag/time-constant, dead-zone threshold, u=0 decay rate, linearity, and steady-state input for 0.6 remain unresolved and a controller cannot be justified yet.",
+   "operator_note": "Testing higher pump power at 0.8 for 8 seconds to see what it takes to raise the level."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.828",
+   "u": 0.8,
+   "duration_s": 8.0
+  },
+  "status": "completed",
+  "t_start": 10.0,
+  "samples": [
+   {
+    "t": 10.0,
+    "y": 0.188,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 10.2,
+    "y": 0.1939,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 10.4,
+    "y": 0.2034,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 10.6,
+    "y": 0.1981,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 10.8,
+    "y": 0.2018,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 11.0,
+    "y": 0.2013,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 11.2,
+    "y": 0.1985,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 11.4,
+    "y": 0.2138,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 11.6,
+    "y": 0.2126,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 11.8,
+    "y": 0.2188,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 12.0,
+    "y": 0.2242,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 12.2,
+    "y": 0.2215,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 12.4,
+    "y": 0.2198,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 12.6,
+    "y": 0.2109,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 12.8,
+    "y": 0.2434,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 13.0,
+    "y": 0.2448,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 13.2,
+    "y": 0.2561,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 13.4,
+    "y": 0.2476,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 13.6,
+    "y": 0.2667,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 13.8,
+    "y": 0.2677,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 14.0,
+    "y": 0.2745,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 14.2,
+    "y": 0.2652,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 14.4,
+    "y": 0.2828,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 14.6,
+    "y": 0.2739,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 14.8,
+    "y": 0.2775,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 15.0,
+    "y": 0.2812,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 15.2,
+    "y": 0.2958,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 15.4,
+    "y": 0.2978,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 15.6,
+    "y": 0.2988,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 15.8,
+    "y": 0.3146,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 16.0,
+    "y": 0.3224,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 16.2,
+    "y": 0.3342,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 16.4,
+    "y": 0.3264,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 16.6,
+    "y": 0.3398,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 16.8,
+    "y": 0.3498,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 17.0,
+    "y": 0.345,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 17.2,
+    "y": 0.3552,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 17.4,
+    "y": 0.36,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 17.6,
+    "y": 0.3659,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 17.8,
+    "y": 0.3703,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E3",
+  "phase": "discovery",
+  "u_before": 0.8,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay <2 s with dominant lag / time constant of order 10 s or more.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise within 10 s at y~0.2 while u=0.8 produces clear rise, so effective threshold is between 0.5 and 0.8.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Natural drain/decay rate and time constant at u=0 and whether level holds, which sets steady-state pump needed for 0.6 and controller integral and drain compensation.",
+   "command_u": 0.0,
+   "duration_s": 15.0,
+   "safety_argument": "Worst-case bound current y + 0.10*u*duration = 0.3689 + 0 = 0.3689 < 0.85 soft limit with ~0.48 margin; u=0 cannot drive a rise even under no-drainage no-lag assumption.",
+   "expected_observation": "If drain hypothesis is right, y will fall gradually from ~0.37 by 0.05-0.15 over 15 s with no sustained rise, noisy +/-0.02, staying below 0.40; if y holds flat, drain is negligible and system is near-integrator.",
+   "ready_to_generate": false,
+   "readiness_justification": "Only two experiments completed (<3 minimum) and key uncertainties remain: drain rate at u=0 unmeasured, steady-state u for 0.6 not bracketed, gain nonlinearity not quantified and tau only loosely bounded; u=0 decay test is needed before controller design, so not ready.",
+   "operator_note": "Stepping pump to zero for 15 s to measure natural drain from ~0.37."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.369",
+   "u": 0.0,
+   "duration_s": 15.0
+  },
+  "status": "completed",
+  "t_start": 18.0,
+  "samples": [
+   {
+    "t": 18.0,
+    "y": 0.3689,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 18.3,
+    "y": 0.3856,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 18.6,
+    "y": 0.3841,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 18.9,
+    "y": 0.3999,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 19.2,
+    "y": 0.3946,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 19.5,
+    "y": 0.3912,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 19.8,
+    "y": 0.4042,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 20.1,
+    "y": 0.3878,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 20.4,
+    "y": 0.3921,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 20.7,
+    "y": 0.389,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 21.0,
+    "y": 0.3899,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 21.3,
+    "y": 0.3712,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 21.6,
+    "y": 0.3753,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 21.9,
+    "y": 0.3746,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 22.2,
+    "y": 0.3451,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 22.5,
+    "y": 0.3447,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 22.8,
+    "y": 0.3392,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 23.1,
+    "y": 0.327,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 23.4,
+    "y": 0.3191,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 23.7,
+    "y": 0.3179,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 24.0,
+    "y": 0.302,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 24.3,
+    "y": 0.2891,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 24.6,
+    "y": 0.2788,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 24.9,
+    "y": 0.2916,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 25.2,
+    "y": 0.2613,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 25.5,
+    "y": 0.2765,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 25.8,
+    "y": 0.2508,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 26.1,
+    "y": 0.2445,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 26.4,
+    "y": 0.252,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 26.7,
+    "y": 0.2448,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 27.0,
+    "y": 0.2209,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 27.3,
+    "y": 0.2122,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 27.6,
+    "y": 0.2118,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 27.9,
+    "y": 0.2081,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 28.2,
+    "y": 0.1969,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 28.5,
+    "y": 0.1984,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 28.8,
+    "y": 0.2015,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 29.1,
+    "y": 0.1888,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 29.4,
+    "y": 0.1704,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 29.7,
+    "y": 0.1736,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 30.0,
+    "y": 0.1517,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 30.3,
+    "y": 0.1624,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 30.6,
+    "y": 0.1564,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 30.9,
+    "y": 0.1374,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 31.2,
+    "y": 0.1384,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 31.5,
+    "y": 0.1249,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 31.8,
+    "y": 0.1209,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 32.1,
+    "y": 0.1214,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 32.4,
+    "y": 0.1214,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 32.7,
+    "y": 0.1072,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E4",
+  "phase": "discovery",
+  "u_before": 0.0,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise within 10 s at y~0.2 while u=0.8 produces clear rise, so effective threshold is between 0.5 and 0.8 or equilibrium at u=0.5 is near 0.18.",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E3",
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Intermediate gain and threshold location between 0.5 and 0.8, which sets controller feedforward and gain needed to reach and hold 0.6.",
+   "command_u": 0.65,
+   "duration_s": 10.0,
+   "safety_argument": "Worst-case with no drain is 0.1146 + 0.10*0.65*10 = 0.7646 which stays below soft limit 0.85.",
+   "expected_observation": "If threshold-plus-lag hypothesis is right, y will hold near 0.11 for 2-3 s then rise 0.08-0.15 to ~0.19-0.26 over 10 s with +/-0.02 noise, staying well below 0.6; if y stays flat or decays, threshold is >0.65 or gain is much lower.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, drain existence, and noise are resolved, but steady-state u for 0.6, threshold vs equilibrium shape, and high-level dynamics are not yet measured, so a controller cannot be justified yet.",
+   "operator_note": "Testing mid-high pump 0.65 for 10 s from low level to map threshold and gain."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.765",
+   "u": 0.65,
+   "duration_s": 10.0
+  },
+  "status": "completed",
+  "t_start": 33.0,
+  "samples": [
+   {
+    "t": 33.0,
+    "y": 0.1146,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 33.2,
+    "y": 0.1043,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 33.4,
+    "y": 0.0937,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 33.6,
+    "y": 0.0984,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 33.8,
+    "y": 0.0919,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 34.0,
+    "y": 0.0975,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 34.2,
+    "y": 0.0864,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 34.4,
+    "y": 0.0867,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 34.6,
+    "y": 0.0839,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 34.8,
+    "y": 0.0874,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 35.0,
+    "y": 0.0876,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 35.2,
+    "y": 0.0851,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 35.4,
+    "y": 0.0799,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 35.6,
+    "y": 0.0926,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 35.8,
+    "y": 0.0811,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 36.0,
+    "y": 0.081,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 36.2,
+    "y": 0.0796,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 36.4,
+    "y": 0.0937,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 36.6,
+    "y": 0.0872,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 36.8,
+    "y": 0.1035,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 37.0,
+    "y": 0.1129,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 37.2,
+    "y": 0.0936,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 37.4,
+    "y": 0.0957,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 37.6,
+    "y": 0.1057,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 37.8,
+    "y": 0.1089,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 38.0,
+    "y": 0.1128,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 38.2,
+    "y": 0.1165,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 38.4,
+    "y": 0.1196,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 38.6,
+    "y": 0.1225,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 38.8,
+    "y": 0.1247,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 39.0,
+    "y": 0.1106,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 39.2,
+    "y": 0.126,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 39.4,
+    "y": 0.13,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 39.6,
+    "y": 0.1514,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 39.8,
+    "y": 0.1555,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 40.0,
+    "y": 0.1492,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 40.2,
+    "y": 0.1423,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 40.4,
+    "y": 0.141,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 40.6,
+    "y": 0.1625,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 40.8,
+    "y": 0.1612,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 41.0,
+    "y": 0.1637,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 41.2,
+    "y": 0.1626,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 41.4,
+    "y": 0.1651,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 41.6,
+    "y": 0.1693,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 41.8,
+    "y": 0.1941,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 42.0,
+    "y": 0.1767,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 42.2,
+    "y": 0.1833,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 42.4,
+    "y": 0.1871,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 42.6,
+    "y": 0.1993,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   },
+   {
+    "t": 42.8,
+    "y": 0.1987,
+    "target": 0.6,
+    "u_requested": 0.65,
+    "u_applied": 0.65,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E5",
+  "phase": "discovery",
+  "u_before": 0.65,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E3",
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "High-input gain magnitude and linearity versus saturation, which sets feedforward/steady-state u for 0.6 and safe controller gain to avoid overshoot.",
+   "command_u": 0.9,
+   "duration_s": 6.0,
+   "safety_argument": "Worst-case with no drain or lag from current y 0.2056 is 0.2056+0.10*0.9*6.0=0.7456 below soft limit 0.85, leaving ~0.10 margin for noise, and true drain and lag make actual rise much smaller.",
+   "expected_observation": "If threshold-plus-lag hypothesis is right, y will hold near 0.20 for 2-3 s then rise 0.10-0.18 to ~0.30-0.38 over 6 s with +/-0.02 noise, staying below 0.45; flat or much faster rise would falsify gain scaling.",
+   "ready_to_generate": false,
+   "readiness_justification": "Gain direction, delay/lag, drain at low level, and noise are resolved enough for preliminary control, but steady-state input for 0.6, high-u linearity/saturation, and drain at high level near target remain unmeasured, so a controller designed now would risk steady-state error or overshoot.",
+   "operator_note": "Probing high-end gain at 0.9 for 6 s to pin down input needed for 0.6."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.746",
+   "u": 0.9,
+   "duration_s": 6.0
+  },
+  "status": "completed",
+  "t_start": 43.0,
+  "samples": [
+   {
+    "t": 43.0,
+    "y": 0.2056,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.1,
+    "y": 0.2141,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.2,
+    "y": 0.2095,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.3,
+    "y": 0.2091,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.4,
+    "y": 0.2203,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.5,
+    "y": 0.2233,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.6,
+    "y": 0.2247,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.7,
+    "y": 0.2271,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.8,
+    "y": 0.2299,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 43.9,
+    "y": 0.2216,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.0,
+    "y": 0.2228,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.1,
+    "y": 0.2341,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.2,
+    "y": 0.2345,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.3,
+    "y": 0.2383,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.4,
+    "y": 0.2345,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.5,
+    "y": 0.2395,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.6,
+    "y": 0.2485,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.7,
+    "y": 0.2473,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.8,
+    "y": 0.2461,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 44.9,
+    "y": 0.2573,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.0,
+    "y": 0.256,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.1,
+    "y": 0.2546,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.2,
+    "y": 0.2433,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.3,
+    "y": 0.2593,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.4,
+    "y": 0.2687,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.5,
+    "y": 0.2718,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.6,
+    "y": 0.2672,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.7,
+    "y": 0.2733,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.8,
+    "y": 0.279,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 45.9,
+    "y": 0.2807,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.0,
+    "y": 0.2869,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.1,
+    "y": 0.2888,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.2,
+    "y": 0.289,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.3,
+    "y": 0.2954,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.4,
+    "y": 0.3064,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.5,
+    "y": 0.2957,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.6,
+    "y": 0.2925,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.7,
+    "y": 0.3098,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.8,
+    "y": 0.3121,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 46.9,
+    "y": 0.3213,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.0,
+    "y": 0.3123,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.1,
+    "y": 0.326,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.2,
+    "y": 0.3144,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.3,
+    "y": 0.3192,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.4,
+    "y": 0.3333,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.5,
+    "y": 0.3178,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.6,
+    "y": 0.3351,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.7,
+    "y": 0.3349,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.8,
+    "y": 0.344,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 47.9,
+    "y": 0.3425,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.0,
+    "y": 0.3524,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.1,
+    "y": 0.362,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.2,
+    "y": 0.3574,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.3,
+    "y": 0.3639,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.4,
+    "y": 0.3628,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.5,
+    "y": 0.3758,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.6,
+    "y": 0.3728,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.7,
+    "y": 0.3736,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.8,
+    "y": 0.3817,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   },
+   {
+    "t": 48.9,
+    "y": 0.3808,
+    "target": 0.6,
+    "u_requested": 0.9,
+    "u_applied": 0.9,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E6",
+  "phase": "discovery",
+  "u_before": 0.9,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E3",
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Steady-state gain and equilibrium at elevated level 0.4-0.6 and whether u=0.8 can drive to target, which sets feedforward u for 0.6 and safe controller gain to avoid overshoot.",
+   "command_u": 0.8,
+   "duration_s": 5.0,
+   "safety_argument": "Worst-case with no drain or lag is current y 0.3882 + 0.10*0.8*5.0 = 0.7882, below soft limit 0.85 and with margin to hard cutoff 0.9 even allowing +/-0.03 noise.",
+   "expected_observation": "If threshold-plus-lag hypothesis is right, y will continue rising from ~0.39 by 0.08-0.14 to ~0.47-0.53 over 5 s with +/-0.02 noise and no flattening yet, staying below 0.60; if rise stalls to <0.05 then equilibrium for u=0.8 is near 0.40 and target 0.6 needs u>0.85.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, delay/lag ~3 s plus tau ~10 s, drain to zero, and noise <0.03 are resolved from E1-E5, but steady-state u for 0.6 and high-level gain/linearity near 0.4-0.6 remain at confidence ~0.65 with no observation above 0.39, so a controller feedforward and safe gain cannot yet be fixed and one elevated-level test is needed.",
+   "operator_note": "Holding near 0.39, stepping to 0.8 for 5 s to test climb toward target."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.788",
+   "u": 0.8,
+   "duration_s": 5.0
+  },
+  "status": "completed",
+  "t_start": 49.0,
+  "samples": [
+   {
+    "t": 49.0,
+    "y": 0.3882,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.1,
+    "y": 0.3948,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.2,
+    "y": 0.3903,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.3,
+    "y": 0.4011,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.4,
+    "y": 0.3953,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.5,
+    "y": 0.4032,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.6,
+    "y": 0.3997,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.7,
+    "y": 0.3925,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.8,
+    "y": 0.4153,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 49.9,
+    "y": 0.4177,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.0,
+    "y": 0.4251,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.1,
+    "y": 0.4205,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.2,
+    "y": 0.4194,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.3,
+    "y": 0.4272,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.4,
+    "y": 0.4315,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.5,
+    "y": 0.4324,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.6,
+    "y": 0.4374,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.7,
+    "y": 0.4471,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.8,
+    "y": 0.4354,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 50.9,
+    "y": 0.44,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.0,
+    "y": 0.4552,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.1,
+    "y": 0.4419,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.2,
+    "y": 0.4602,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.3,
+    "y": 0.4614,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.4,
+    "y": 0.4643,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.5,
+    "y": 0.4647,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.6,
+    "y": 0.4549,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.7,
+    "y": 0.465,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.8,
+    "y": 0.4696,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 51.9,
+    "y": 0.4562,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.0,
+    "y": 0.4763,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.1,
+    "y": 0.4807,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.2,
+    "y": 0.4795,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.3,
+    "y": 0.4905,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.4,
+    "y": 0.4765,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.5,
+    "y": 0.4905,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.6,
+    "y": 0.4918,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.7,
+    "y": 0.497,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.8,
+    "y": 0.4936,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 52.9,
+    "y": 0.4967,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.0,
+    "y": 0.5034,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.1,
+    "y": 0.5106,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.2,
+    "y": 0.5145,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.3,
+    "y": 0.4982,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.4,
+    "y": 0.5096,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.5,
+    "y": 0.5027,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.6,
+    "y": 0.5097,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.7,
+    "y": 0.5127,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.8,
+    "y": 0.5205,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 53.9,
+    "y": 0.5198,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E7",
+  "phase": "discovery",
+  "u_before": 0.8,
+  "t_since_last_command_change_s": 5.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.86,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+     "confidence": 0.78,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E3",
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.04,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+     "confidence": 0.72,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.55, so target band is reachable without requiring u>0.9.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E2",
+      "E6"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "High-level steady-state gain and whether u=0.8 reaches 0.6, which sets feedforward holding input and safe controller gain to avoid steady-state error or overshoot.",
+   "command_u": 0.8,
+   "duration_s": 4.0,
+   "safety_argument": "Worst-case with no drainage or lag from current y=0.5181 is 0.5181+0.10*0.8*4.0=0.8381 below soft limit 0.85 and hard cutoff 0.9.",
+   "expected_observation": "If threshold-plus-lag hypothesis is right, y will continue rising from ~0.52 by 0.06-0.12 to ~0.58-0.64 over 4 s with +/-0.02 noise and no flattening yet, staying below 0.70; if rise stalls to <0.03 then equilibrium for u=0.8 is near 0.52 and target 0.6 needs higher u.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, delay/tau ~9s, drain at zero, and noise are resolved enough for control structure, but steady-state u for 0.6 and equilibrium of u=0.8 above 0.52 remain unproven since max observed y is 0.52; one more short high-level hold is needed before feedforward and anti-overshoot can be set safely.",
+   "operator_note": "Extending 0.8 pump hold 4 s to watch approach to target band."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.838",
+   "u": 0.8,
+   "duration_s": 4.0
+  },
+  "status": "completed",
+  "t_start": 54.0,
+  "samples": [
+   {
+    "t": 54.0,
+    "y": 0.5181,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.1,
+    "y": 0.5354,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.2,
+    "y": 0.5302,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.3,
+    "y": 0.5355,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.4,
+    "y": 0.5317,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.5,
+    "y": 0.5346,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.6,
+    "y": 0.5413,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.7,
+    "y": 0.5382,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.8,
+    "y": 0.5346,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 54.9,
+    "y": 0.5423,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.0,
+    "y": 0.5457,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.1,
+    "y": 0.5538,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.2,
+    "y": 0.5577,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.3,
+    "y": 0.5501,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.4,
+    "y": 0.5551,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.5,
+    "y": 0.5562,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.6,
+    "y": 0.5671,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.7,
+    "y": 0.5717,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.8,
+    "y": 0.5745,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 55.9,
+    "y": 0.5741,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.0,
+    "y": 0.5671,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.1,
+    "y": 0.5742,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.2,
+    "y": 0.5839,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.3,
+    "y": 0.578,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.4,
+    "y": 0.5817,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.5,
+    "y": 0.5959,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.6,
+    "y": 0.5814,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.7,
+    "y": 0.5873,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.8,
+    "y": 0.5894,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 56.9,
+    "y": 0.6009,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.0,
+    "y": 0.5877,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.1,
+    "y": 0.595,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.2,
+    "y": 0.59,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.3,
+    "y": 0.6,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.4,
+    "y": 0.5986,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.5,
+    "y": 0.6104,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.6,
+    "y": 0.614,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.7,
+    "y": 0.609,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.8,
+    "y": 0.614,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   },
+   {
+    "t": 57.9,
+    "y": 0.609,
+    "target": 0.6,
+    "u_requested": 0.8,
+    "u_applied": 0.8,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E8",
+  "phase": "discovery",
+  "u_before": 0.8,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so response is strongly nonlinear with low gain below ~0.6 and higher gain above.",
+     "confidence": 0.82,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E3",
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is below 0.8 and above 0.6, likely in u in [0.65, 0.78], because u=0.8 drives through 0.6 with +0.02/s slope while u=0.5 and u=0.65 equilibrate far below.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E2",
+      "E6",
+      "E7"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Natural drain rate and delay at operating level 0.6, which sets steady-state pump needed to hold 0.6 and controller integral/drain compensation to avoid overshoot.",
+   "command_u": 0.0,
+   "duration_s": 8.0,
+   "safety_argument": "Worst-case with no drainage is 0.6114 + 0.10*0.0*8.0 = 0.6114, well below soft limit 0.85.",
+   "expected_observation": "If drain-plus-delay hypothesis is right, y will hold near 0.61 for 2-3 s then fall 0.12-0.20 to ~0.42-0.52 over 8 s with +/-0.02 noise, staying below 0.65; if y holds flat, drain at high level is negligible and system is near-integrator.",
+   "ready_to_generate": false,
+   "readiness_justification": "Resolved well enough: direction, delay 2-4 s, tau order 10 s, noise <0.03, nonlinearity/low gain at low u, and that u=0.8 overshoots 0.6. Not resolved: drain rate at operating level 0.6 and exact holding u for 0.6, which is needed for feedforward without overshoot; one bounded u=0 step from 0.61 will pin it, so not ready yet.",
+   "operator_note": "Stepping pump to zero for 8 s from in-band level to measure high-level drain and delay."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.611",
+   "u": 0.0,
+   "duration_s": 8.0
+  },
+  "status": "completed",
+  "t_start": 58.0,
+  "samples": [
+   {
+    "t": 58.0,
+    "y": 0.6114,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 58.2,
+    "y": 0.6294,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 58.4,
+    "y": 0.6143,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 58.6,
+    "y": 0.6116,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 58.8,
+    "y": 0.6257,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 59.0,
+    "y": 0.6377,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 59.2,
+    "y": 0.6325,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 59.4,
+    "y": 0.6407,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 59.6,
+    "y": 0.6192,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 59.8,
+    "y": 0.6301,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 60.0,
+    "y": 0.6199,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 60.2,
+    "y": 0.6209,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 60.4,
+    "y": 0.6178,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 60.6,
+    "y": 0.6074,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 60.8,
+    "y": 0.6038,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 61.0,
+    "y": 0.6026,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 61.2,
+    "y": 0.5887,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 61.4,
+    "y": 0.5879,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 61.6,
+    "y": 0.5879,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 61.8,
+    "y": 0.5813,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 62.0,
+    "y": 0.5832,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 62.2,
+    "y": 0.5659,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 62.4,
+    "y": 0.5541,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 62.6,
+    "y": 0.5457,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 62.8,
+    "y": 0.537,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 63.0,
+    "y": 0.5397,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 63.2,
+    "y": 0.5302,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 63.4,
+    "y": 0.5179,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 63.6,
+    "y": 0.5077,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 63.8,
+    "y": 0.5184,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 64.0,
+    "y": 0.5069,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 64.2,
+    "y": 0.5028,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 64.4,
+    "y": 0.4911,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 64.6,
+    "y": 0.479,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 64.8,
+    "y": 0.4713,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 65.0,
+    "y": 0.4673,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 65.2,
+    "y": 0.4592,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 65.4,
+    "y": 0.4541,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 65.6,
+    "y": 0.4623,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   },
+   {
+    "t": 65.8,
+    "y": 0.4472,
+    "target": 0.6,
+    "u_requested": 0.0,
+    "u_applied": 0.0,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E9",
+  "phase": "discovery",
+  "u_before": 0.0,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so response is strongly nonlinear with low gain below ~0.6 and higher gain above.",
+     "confidence": 0.84,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E3",
+      "E1",
+      "E8"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is below 0.8 and above 0.6, likely in u in [0.65, 0.78], because u=0.8 drives through 0.6 with +0.02/s slope while u=0.5 and u=0.65 equilibrate far below.",
+     "confidence": 0.68,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E2",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Intermediate gain and steady-state holding input for 0.6 between 0.65 and 0.8, which sets feedforward and integral needed to reach and hold target without overshoot.",
+   "command_u": 0.7,
+   "duration_s": 5.0,
+   "safety_argument": "Worst-case with no drain or lag is 0.4298 + 0.10*0.7*5.0 = 0.7798, which stays below the 0.85 soft limit with 0.07 margin.",
+   "expected_observation": "If threshold-plus-lag hypothesis is right, y will hold near 0.43 for 2-3 s then rise 0.06-0.12 to ~0.49-0.55 over 5 s with +/-0.02 noise, staying below 0.60; if rise stalls to <0.03 then u=0.7 net gain near 0.45 is insufficient and holding 0.6 needs >0.75, if rise >0.15 then holding needs <0.65.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, delay 2-4s, lag ~10s, drain at 0 and at 0.6, noise <0.03, and reachability with u=0.8 are resolved well enough for control structure, but holding input for 0.6 remains uncertain over ~0.13 width and linearity near target is untested, so a controller cannot yet be sized without risk of steady-state error or overshoot; one intermediate-gain test is needed, so not ready.",
+   "operator_note": "Starting near 0.43, applying 0.70 pump for 5 s to probe mid-level gain toward the 0.6 target."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.780",
+   "u": 0.7,
+   "duration_s": 5.0
+  },
+  "status": "completed",
+  "t_start": 66.0,
+  "samples": [
+   {
+    "t": 66.0,
+    "y": 0.4298,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.1,
+    "y": 0.4325,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.2,
+    "y": 0.4389,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.3,
+    "y": 0.4266,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.4,
+    "y": 0.4204,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.5,
+    "y": 0.4206,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.6,
+    "y": 0.4244,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.7,
+    "y": 0.4091,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.8,
+    "y": 0.4128,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 66.9,
+    "y": 0.406,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.0,
+    "y": 0.4015,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.1,
+    "y": 0.4081,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.2,
+    "y": 0.4035,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.3,
+    "y": 0.3971,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.4,
+    "y": 0.3972,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.5,
+    "y": 0.3963,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.6,
+    "y": 0.3787,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.7,
+    "y": 0.3864,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.8,
+    "y": 0.3829,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 67.9,
+    "y": 0.3834,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.0,
+    "y": 0.3799,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.1,
+    "y": 0.3714,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.2,
+    "y": 0.389,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.3,
+    "y": 0.3757,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.4,
+    "y": 0.3706,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.5,
+    "y": 0.3829,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.6,
+    "y": 0.3799,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.7,
+    "y": 0.3767,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.8,
+    "y": 0.3684,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 68.9,
+    "y": 0.381,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.0,
+    "y": 0.3734,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.1,
+    "y": 0.3718,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.2,
+    "y": 0.3715,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.3,
+    "y": 0.3705,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.4,
+    "y": 0.3685,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.5,
+    "y": 0.3708,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.6,
+    "y": 0.3769,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.7,
+    "y": 0.3795,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.8,
+    "y": 0.376,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 69.9,
+    "y": 0.3649,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.0,
+    "y": 0.3815,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.1,
+    "y": 0.3716,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.2,
+    "y": 0.3806,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.3,
+    "y": 0.3778,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.4,
+    "y": 0.3817,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.5,
+    "y": 0.3695,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.6,
+    "y": 0.3738,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.7,
+    "y": 0.3678,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.8,
+    "y": 0.3775,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   },
+   {
+    "t": 70.9,
+    "y": 0.3787,
+    "target": 0.6,
+    "u_requested": 0.7,
+    "u_applied": 0.7,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E10",
+  "phase": "discovery",
+  "u_before": 0.7,
+  "t_since_last_command_change_s": 0.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.91,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.8-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E3",
+      "E1",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and no flattening.",
+     "confidence": 0.72,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E2",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H10",
+     "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened), implying very steep steady-state gain between 0.7 and 0.8.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E9"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Intermediate gain and holding input between 0.7 (insufficient) and 0.8 (sufficient) which sets feedforward for 0.6 and whether controller needs high integral authority for steep nonlinearity.",
+   "command_u": 0.75,
+   "duration_s": 6.0,
+   "safety_argument": "Worst-case with no drain or lag: 0.3659 + 0.10*0.75*6.0 = 0.816 below 0.85 soft limit with margin to 0.90 hard cutoff.",
+   "expected_observation": "If threshold-plus-steep-gain hypothesis is right, y will hold near 0.36 for 2-3 s delay then rise 0.05-0.10 to ~0.42-0.47 over remaining ~3 s with +/-0.02 noise, staying below 0.55; if y stays flat near 0.37 or decays like E9, then u=0.75 is still insufficient and holding 0.6 needs >=0.78-0.80.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, delay 2-4s, lag ~10s, drain at 0 and 0.6, noise, and strong nonlinearity are resolved; steady-state u for 0.6 remains uncertain to ~0.05 (0.70 fails, 0.80 succeeds) which is too coarse for feedforward without excessive integral, so one 0.75 discriminating test is needed before generating.",
+   "operator_note": "Holding at 0.37, stepping to 0.75 for 6 s to test if mid input can lift level where 0.7 stalled."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.816",
+   "u": 0.75,
+   "duration_s": 6.0
+  },
+  "status": "completed",
+  "t_start": 71.0,
+  "samples": [
+   {
+    "t": 71.0,
+    "y": 0.3659,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.1,
+    "y": 0.3833,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.2,
+    "y": 0.381,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.3,
+    "y": 0.3824,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.4,
+    "y": 0.3827,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.5,
+    "y": 0.3948,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.6,
+    "y": 0.3916,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.7,
+    "y": 0.3899,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.8,
+    "y": 0.3909,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 71.9,
+    "y": 0.3897,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.0,
+    "y": 0.3922,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.1,
+    "y": 0.3909,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.2,
+    "y": 0.3824,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.3,
+    "y": 0.399,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.4,
+    "y": 0.3857,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.5,
+    "y": 0.3879,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.6,
+    "y": 0.392,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.7,
+    "y": 0.3968,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.8,
+    "y": 0.4054,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 72.9,
+    "y": 0.4052,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.0,
+    "y": 0.4103,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.1,
+    "y": 0.411,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.2,
+    "y": 0.3988,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.3,
+    "y": 0.4014,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.4,
+    "y": 0.4103,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.5,
+    "y": 0.4272,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.6,
+    "y": 0.4082,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.7,
+    "y": 0.4181,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.8,
+    "y": 0.4008,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 73.9,
+    "y": 0.4187,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.0,
+    "y": 0.4085,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.1,
+    "y": 0.4139,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.2,
+    "y": 0.4172,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.3,
+    "y": 0.4286,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.4,
+    "y": 0.4277,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.5,
+    "y": 0.4301,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.6,
+    "y": 0.4317,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.7,
+    "y": 0.4333,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.8,
+    "y": 0.4239,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 74.9,
+    "y": 0.4377,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.0,
+    "y": 0.4386,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.1,
+    "y": 0.4283,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.2,
+    "y": 0.4469,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.3,
+    "y": 0.437,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.4,
+    "y": 0.4471,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.5,
+    "y": 0.4415,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.6,
+    "y": 0.4389,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.7,
+    "y": 0.439,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.8,
+    "y": 0.4431,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 75.9,
+    "y": 0.4702,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.0,
+    "y": 0.4574,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.1,
+    "y": 0.4643,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.2,
+    "y": 0.4556,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.3,
+    "y": 0.4589,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.4,
+    "y": 0.4585,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.5,
+    "y": 0.4649,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.6,
+    "y": 0.4744,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.7,
+    "y": 0.4752,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.8,
+    "y": 0.4769,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 76.9,
+    "y": 0.4781,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E11",
+  "phase": "discovery",
+  "u_before": 0.75,
+  "t_since_last_command_change_s": 6.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.75-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E3",
+      "E1",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and u=0.75 drives 0.37 to 0.48 with positive slope and no flattening.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E2",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H10",
+     "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened) while u=0.75 rises from same level, implying very steep steady-state gain between 0.7 and 0.8.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E9",
+      "E10"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Intermediate steady-state gain and holding input for 0.6 at operating level 0.46-0.58, discriminating whether u=0.75 equilibrium exceeds 0.6 or whether >=0.80 is needed, which sets feedforward and integral authority.",
+   "command_u": 0.75,
+   "duration_s": 5.0,
+   "safety_argument": "Worst-case with no drain or lag from current 0.4619 is 0.4619+0.10*0.75*5.0=0.8369 below soft limit 0.85 and hard cutoff 0.9; observed rise rates ~0.02/s and 2-4 s delay make actual peak near 0.52-0.58.",
+   "expected_observation": "If steep-gain hypothesis is right, y will rise from ~0.46 by 0.06-0.12 to ~0.52-0.58 over 5 s with +/-0.02 noise and no flattening, staying below 0.65; if rise stalls to <0.03 then equilibrium for u=0.75 is near 0.46 and holding 0.6 needs >=0.80.",
+   "ready_to_generate": false,
+   "readiness_justification": "Direction, delay/lag, drain at u=0, nonlinearity, and noise are resolved well enough for control, but steady-state input to hold 0.6 remains uncertain between 0.75 and 0.80 and equilibrium for 0.75 near target is untested, so one more bounded hold is needed before feedforward can be set without risk of steady-state error or overshoot.",
+   "operator_note": "Holding pump at 0.75 for five seconds to see if level climbs toward target."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.837",
+   "u": 0.75,
+   "duration_s": 5.0
+  },
+  "status": "completed",
+  "t_start": 77.0,
+  "samples": [
+   {
+    "t": 77.0,
+    "y": 0.4619,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.1,
+    "y": 0.4813,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.2,
+    "y": 0.4637,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.3,
+    "y": 0.4667,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.4,
+    "y": 0.4717,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.5,
+    "y": 0.477,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.6,
+    "y": 0.4875,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.7,
+    "y": 0.482,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.8,
+    "y": 0.4916,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 77.9,
+    "y": 0.4949,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.0,
+    "y": 0.4845,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.1,
+    "y": 0.4983,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.2,
+    "y": 0.4959,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.3,
+    "y": 0.5003,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.4,
+    "y": 0.4955,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.5,
+    "y": 0.4974,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.6,
+    "y": 0.5048,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.7,
+    "y": 0.4891,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.8,
+    "y": 0.515,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 78.9,
+    "y": 0.5127,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.0,
+    "y": 0.5102,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.1,
+    "y": 0.5093,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.2,
+    "y": 0.5191,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.3,
+    "y": 0.5112,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.4,
+    "y": 0.5086,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.5,
+    "y": 0.514,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.6,
+    "y": 0.5223,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.7,
+    "y": 0.5271,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.8,
+    "y": 0.5212,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 79.9,
+    "y": 0.5216,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.0,
+    "y": 0.5271,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.1,
+    "y": 0.5262,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.2,
+    "y": 0.5302,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.3,
+    "y": 0.533,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.4,
+    "y": 0.5363,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.5,
+    "y": 0.5397,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.6,
+    "y": 0.5465,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.7,
+    "y": 0.5344,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.8,
+    "y": 0.5526,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 80.9,
+    "y": 0.5399,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.0,
+    "y": 0.5382,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.1,
+    "y": 0.5419,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.2,
+    "y": 0.5449,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.3,
+    "y": 0.5513,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.4,
+    "y": 0.5479,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.5,
+    "y": 0.5598,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.6,
+    "y": 0.5545,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.7,
+    "y": 0.547,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.8,
+    "y": 0.5606,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 81.9,
+    "y": 0.5503,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   }
+  ]
+ },
+ {
+  "id": "E12",
+  "phase": "discovery",
+  "u_before": 0.75,
+  "t_since_last_command_change_s": 11.0,
+  "proposal": {
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.75-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+     "confidence": 0.91,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E3",
+      "E1",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and u=0.75 drives 0.37 to 0.55 with positive slope and no flattening.",
+     "confidence": 0.78,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H9",
+     "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E2",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H10",
+     "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened) while u=0.75 rises from same level and from 0.46 to 0.55 in 5 s, implying very steep steady-state gain between 0.7 and 0.8.",
+     "confidence": 0.82,
+     "evidence_refs": [
+      "E9",
+      "E10",
+      "E11"
+     ]
+    }
+   ],
+   "uncertainty_targeted": "Net flow and equilibrium at operating level for u=0.75: whether drift at ~0.56 is zero/positive (equilibrium >=0.60) or negative, which sets feedforward holding input for 0.6 and required integral authority given steep gain between 0.7 and 0.8.",
+   "command_u": 0.75,
+   "duration_s": 3.5,
+   "safety_argument": "Starting from y=0.5578, worst-case with no drainage is 0.5578+0.10*0.75*3.5=0.8203 which stays below soft limit 0.85 with margin, duration 3.5 s respects max 20 s.",
+   "expected_observation": "If u=0.75 equilibrium >=0.60 hypothesis is right, y will hold/rise slowly from ~0.56 by 0.02-0.06 to ~0.58-0.62 over 3.5 s with +/-0.02 noise, staying in band and below 0.70; if y stays flat or falls, equilibrium for 0.75 is <=0.56 and holding 0.6 needs >=0.78-0.80.",
+   "ready_to_generate": false,
+   "readiness_justification": "Gain direction, delay/lag order, drain behavior, nonlinearity, reachability with u=0.8, and noise level are resolved well enough for control structure. Steady-state u for 0.6 remains 0.73-0.80 and exact equilibrium for 0.75 vs 0.80 is not yet resolved; with steep gain ~2-3 this maps to >0.05 y-error, so one more bounded near-target drift measurement is needed before fixing feedforward and integral authority.",
+   "operator_note": "Holding 0.75 for 3.5 s near target to measure drift and pin down the holding input for 0.6."
+  },
+  "verdict": {
+   "ok": true,
+   "reason": "approved; worst-case bound 0.820",
+   "u": 0.75,
+   "duration_s": 3.5
+  },
+  "status": "completed",
+  "t_start": 82.0,
+  "samples": [
+   {
+    "t": 82.0,
+    "y": 0.5578,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.1,
+    "y": 0.5632,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.2,
+    "y": 0.5594,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.3,
+    "y": 0.5641,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.4,
+    "y": 0.5639,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.5,
+    "y": 0.5602,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.6,
+    "y": 0.5775,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.7,
+    "y": 0.5784,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.8,
+    "y": 0.573,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 82.9,
+    "y": 0.5605,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.0,
+    "y": 0.5717,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.1,
+    "y": 0.5799,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.2,
+    "y": 0.5725,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.3,
+    "y": 0.5803,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.4,
+    "y": 0.5813,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.5,
+    "y": 0.5875,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.6,
+    "y": 0.5828,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.7,
+    "y": 0.5826,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.8,
+    "y": 0.5868,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 83.9,
+    "y": 0.6006,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.0,
+    "y": 0.5902,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.1,
+    "y": 0.5874,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.2,
+    "y": 0.5995,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.3,
+    "y": 0.5888,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.4,
+    "y": 0.5968,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.5,
+    "y": 0.6009,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.6,
+    "y": 0.602,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.7,
+    "y": 0.6021,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.8,
+    "y": 0.5933,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 84.9,
+    "y": 0.6098,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 85.0,
+    "y": 0.6048,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 85.1,
+    "y": 0.6023,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 85.2,
+    "y": 0.6112,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 85.3,
+    "y": 0.6133,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   },
+   {
+    "t": 85.4,
+    "y": 0.617,
+    "target": 0.6,
+    "u_requested": 0.75,
+    "u_applied": 0.75,
+    "override": false
+   }
+  ]
+ }
+]

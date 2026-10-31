@@ -1,0 +1,685 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 9,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 42.0,
+  "y": 0.021
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.4,
+   "duration_s": 15.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of static gain and lag/delay at a moderate input, which determines what u is needed to approach the 0.6 target and how fast to actuate.",
+   "expected_observation": "If positive gain with lag is correct, y will rise gradually from ~0.21 toward ~0.35-0.55 over 15s with small noisy fluctuations, staying well below 0.85.",
+   "verdict": "approved; worst-case bound 0.810",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2097
+    ],
+    [
+     0.3,
+     0.2021
+    ],
+    [
+     0.6,
+     0.196
+    ],
+    [
+     0.9,
+     0.1903
+    ],
+    [
+     1.2,
+     0.1874
+    ],
+    [
+     1.5,
+     0.1841
+    ],
+    [
+     1.8,
+     0.1862
+    ],
+    [
+     2.1,
+     0.1735
+    ],
+    [
+     2.4,
+     0.1695
+    ],
+    [
+     2.7,
+     0.1776
+    ],
+    [
+     3.0,
+     0.1783
+    ],
+    [
+     3.3,
+     0.1744
+    ],
+    [
+     3.6,
+     0.1735
+    ],
+    [
+     3.9,
+     0.1736
+    ],
+    [
+     4.2,
+     0.1688
+    ],
+    [
+     4.5,
+     0.1809
+    ],
+    [
+     4.8,
+     0.18
+    ],
+    [
+     5.1,
+     0.1781
+    ],
+    [
+     5.4,
+     0.1787
+    ],
+    [
+     5.7,
+     0.1823
+    ],
+    [
+     6.0,
+     0.184
+    ],
+    [
+     6.3,
+     0.1827
+    ],
+    [
+     6.6,
+     0.1778
+    ],
+    [
+     6.9,
+     0.1839
+    ],
+    [
+     7.2,
+     0.1841
+    ],
+    [
+     7.5,
+     0.1823
+    ],
+    [
+     7.8,
+     0.1842
+    ],
+    [
+     8.1,
+     0.1776
+    ],
+    [
+     8.4,
+     0.1908
+    ],
+    [
+     8.7,
+     0.1763
+    ],
+    [
+     9.0,
+     0.181
+    ],
+    [
+     9.3,
+     0.1845
+    ],
+    [
+     9.6,
+     0.1903
+    ],
+    [
+     9.9,
+     0.1832
+    ],
+    [
+     10.2,
+     0.1902
+    ],
+    [
+     10.5,
+     0.1899
+    ],
+    [
+     10.8,
+     0.1862
+    ],
+    [
+     11.1,
+     0.1913
+    ],
+    [
+     11.4,
+     0.1832
+    ],
+    [
+     11.7,
+     0.193
+    ],
+    [
+     12.0,
+     0.1898
+    ],
+    [
+     12.3,
+     0.1942
+    ],
+    [
+     12.6,
+     0.1941
+    ],
+    [
+     12.9,
+     0.191
+    ],
+    [
+     13.2,
+     0.1924
+    ],
+    [
+     13.5,
+     0.1943
+    ],
+    [
+     13.8,
+     0.1902
+    ],
+    [
+     14.1,
+     0.1911
+    ],
+    [
+     14.4,
+     0.1879
+    ],
+    [
+     14.7,
+     0.1919
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.8,
+   "duration_s": 7.0,
+   "command_before": 0.4,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of gain at high input and dead-zone threshold, which determines what u is needed to drive y from ~0.19 toward the 0.6 target.",
+   "expected_observation": "If positive gain with dead-zone/lag is correct, y will rise clearly from ~0.19 toward ~0.3-0.45 during the 7s hold with noisy fluctuations, staying well below 0.85; if y stays flat near 0.19 it indicates very low gain or dead-zone above 0.8.",
+   "verdict": "approved; worst-case bound 0.755",
+   "t_start": 15.0,
+   "samples": [
+    [
+     15.0,
+     0.1947
+    ],
+    [
+     15.2,
+     0.1963
+    ],
+    [
+     15.4,
+     0.1975
+    ],
+    [
+     15.6,
+     0.202
+    ],
+    [
+     15.8,
+     0.1955
+    ],
+    [
+     16.0,
+     0.2023
+    ],
+    [
+     16.2,
+     0.2067
+    ],
+    [
+     16.4,
+     0.2075
+    ],
+    [
+     16.6,
+     0.222
+    ],
+    [
+     16.8,
+     0.219
+    ],
+    [
+     17.0,
+     0.2254
+    ],
+    [
+     17.2,
+     0.2406
+    ],
+    [
+     17.4,
+     0.2442
+    ],
+    [
+     17.6,
+     0.2485
+    ],
+    [
+     17.8,
+     0.2553
+    ],
+    [
+     18.0,
+     0.2613
+    ],
+    [
+     18.2,
+     0.264
+    ],
+    [
+     18.4,
+     0.2799
+    ],
+    [
+     18.6,
+     0.2862
+    ],
+    [
+     18.8,
+     0.2827
+    ],
+    [
+     19.0,
+     0.2918
+    ],
+    [
+     19.2,
+     0.3021
+    ],
+    [
+     19.4,
+     0.3153
+    ],
+    [
+     19.6,
+     0.3134
+    ],
+    [
+     19.8,
+     0.3285
+    ],
+    [
+     20.0,
+     0.32
+    ],
+    [
+     20.2,
+     0.3353
+    ],
+    [
+     20.4,
+     0.3408
+    ],
+    [
+     20.6,
+     0.3474
+    ],
+    [
+     20.8,
+     0.36
+    ],
+    [
+     21.0,
+     0.3609
+    ],
+    [
+     21.2,
+     0.3729
+    ],
+    [
+     21.4,
+     0.3735
+    ],
+    [
+     21.6,
+     0.3852
+    ],
+    [
+     21.8,
+     0.3866
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 20.0,
+   "command_before": 0.8,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "How y behaves at u=0 (drain rate and time constant) from the current ~0.40 level, which determines integral action, hold effort for 0.6, and safe duration for future pumping tests.",
+   "expected_observation": "If self-drain with lag is correct, y will decay gradually from ~0.40 toward ~0.15-0.30 over 20s with ~0.01 noisy jitter, staying well below 0.85; if y holds flat near 0.40 it indicates negligible drain.",
+   "verdict": "approved; worst-case bound 0.395",
+   "t_start": 22.0,
+   "samples": [
+    [
+     22.0,
+     0.3953
+    ],
+    [
+     22.4,
+     0.4076
+    ],
+    [
+     22.8,
+     0.411
+    ],
+    [
+     23.2,
+     0.4027
+    ],
+    [
+     23.6,
+     0.4076
+    ],
+    [
+     24.0,
+     0.3932
+    ],
+    [
+     24.4,
+     0.3791
+    ],
+    [
+     24.8,
+     0.365
+    ],
+    [
+     25.2,
+     0.3565
+    ],
+    [
+     25.6,
+     0.3391
+    ],
+    [
+     26.0,
+     0.3319
+    ],
+    [
+     26.4,
+     0.3132
+    ],
+    [
+     26.8,
+     0.3104
+    ],
+    [
+     27.2,
+     0.2981
+    ],
+    [
+     27.6,
+     0.2907
+    ],
+    [
+     28.0,
+     0.2749
+    ],
+    [
+     28.4,
+     0.2601
+    ],
+    [
+     28.8,
+     0.2474
+    ],
+    [
+     29.2,
+     0.2395
+    ],
+    [
+     29.6,
+     0.2329
+    ],
+    [
+     30.0,
+     0.2163
+    ],
+    [
+     30.4,
+     0.2135
+    ],
+    [
+     30.8,
+     0.2085
+    ],
+    [
+     31.2,
+     0.1939
+    ],
+    [
+     31.6,
+     0.1844
+    ],
+    [
+     32.0,
+     0.1751
+    ],
+    [
+     32.4,
+     0.1642
+    ],
+    [
+     32.8,
+     0.1604
+    ],
+    [
+     33.2,
+     0.1512
+    ],
+    [
+     33.6,
+     0.1411
+    ],
+    [
+     34.0,
+     0.1315
+    ],
+    [
+     34.4,
+     0.1271
+    ],
+    [
+     34.8,
+     0.1148
+    ],
+    [
+     35.2,
+     0.1082
+    ],
+    [
+     35.6,
+     0.1064
+    ],
+    [
+     36.0,
+     0.0928
+    ],
+    [
+     36.4,
+     0.0858
+    ],
+    [
+     36.8,
+     0.0837
+    ],
+    [
+     37.2,
+     0.0756
+    ],
+    [
+     37.6,
+     0.0639
+    ],
+    [
+     38.0,
+     0.0629
+    ],
+    [
+     38.4,
+     0.0601
+    ],
+    [
+     38.8,
+     0.0522
+    ],
+    [
+     39.2,
+     0.0451
+    ],
+    [
+     39.6,
+     0.0372
+    ],
+    [
+     40.0,
+     0.0385
+    ],
+    [
+     40.4,
+     0.0314
+    ],
+    [
+     40.8,
+     0.0272
+    ],
+    [
+     41.2,
+     0.0272
+    ],
+    [
+     41.6,
+     0.0203
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases steady-state level y (positive static gain).",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "With u=0, level y decays over time toward a low level due to self-drain rather than holding constant.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "Response to a step in u has lag/delay of several seconds, not instantaneous.",
+   "confidence": 0.7,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "There is a dead-zone at low u where u below ~0.2-0.4 produces negligible rise compared to noise.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state response is roughly monotonic/near-linear and holding y=0.6 requires an intermediate u in ~0.3-0.7, not saturation at 0 or 1.",
+   "confidence": 0.25,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor noise on y is small relative to the 0.10 control band (std <0.02), so multi-second averaging reveals true level.",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

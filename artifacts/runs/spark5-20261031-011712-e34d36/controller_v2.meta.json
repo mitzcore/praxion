@@ -1,0 +1,20 @@
+{
+  "id": "spark5-20261031-011712-e34d36-v2",
+  "run_id": "spark5-20261031-011712-e34d36",
+  "version": 2,
+  "path": "artifacts/runs/spark5-20261031-011712-e34d36/controller_v2.py",
+  "sha256": "64a86c473647b61107bf3ebdfe3c6bb50e0c70bb80e8a59919ff7118267b5f1e",
+  "parent_id": "spark5-20261031-011712-e34d36-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:28:00.141031+00:00",
+  "byte_length": 4302,
+  "rationale": "Replaced aggressive PI (Kp=1.0,Ki=0.20,tau=0.8s,ff=0.57, hard cut only at 0.70/0.80) with delay-robust low-gain PI + asymmetric rate limiter + 6s look-ahead governor. Kp 1.0->0.40 with clipped error, Ki 0.20->0.05 with freeze when |e|>0.18 or yf>0.70, filter 0.8->1.5s, ff center 0.57->0.545, max increase 0.15/s / max decrease 0.60/s, safety caps 0.68->0.25 / 0.72->0.10 / 0.78->0 and predicted yf+6*slope caps 0.70->0.40 / 0.75->0.25. This caps in-flight pumping, stops windup during the 15s deadtime, and cuts early for water already in transit, while keeping same hold-u for nominal 1-2s plant.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir: u in [0,1] pump, y in [0,1] noisy level, target 0.6 band 0.55-0.65, soft 0.85 hard 0.90 forces 0. Nominal: positive nonlinear gain, hold-u ~0.54 for 0.6, drain to ~0 at u=0 tau ~8s, lag 1-2s, noise <0.01. Changed: pure delay ~15s added, gain/drain/noise unchanged. Controller must be low-bandwidth, anti-windup, predictive cut.",
+    "predicted_behavior": "Nominal (1-2s lag): from 0.17 rise at ~0.018/s with u~0.67 capped, enter 0.55-0.65 in ~20-25s, overshoot <0.70, MAE after 30s <0.02, in-band >0.90, no overrides. Delayed (~15s): same cap holds in-flight energy <0.375 rise in transit, prediction cuts at yf~0.65-0.68 to 0.25/0.10, overshoot peaks <0.80-0.85, no hard >0.90 violations, slow oscillation damped to band within ~60-80s, in-band after settling >0.70, MAE ~0.03-0.06 vs 0.21 before.",
+    "diagnosis": "Transport lag grew from ~1-2s to ~12-18s (~15s center) with similar steady gain. Evidence: after_change trace t132-187: u=0.75-0.95 from t140-155 holds y at 0.28-0.32 with no rise for ~15-19s, rise to 0.60 only at t165-171 (~0.02-0.03/s, same as E2/E5 nominal slope); after u cut to 0.25/0 at t174, y keeps rising 0.73->1.0 through t187 (>13s continued rise). Pre-change the same u=0.8 rose in 1-2s at 0.02-0.03/s. Post-change disturbance episodes show same: y rises while u is falling (e.g. Ep2 t80-100 y 0.61->0.63 while u 0.56->0.47) and falls long after cut, classic deadtime oscillation to 0.09-0.90 with 40 overrides/30 hard violations. No gain loss (eventual slope same), no faster drain (y stays at 1.0 for 10s at u=0), no sensor offset (lows ~0.06-0.10 and noise ~0.01 as in E1-E10).",
+    "diagnosis_category": "response_slower"
+  }
+}

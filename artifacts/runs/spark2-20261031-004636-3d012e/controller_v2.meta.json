@@ -1,0 +1,20 @@
+{
+  "id": "spark2-20261031-004636-3d012e-v2",
+  "run_id": "spark2-20261031-004636-3d012e",
+  "version": 2,
+  "path": "artifacts/runs/spark2-20261031-004636-3d012e/controller_v2.py",
+  "sha256": "8d187320aa501d4012b10db5ab06b588e2574217c82fc8699de23a8f9cfde7eb",
+  "parent_id": "spark2-20261031-004636-3d012e-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "1a84ab41dd365d79",
+  "created_at": "2026-10-31T04:55:57.371578+00:00",
+  "byte_length": 3417,
+  "rationale": "Lowered proportional gain (2.0->1.3) and integral rate, added filtered derivative-on-measurement damping (Kd~2.5), made integral rate-gated (|e|<0.12 and |rate|<0.02 with anti-windup) and added slow adaptive feedforward (init 0.52, adapts with e*dt*0.04 when settled). Replaced late 0.78/0.74 safety with early staged guards (0.80=0, 0.75<=0.05, 0.70<=0.20) plus 4-s-ahead prediction y+rate*4 braking. Filter tau 0.8->1.0s and separate 1.2s rate filter. Far-from-target still saturates to 1 for fast fill, near-target is gentle and predictive to survive large deadtime.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Water reservoir: pump u in [0,1] raises level, self-drain lowers it, noisy y in [0,1]. Nominal: positive gain k~0.07/s per u, level-dependent drain ~0.03/s at 0.6 with u=0, lag/carryover 1.5-2.5s, hold for 0.6 ~0.50-0.54, noise <0.02. Degraded: same sign gain and similar steady-state hold (~0.52 still holds), similar or smaller drain, but effective deadtime/time-constant ~4-6x larger (5-12s carryover, rise/fall delayed 8-15s), causing P+I tuned for 2s lag to oscillate and hit 0.9 cutoff. Target 0.6 band 0.55-0.65, soft 0.85 hard 0.9 forces u=0.",
+    "predicted_behavior": "Nominal: from 0.16-0.38, u saturates to 1, reaches 0.55-0.65 within ~12-20s, overshoot <0.04, then holds 0.52-0.56 with MAE ~0.002-0.01 and 100% in-band after 30s, no overrides. Degraded/delayed: approach slower, derivative + predictive caps brake at 0.62-0.70 when rising >0.015/s, peak <0.78-0.82, no hard violations or sustained limit cycle; settles to band with damped oscillation and in-band >0.7, energy modestly higher than nominal but far below 139 oscillating case. If diagnosis wrong (pure gain/outflow shift), slow FF + gated integral still re-centers hold to new value.",
+    "diagnosis": "Response became much slower/longer lag, not weaker gain or larger drain. Nominal E1-E8: lag 1.5-2.5s (E4 u=1 flat ~2s then +0.036/s; E3/E8 1-2s carryover then -0.03/s at u=0; E7 u=0.55 still rises at 0.62). Post-change: hold still ~0.52 (ep0 t55-95 y~0.59-0.60 at u~0.52-0.55 stable), drain slower not faster (170-175 u=0 fall 0.838->0.767 =0.014/s vs nominal 0.03/s), gain not weaker (eventual explosion 0.316->0.635->0.838 on same u=1). What changed is deadtime: u=1 at t150-155 leaves y 0.31-0.34 flat, rise appears 5-10s later; u=0 at t170 y keeps rising to 0.87-1.0 for ~10s. Controller cutting to 0.30-0.48 at y~0.62 (t100-115) does not turn y for ~10s, then over-corrects, producing growing oscillation 0.3<->0.9 and 31 hard violations. Classic delay-induced instability.",
+    "diagnosis_category": "response_slower"
+  }
+}

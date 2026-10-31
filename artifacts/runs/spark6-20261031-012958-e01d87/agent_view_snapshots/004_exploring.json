@@ -1,0 +1,721 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 9,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 33.0,
+  "y": 0.1146
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 10.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Gain magnitude and lag/time-constant plus noise level at a mid input, which sets controller gain, integral time and filtering needed to reach 0.6 without overshoot.",
+   "expected_observation": "If positive-gain with lag hypothesis is right, y will rise gradually from ~0.23 by 0.1-0.3 over 10 s with 1-3 s lag, noisy +-0.02, staying well below 0.6.",
+   "verdict": "approved; worst-case bound 0.727",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2273
+    ],
+    [
+     0.2,
+     0.2153
+    ],
+    [
+     0.4,
+     0.2167
+    ],
+    [
+     0.6,
+     0.2081
+    ],
+    [
+     0.8,
+     0.2044
+    ],
+    [
+     1.0,
+     0.2038
+    ],
+    [
+     1.2,
+     0.1944
+    ],
+    [
+     1.4,
+     0.1933
+    ],
+    [
+     1.6,
+     0.1908
+    ],
+    [
+     1.8,
+     0.1912
+    ],
+    [
+     2.0,
+     0.1812
+    ],
+    [
+     2.2,
+     0.1789
+    ],
+    [
+     2.4,
+     0.1845
+    ],
+    [
+     2.6,
+     0.1862
+    ],
+    [
+     2.8,
+     0.1781
+    ],
+    [
+     3.0,
+     0.1692
+    ],
+    [
+     3.2,
+     0.1745
+    ],
+    [
+     3.4,
+     0.1665
+    ],
+    [
+     3.6,
+     0.1697
+    ],
+    [
+     3.8,
+     0.1569
+    ],
+    [
+     4.0,
+     0.1632
+    ],
+    [
+     4.2,
+     0.1759
+    ],
+    [
+     4.4,
+     0.1684
+    ],
+    [
+     4.6,
+     0.1676
+    ],
+    [
+     4.8,
+     0.1664
+    ],
+    [
+     5.0,
+     0.1694
+    ],
+    [
+     5.2,
+     0.1563
+    ],
+    [
+     5.4,
+     0.1771
+    ],
+    [
+     5.6,
+     0.1731
+    ],
+    [
+     5.8,
+     0.1787
+    ],
+    [
+     6.0,
+     0.1675
+    ],
+    [
+     6.2,
+     0.1599
+    ],
+    [
+     6.4,
+     0.1719
+    ],
+    [
+     6.6,
+     0.1745
+    ],
+    [
+     6.8,
+     0.17
+    ],
+    [
+     7.0,
+     0.1841
+    ],
+    [
+     7.2,
+     0.1723
+    ],
+    [
+     7.4,
+     0.1714
+    ],
+    [
+     7.6,
+     0.1754
+    ],
+    [
+     7.8,
+     0.17
+    ],
+    [
+     8.0,
+     0.1781
+    ],
+    [
+     8.2,
+     0.1778
+    ],
+    [
+     8.4,
+     0.189
+    ],
+    [
+     8.6,
+     0.1876
+    ],
+    [
+     8.8,
+     0.1845
+    ],
+    [
+     9.0,
+     0.1946
+    ],
+    [
+     9.2,
+     0.1923
+    ],
+    [
+     9.4,
+     0.2004
+    ],
+    [
+     9.6,
+     0.1878
+    ],
+    [
+     9.8,
+     0.1976
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.8,
+   "duration_s": 8.0,
+   "command_before": 0.5,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Gain magnitude and dead-zone upper bound and steady-state input needed for 0.6 by testing a second, higher amplitude that discriminates weak-gain vs high-threshold explanations for E1 flat response.",
+   "expected_observation": "If higher-threshold positive-gain hypothesis is right, y will hold near 0.19 for 1-3 s then rise 0.05-0.15 over remaining time, staying below ~0.4 with +/-0.02 noise; if y stays flat or decays, threshold is >0.8 or time constant >>8 s.",
+   "verdict": "approved; worst-case bound 0.828",
+   "t_start": 10.0,
+   "samples": [
+    [
+     10.0,
+     0.188
+    ],
+    [
+     10.2,
+     0.1939
+    ],
+    [
+     10.4,
+     0.2034
+    ],
+    [
+     10.6,
+     0.1981
+    ],
+    [
+     10.8,
+     0.2018
+    ],
+    [
+     11.0,
+     0.2013
+    ],
+    [
+     11.2,
+     0.1985
+    ],
+    [
+     11.4,
+     0.2138
+    ],
+    [
+     11.6,
+     0.2126
+    ],
+    [
+     11.8,
+     0.2188
+    ],
+    [
+     12.0,
+     0.2242
+    ],
+    [
+     12.2,
+     0.2215
+    ],
+    [
+     12.4,
+     0.2198
+    ],
+    [
+     12.6,
+     0.2109
+    ],
+    [
+     12.8,
+     0.2434
+    ],
+    [
+     13.0,
+     0.2448
+    ],
+    [
+     13.2,
+     0.2561
+    ],
+    [
+     13.4,
+     0.2476
+    ],
+    [
+     13.6,
+     0.2667
+    ],
+    [
+     13.8,
+     0.2677
+    ],
+    [
+     14.0,
+     0.2745
+    ],
+    [
+     14.2,
+     0.2652
+    ],
+    [
+     14.4,
+     0.2828
+    ],
+    [
+     14.6,
+     0.2739
+    ],
+    [
+     14.8,
+     0.2775
+    ],
+    [
+     15.0,
+     0.2812
+    ],
+    [
+     15.2,
+     0.2958
+    ],
+    [
+     15.4,
+     0.2978
+    ],
+    [
+     15.6,
+     0.2988
+    ],
+    [
+     15.8,
+     0.3146
+    ],
+    [
+     16.0,
+     0.3224
+    ],
+    [
+     16.2,
+     0.3342
+    ],
+    [
+     16.4,
+     0.3264
+    ],
+    [
+     16.6,
+     0.3398
+    ],
+    [
+     16.8,
+     0.3498
+    ],
+    [
+     17.0,
+     0.345
+    ],
+    [
+     17.2,
+     0.3552
+    ],
+    [
+     17.4,
+     0.36
+    ],
+    [
+     17.6,
+     0.3659
+    ],
+    [
+     17.8,
+     0.3703
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 15.0,
+   "command_before": 0.8,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Natural drain/decay rate and time constant at u=0 and whether level holds, which sets steady-state pump needed for 0.6 and controller integral and drain compensation.",
+   "expected_observation": "If drain hypothesis is right, y will fall gradually from ~0.37 by 0.05-0.15 over 15 s with no sustained rise, noisy +/-0.02, staying below 0.40; if y holds flat, drain is negligible and system is near-integrator.",
+   "verdict": "approved; worst-case bound 0.369",
+   "t_start": 18.0,
+   "samples": [
+    [
+     18.0,
+     0.3689
+    ],
+    [
+     18.3,
+     0.3856
+    ],
+    [
+     18.6,
+     0.3841
+    ],
+    [
+     18.9,
+     0.3999
+    ],
+    [
+     19.2,
+     0.3946
+    ],
+    [
+     19.5,
+     0.3912
+    ],
+    [
+     19.8,
+     0.4042
+    ],
+    [
+     20.1,
+     0.3878
+    ],
+    [
+     20.4,
+     0.3921
+    ],
+    [
+     20.7,
+     0.389
+    ],
+    [
+     21.0,
+     0.3899
+    ],
+    [
+     21.3,
+     0.3712
+    ],
+    [
+     21.6,
+     0.3753
+    ],
+    [
+     21.9,
+     0.3746
+    ],
+    [
+     22.2,
+     0.3451
+    ],
+    [
+     22.5,
+     0.3447
+    ],
+    [
+     22.8,
+     0.3392
+    ],
+    [
+     23.1,
+     0.327
+    ],
+    [
+     23.4,
+     0.3191
+    ],
+    [
+     23.7,
+     0.3179
+    ],
+    [
+     24.0,
+     0.302
+    ],
+    [
+     24.3,
+     0.2891
+    ],
+    [
+     24.6,
+     0.2788
+    ],
+    [
+     24.9,
+     0.2916
+    ],
+    [
+     25.2,
+     0.2613
+    ],
+    [
+     25.5,
+     0.2765
+    ],
+    [
+     25.8,
+     0.2508
+    ],
+    [
+     26.1,
+     0.2445
+    ],
+    [
+     26.4,
+     0.252
+    ],
+    [
+     26.7,
+     0.2448
+    ],
+    [
+     27.0,
+     0.2209
+    ],
+    [
+     27.3,
+     0.2122
+    ],
+    [
+     27.6,
+     0.2118
+    ],
+    [
+     27.9,
+     0.2081
+    ],
+    [
+     28.2,
+     0.1969
+    ],
+    [
+     28.5,
+     0.1984
+    ],
+    [
+     28.8,
+     0.2015
+    ],
+    [
+     29.1,
+     0.1888
+    ],
+    [
+     29.4,
+     0.1704
+    ],
+    [
+     29.7,
+     0.1736
+    ],
+    [
+     30.0,
+     0.1517
+    ],
+    [
+     30.3,
+     0.1624
+    ],
+    [
+     30.6,
+     0.1564
+    ],
+    [
+     30.9,
+     0.1374
+    ],
+    [
+     31.2,
+     0.1384
+    ],
+    [
+     31.5,
+     0.1249
+    ],
+    [
+     31.8,
+     0.1209
+    ],
+    [
+     32.1,
+     0.1214
+    ],
+    [
+     32.4,
+     0.1214
+    ],
+    [
+     32.7,
+     0.1072
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+   "confidence": 0.9,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+   "confidence": 0.05,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "Response is not instantaneous: pure delay <2 s with dominant lag / time constant of order 10 s or more.",
+   "confidence": 0.6,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise within 10 s at y~0.2 while u=0.8 produces clear rise, so effective threshold is between 0.5 and 0.8.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+   "confidence": 0.55,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+   "confidence": 0.1,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+   "confidence": 0.55,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H8",
+   "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

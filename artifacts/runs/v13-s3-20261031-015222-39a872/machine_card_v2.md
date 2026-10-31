@@ -1,0 +1,1 @@
+Reservoir first-order tau~10-15s K~1.0-1.2. Nominal dead-time 2-4s, degraded dead-time ~15s. FF to hold 0.6 is ~0.60-0.65. Sensor noise +-0.015 zero-mean. Safety: cut at 0.75/0.82 predictive, hard 0.9 forces 0. Robust PI Kp=0.35 Ki=0.035 Kd=2.5 TAUf=2.0 rateUp 0.25/s rateDown 0.6/s.

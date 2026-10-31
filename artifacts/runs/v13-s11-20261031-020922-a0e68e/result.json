@@ -1,0 +1,4113 @@
+{
+ "run_id": "v13-s11-20261031-020922-a0e68e",
+ "stage": "COMPLETE",
+ "model_id": "muse-spark-1.3",
+ "agent_mode": "live",
+ "prompt_version": "v1.3",
+ "prompt_hash": "0d19650e641cac11",
+ "sandbox_mode": "docker",
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.8,
+      "evidence_refs": []
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+      "confidence": 0.4,
+      "evidence_refs": []
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+      "confidence": 0.8,
+      "evidence_refs": []
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.3,
+      "evidence_refs": []
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.5,
+      "evidence_refs": []
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "Static gain magnitude and response lag: first discriminating mid-level hold separates zero-gain/dead-zone from positive-gain and gives initial rate and curvature needed to size later holds and controller gain.",
+    "command_u": 0.3,
+    "duration_s": 20.0,
+    "safety_argument": "Worst-case with no drain or lag: 0.2097 + 0.10*0.3*20.0 = 0.8097, which stays below the 0.85 soft limit and below the 0.9 hard cutoff.",
+    "expected_observation": "If positive-gain with drain is right, y rises monotonically from ~0.21 toward a higher quasi-equilibrium, with positive but flattening slope in last seconds and only small noise wiggles, not falling or staying flat.",
+    "ready_to_generate": false,
+    "readiness_justification": "No experiments completed yet, so gain magnitude, lag, dead-zone, zero-input decay, linearity, hold-input for 0.6, and noise are all unresolved; minimum 3 experiments not met, so controller cannot be justified.",
+    "operator_note": "First probe: holding low-moderate pump at 0.3 for 20 s to measure rise direction, rate and lag."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.810",
+    "u": 0.3,
+    "duration_s": 20.0
+   },
+   "status": "completed",
+   "t_start": 0.0
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "u_before": 0.3,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.2,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.7,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.7,
+      "evidence_refs": [
+       "E1"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Static gain magnitude and steady-state u needed for y=0.6 and linearity across levels: u=0.3 settled near ~0.10, so a second higher amplitude separates weak-gain vs dead-zone vs nonlinear and sizes feedforward for control.",
+    "command_u": 0.7,
+    "duration_s": 10.0,
+    "safety_argument": "Worst-case with no drainage or lag from current y=0.0863 is 0.0863+0.10*0.7*10.0=0.7863, below soft limit 0.85 and hard cutoff 0.9.",
+    "expected_observation": "If positive-gain-with-drain is right, y should reverse from decay to a monotonic rise from ~0.09 with positive slope, gradually flattening but still positive in last seconds, reaching ~0.15-0.30 with only +/-0.01 noise and no fall or oscillation.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 1 experiment completed, below minimum of 3. E1 resolved noise is small and drainage is strong and response is stable, but gain magnitude, u=0 decay rate, linearity, and u-needed-for-0.6 remain unresolved, so a controller cannot yet be sized safely.",
+    "operator_note": "Stepping pump to 0.7 for 10 s to see if higher duty reverses the drain and how fast level climbs."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.786",
+    "u": 0.7,
+    "duration_s": 10.0
+   },
+   "status": "completed",
+   "t_start": 20.0
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "u_before": 0.7,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+      "confidence": 0.75,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+      "confidence": 0.35,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Zero-input drain behavior and decay time constant: first u=0 hold separates sustained-level vs natural-drain hypotheses and gives tau needed to infer equilibria and size controller.",
+    "command_u": 0.0,
+    "duration_s": 20.0,
+    "safety_argument": "Worst-case with no drain or lag is 0.335 + 0.10*0.0*20.0 = 0.335, well below soft limit 0.85.",
+    "expected_observation": "If drain-with-positive-gain is right, y will decay monotonically from ~0.34 toward <0.15 with gradually flattening negative slope (still slightly negative in last 5 s) and only +/-0.01 noise, not rise or hold flat.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 2 experiments completed so not ready; direction of gain, small noise, and stability are fairly resolved, but u=0 decay rate, time constant, linearity, and exact u to hold 0.6 remain unresolved and are needed for controller design.",
+    "operator_note": "Stepping pump to zero for 20 s to measure natural drain from ~0.34."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.335",
+    "u": 0.0,
+    "duration_s": 20.0
+   },
+   "status": "completed",
+   "t_start": 30.0
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E1",
+       "E3"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Static-gain nonlinearity and steady-state u needed for y=0.6: a settled intermediate amplitude discriminates linear vs superlinear extrapolation from 0.3 and 0.7 and is needed to set feedforward for control.",
+    "command_u": 0.5,
+    "duration_s": 16.0,
+    "safety_argument": "Worst-case with no drain or lag is current y 0.0 + 0.10*0.5*16.0 = 0.80, which stays below the 0.85 soft limit.",
+    "expected_observation": "If positive-gain-with-drain and ~9s tau is right, y will rise monotonically from ~0.0 toward ~0.25-0.30, with positive but flattening slope in last 5s and only +/-0.01 noise, ending ~0.20-0.30 and still rising slightly, not flat at zero or falling.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to zero, low noise, and stability are resolved, but gain linearity and steady-state u for y=0.6 are not: u=0.3 settles near 0.10 while u=0.7 exceeds 0.34 still rising fast, implying superlinear gain, so one more settled mid-level hold is needed before a controller can be sized.",
+    "operator_note": "Holding mid pump 0.5 for 16 s from empty to measure mid-level gain and settling."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.800",
+    "u": 0.5,
+    "duration_s": 16.0
+   },
+   "status": "completed",
+   "t_start": 50.0
+  },
+  {
+   "id": "E5",
+   "phase": "discovery",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.75,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "High-side static gain and u needed for y=0.6 and linearity: a higher-amplitude hold from higher baseline separates linear vs saturating vs superlinear extrapolation from u=0.3/0.5/0.7 and sizes feedforward.",
+    "command_u": 0.7,
+    "duration_s": 8.0,
+    "safety_argument": "Starting from y=0.2157, worst-case no-drain no-lag bound is 0.2157+0.10*0.7*8.0=0.776, below soft limit 0.85 with margin, so hard cutoff 0.9 is not approached.",
+    "expected_observation": "If positive-gain-with-drain and ~7-10s tau is right, y will rise monotonically from ~0.22 to ~0.33-0.40 with positive slope ~0.015-0.025/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to near-zero, stability and small noise are resolved, but gain magnitude, linearity, tau and u_ss for y=0.6 are not: no hold has settled (all last-5s slopes non-zero) and no observation near 0.6 exists, so feedforward and feedback cannot be sized yet.",
+    "operator_note": "Stepping pump up to 0.7 for 8s to measure high-side gain toward the 0.6 target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.776",
+    "u": 0.7,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 66.0
+  },
+  {
+   "id": "E6",
+   "phase": "discovery",
+   "u_before": 0.7,
+   "t_since_last_command_change_s": 8.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.12,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.93,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "High-side static gain and settling toward 0.6: continuing same 0.7 command separates linear vs superlinear extrapolation and tests whether 0.7 equilibrates near target, which directly sizes feedforward.",
+    "command_u": 0.7,
+    "duration_s": 6.0,
+    "safety_argument": "Worst-case with no drain or lag: 0.3977 + 0.10*0.7*6.0 = 0.8177 stays below 0.85 soft limit with margin.",
+    "expected_observation": "If positive-gain-with-drain and ~8-10s tau is right, y will rise monotonically from ~0.40 toward ~0.50-0.54 over 6 s with positive slope ~0.02/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to near-zero, small noise, stability and multi-second lag are resolved; high-side equilibrium for u=0.7, linearity vs superlinear gain, and exact u to hold 0.6 remain unresolved because E2/E4/E5 all ended with large positive slope and no settling, so a controller cannot be sized yet.",
+    "operator_note": "Continuing 0.7 pump hold for 6 s to track rise from 0.40 toward target band."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.818",
+    "u": 0.7,
+    "duration_s": 6.0
+   },
+   "status": "completed",
+   "t_start": 74.0
+  },
+  {
+   "id": "E7",
+   "phase": "discovery",
+   "u_before": 0.7,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.94,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "High-side static gain and steady-state u needed for y=0.6 and near-target linearity: a 0.65 hold from 0.51 separates ss inside-band vs above-band and refines feedforward for control.",
+    "command_u": 0.65,
+    "duration_s": 5.0,
+    "safety_argument": "Worst-case with no drain or lag from current y=0.5106 is 0.5106+0.10*0.65*5.0=0.8356 which stays below the 0.85 soft limit.",
+    "expected_observation": "If tau ~8-11s and ss(0.65) ~0.55-0.65 is right, y will rise monotonically from ~0.51 to ~0.55-0.58 over 5s with positive slope ~0.015-0.02 still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain-to-zero, small noise, and stability are resolved, but no hold has settled (all last-5s slopes non-zero: E4 0.0114, E5 0.0236, E6 0.0196) so ss(0.7) and linearity/convexity and exact u* for 0.6 remain unresolved and a controller cannot yet be sized safely.",
+    "operator_note": "Holding near 0.65 for 5s to probe settling toward the 0.6 target band."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.836",
+    "u": 0.65,
+    "duration_s": 5.0
+   },
+   "status": "completed",
+   "t_start": 80.0
+  },
+  {
+   "id": "E8",
+   "phase": "discovery",
+   "u_before": 0.65,
+   "t_since_last_command_change_s": 5.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.2,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.93,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.96,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "High-side static gain and settling at operating point: whether u=0.65 equilibrates inside 0.55-0.65 and with what tau, which directly sets feedforward for y=0.6 and controller timing.",
+    "command_u": 0.65,
+    "duration_s": 4.0,
+    "safety_argument": "Worst-case with no drain or lag is 0.5754 + 0.10*0.65*4.0 = 0.8354 which stays below the 0.85 soft limit, with true rise smaller due to drain and lag, duration 4s is within 20s max and u in [0,1].",
+    "expected_observation": "If convex positive-gain with ~8-12s tau and ss(0.65)~0.60-0.70 is right, y will rise monotonically from ~0.575 toward ~0.61-0.63 over 4s with positive but flattening slope ~0.01/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain-to-zero, small noise, stability and convex nonlinearity are well resolved, but ss for 0.6-0.65 has never been observed settled with E2 slope 0.0261, E4 0.0114, E5 0.0236, E6 0.0196, E7 0.0128 all clearly positive, so feedforward for y=0.6 remains uncertain and a controller cannot be justified yet; this short same-command continuation is needed.",
+    "operator_note": "Holding pump at 0.65 for 4 seconds to watch level settle toward target from 0.575."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.835",
+    "u": 0.65,
+    "duration_s": 4.0
+   },
+   "status": "completed",
+   "t_start": 85.0
+  },
+  {
+   "id": "E9",
+   "phase": "discovery",
+   "u_before": 0.65,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.96,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.94,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state u needed to hold y=0.6 and high-side gain/settling: whether u=0.65 equilibrates above band vs u~0.60 holds inside, which sets feedforward and separates linear vs convex extrapolation.",
+    "command_u": 0.6,
+    "duration_s": 3.0,
+    "safety_argument": "Worst-case with no drain from current y=0.6164 is 0.6164+0.10*0.60*3.0=0.796 below soft limit 0.85 with ~0.054 margin for noise, well below hard cutoff 0.90.",
+    "expected_observation": "If convex positive-gain with ~8-12s tau and ss(0.65)~0.68-0.72 is right, y from ~0.616 will hold/rise slowly to ~0.62-0.64 over 3s with small positive slope ~0.005-0.01/s still positive in last seconds and only +/-0.01 noise, not falling or jumping.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to near-zero, small dead-zone, small noise, stability and ~8-12s lag are resolved. Not ready because high-side equilibrium is unsettled: u=0.65 rose 0.511 to 0.608 over 9s with slope still 0.01/s, so ss(0.65) and exact u to hold 0.6 remain uncertain; a short safe 0.60 step discriminates this before control design.",
+    "operator_note": "Stepping slightly down to 0.60 for 3 s to check holding level near target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.796",
+    "u": 0.6,
+    "duration_s": 3.0
+   },
+   "status": "completed",
+   "t_start": 89.0
+  },
+  {
+   "id": "E10",
+   "phase": "discovery",
+   "u_before": 0.6,
+   "t_since_last_command_change_s": 3.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.08,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.635 after ~12s at 0.6-0.65, larger than linear extrapolation from low u.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state u needed to hold y=0.6 and settling at operating point: continuing same 0.6 separates ss inside-band vs above-band and measures residual slope needed for feedforward.",
+    "command_u": 0.6,
+    "duration_s": 3.0,
+    "safety_argument": "Worst-case with no drain or lag is 0.6372 + 0.10*0.6*3.0 = 0.8172, which stays below the 0.85 soft limit.",
+    "expected_observation": "If convex positive-gain with ~8-12s tau and ss(0.6)~0.68-0.75 is right, y will hold/rise slowly from ~0.637 toward ~0.645-0.655 over 3s with small positive slope ~0.004-0.008/s still positive in last seconds and only +/-0.01 noise, not falling or jumping.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to near-zero, small noise, stability and long tau are resolved, but high-side equilibrium is not settled: all holds at 0.6-0.65 still have positive slope so ss(0.6) vs ss(0.65) and exact feedforward for 0.6 remain uncertain by ~0.05, so a controller cannot be sized yet and one more settling hold is needed.",
+    "operator_note": "Hold pump at 0.6 for 3 seconds to see if level settles near target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.817",
+    "u": 0.6,
+    "duration_s": 3.0
+   },
+   "status": "completed",
+   "t_start": 92.0
+  },
+  {
+   "id": "E11",
+   "phase": "discovery",
+   "u_before": 0.6,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.96,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 after ~6s at 0.6, larger than linear extrapolation from low u.",
+      "confidence": 0.94,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state u needed to hold y=0.6 and high-side gain: whether stepping down to 0.5 reverses the positive slope at 0.648 brackets ss inside vs above band and sets feedforward.",
+    "command_u": 0.5,
+    "duration_s": 4.0,
+    "safety_argument": "Worst-case with no drain or lag from current y=0.648 is 0.648+0.10*0.5*4.0=0.848 which stays below soft limit 0.85.",
+    "expected_observation": "If convex positive-gain with ss(0.6) above 0.65 and ss(0.5) below 0.65 is right, y from ~0.648 will stop rising and hold/fall slightly to ~0.62-0.64 over 4s with small zero-to-negative slope ~-0.015 to 0.0 in last seconds and only +/-0.01 noise, not continue rising at +0.004/s.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain to near-zero at u=0, small noise, stability, and ~5-12s lag are resolved. Steady-state u for y=0.6 is not resolved: u=0.6 still rising with slope +0.0037 after 6s past 0.653 and u=0.65 still rising, so no settled equilibrium near target has been observed and feedforward remains uncertain by >0.05, so not yet ready.",
+    "operator_note": "Stepping pump down to 0.5 for 4 s to see if level stops climbing and brackets the feedforward needed for 0.6."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.848",
+    "u": 0.5,
+    "duration_s": 4.0
+   },
+   "status": "completed",
+   "t_start": 95.0
+  },
+  {
+   "id": "E12",
+   "phase": "discovery",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 4.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state u needed to hold y=0.6 and settling tau at operating point: continuing same 0.5 hold tests whether 0.64 is equilibrium and measures residual slope needed to set feedforward and controller timing.",
+    "command_u": 0.5,
+    "duration_s": 4.0,
+    "safety_argument": "Worst-case with no drain or lag: 0.6401 + 0.10*0.5*4.0 = 0.8401 which stays below soft limit 0.85.",
+    "expected_observation": "If convex positive-gain with long tau and ss(0.5) near 0.6-0.65 is right, y will continue to hold around 0.63-0.65 from 0.64 with near-zero slope -0.005 to +0.002/s in last seconds and only +/-0.01 noise, not continue rising at +0.004/s as under u=0.6 nor fall fast.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, drain-to-zero, small noise, stability and convexity are well resolved, but true equilibrium and tau at the 0.6 operating point are not yet settled (slopes still +0.004 at u=0.6 and -0.002 at u=0.5 over only 3-4 s), so feedforward for 0.6 remains uncertain by ~0.05 and needs this final settling hold before a controller can be justified.",
+    "operator_note": "Holding pump at 0.5 for 4 s to confirm level settles near target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.840",
+    "u": 0.5,
+    "duration_s": 4.0
+   },
+   "status": "completed",
+   "t_start": 99.0
+  },
+  {
+   "id": "E13",
+   "phase": "after_change",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.1,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+      "confidence": 0.15,
+      "evidence_refs": []
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+      "confidence": 0.15,
+      "evidence_refs": []
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+      "confidence": 0.75,
+      "evidence_refs": []
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+      "confidence": 0.1,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "Directly measures delay from COMMAND LAST CHANGED and u=0 drain rate to discriminate C3 longer-delay/slower-response versus C1 weaker-actuator, C2 faster-outflow and C4 sensor change, which determines required controller detuning and feedforward.",
+    "command_u": 0.0,
+    "duration_s": 40.0,
+    "safety_argument": "With u=0 the conservative bound is 0.893+0.10*0*40=0.893 with zero pump-driven rise; pump-off adds no energy and level must drain, which is the minimum-risk action from above the soft limit and identical to the hard-cutoff forced action.",
+    "expected_observation": "If longer-delay/slower-response is right, y will stay near 0.85-0.90 or rise slightly for ~6-10 s after start while pre-cut high commands are still in transit, then fall steadily toward <0.4 with slope ~-0.02 per s and only +/-0.01 noise, not fall immediately within 1 s nor hold high indefinitely.",
+    "ready_to_generate": false,
+    "readiness_justification": "Baseline gain, drain direction, tau range and noise are known, and monitoring strongly favors longer delay over weaker gain, faster drain or sensor change, but delay length and u=0 fall rate are not yet quantified from a controlled hold, so a controller cannot be safely retimed yet.",
+    "operator_note": "Holding pump off to drain safely from high level and measure the response delay directly."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.893",
+    "u": 0.0,
+    "duration_s": 40.0
+   },
+   "status": "invalid",
+   "t_start": 129.6
+  },
+  {
+   "id": "E14",
+   "phase": "after_change",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4",
+       "E13"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E13"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E13"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E13"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E13"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Response delay duration and rise rate at u=0.5 to separate longer-delay (~8 s flat then normal rise) from weaker-actuator/faster-outflow (immediate but smaller rise) and sensor offset/noise, needed to set detuning and feedforward.",
+    "command_u": 0.5,
+    "duration_s": 16.0,
+    "safety_argument": "Starting from y=0.0, conservative no-drain bound gives 0.0+0.10*0.5*16=0.80 below soft limit 0.85 with 0.05 margin; previous 40 s hold at u=0 means no high commands remain in transit to add hidden rise.",
+    "expected_observation": "If C3 ~8-10 s delay is right, y will hold near 0.0-0.03 for first ~7-9 s after start then rise to ~0.07-0.15 by 16 s with positive slope in last seconds and only +/-0.01 noise; if delay were ~1 s as in discovery, y would start rising within ~1-2 s and reach ~0.18-0.24 as in E4.",
+    "ready_to_generate": false,
+    "readiness_justification": "Gain sign, drain to zero, small noise and open-loop stability are resolved by discovery plus E13 drain to zero; ~8-10 s delay is strongly suggested by continued rise after u cuts and oscillation in post-change traces but not yet measured in a clean step from steady low level, and same-u gain/outflow comparison is still needed, so one more rise is required before detuning.",
+    "operator_note": "Starting from empty, holding medium pump to measure response delay and rise rate."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.800",
+    "u": 0.5,
+    "duration_s": 16.0
+   },
+   "status": "completed",
+   "t_start": 169.6
+  },
+  {
+   "id": "E15",
+   "phase": "after_change",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 16.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E14"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.4,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5",
+       "E14"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4",
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E14"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+      "confidence": 0.35,
+      "evidence_refs": [
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+      "confidence": 0.7,
+      "evidence_refs": [
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E13",
+       "E14"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Whether the 16s flat at u=0.5 is >16s transport delay versus near-zero actuator gain, which decides between delay-compensating detuning versus increased feedforward gain for control.",
+    "command_u": 0.5,
+    "duration_s": 16.0,
+    "safety_argument": "Current y=0.003, worst-case with no drain or lag is 0.003+0.10*0.5*16.0=0.803 below 0.85 soft limit with margin, and prior 16s at same u gave <0.01 rise so true rise will be far smaller.",
+    "expected_observation": "If C3 long-delay >16s is right, y will stay near 0.0-0.02 for the first several seconds of this continuation (16-22s after the 0-to-0.5 change) then start a monotonic rise to ~0.05-0.15 by the end with positive slope in last 5s and +/-0.01 noise; if C1 near-zero gain is right, y will stay flat at 0.0-0.01 for the full 16s with near-zero slope as in E14.",
+    "ready_to_generate": false,
+    "readiness_justification": "Noise small, drain to zero, and open-loop stability are resolved, but C1 near-zero gain versus C3 delay >16s is unresolved because E14 flat for 16s fits both, so controller cannot be sized yet and one continued hold is needed.",
+    "operator_note": "Continuing the current 0.5 pump hold for 16s more to see if the level finally starts rising after the long flat period."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.803",
+    "u": 0.5,
+    "duration_s": 16.0
+   },
+   "status": "completed",
+   "t_start": 185.6
+  },
+  {
+   "id": "E16",
+   "phase": "after_change",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E4",
+       "E5",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E3",
+       "E4",
+       "E13",
+       "E14"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E4",
+       "E5",
+       "E6",
+       "E7",
+       "E8",
+       "E9",
+       "E10",
+       "E11",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+      "confidence": 0.08,
+      "evidence_refs": [
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~24 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E13",
+       "E14",
+       "E15"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E13",
+       "E14",
+       "E15"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Measures delay from the 0.5-to-0 switch and u=0 drain rate to separate C3 long delay (continued rise ~24s then fall) from C1/C2 immediate fall and C4 offset, which sets required detuning and feedforward for delay-compensating control.",
+    "command_u": 0.0,
+    "duration_s": 40.0,
+    "safety_argument": "Worst-case bound is 0.136 + 0.10*0*40 = 0.136 < 0.85 soft limit; from low 0.136 even continued rise on prior u=0.5 for full ~24s delay at ~0.016/s peaks below ~0.55, leaving large margin to soft limit and hard cutoff.",
+    "expected_observation": "If C3 ~24s delay is right, y will keep rising from ~0.14 for ~20-24s after the switch (still responding to prior u=0.5) to ~0.35-0.55 with slope ~0.015/s, then reverse and fall steadily with negative slope toward <0.2 by 40s with only +/-0.01 noise; if no long delay, y would start falling within 1-2s.",
+    "ready_to_generate": false,
+    "readiness_justification": "Delay ~24s is established by E14 16s flat plus E15 rise after ~24s with normal slope ~0.016/s, largely ruling out weaker gain and sensor change, but u=0 drain rate and peak after switch are not yet isolated from the opposite direction, so one safe u=0 hold is needed before detuned delay-aware control can be justified.",
+    "operator_note": "Holding pump off for 40s from low level to measure delay and drain cleanly."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.136",
+    "u": 0.0,
+    "duration_s": 40.0
+   },
+   "status": "completed",
+   "t_start": 201.6
+  }
+ ],
+ "ledger_history": [
+  {
+   "after_experiment": null,
+   "ts": 1793426972.6089852,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.8,
+     "evidence_refs": []
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+     "confidence": 0.4,
+     "evidence_refs": []
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+     "confidence": 0.8,
+     "evidence_refs": []
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.3,
+     "evidence_refs": []
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E1",
+   "ts": 1793426992.4710321,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.2,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E2",
+   "ts": 1793427018.174745,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+     "confidence": 0.35,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E3",
+   "ts": 1793427047.437251,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive rise rate versus u=0.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E3"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a low equilibrium due to drainage.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E4",
+   "ts": 1793427079.699432,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E5",
+   "ts": 1793427101.905741,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds; 20 s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.12,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E6",
+   "ts": 1793427130.6103182,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E7",
+   "ts": 1793427154.6798248,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.2,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E8",
+   "ts": 1793427186.905324,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E9",
+   "ts": 1793427212.177269,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.635 after ~12s at 0.6-0.65, larger than linear extrapolation from low u.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E10",
+   "ts": 1793427251.655366,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 after ~6s at 0.6, larger than linear extrapolation from low u.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E11",
+   "ts": 1793427282.677788,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E12",
+   "ts": 1793427443.867274,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+     "confidence": 0.15,
+     "evidence_refs": []
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+     "confidence": 0.15,
+     "evidence_refs": []
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+     "confidence": 0.75,
+     "evidence_refs": []
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+     "confidence": 0.1,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E13",
+   "ts": 1793427483.0871701,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4",
+      "E13"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E13"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E13"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E13"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E13"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E14",
+   "ts": 1793427511.322593,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E14"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.4,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5",
+      "E14"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4",
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E14"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+     "confidence": 0.35,
+     "evidence_refs": [
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~6-10 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E13",
+      "E14"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E15",
+   "ts": 1793427539.005124,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has lag/time-constant of several seconds (~5-12s); 6-16s holds are not guaranteed to reach full equilibrium near target.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4",
+      "E5",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E3",
+      "E4",
+      "E13",
+      "E14"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.6 is still rising past 0.653 and u=0.5 holds ~0.64 with near-zero slope, larger than linear extrapolation from low u.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u gives smaller rise rate and lower held level than discovery.",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow: u=0 falls faster than ~0.02 per s and same u holds lower y than discovery.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response/longer delay: visible response to a command change is delayed by ~24 s versus ~1 s in discovery, causing continued rise after u is cut and delay-induced closed-loop oscillation.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E13",
+      "E14",
+      "E15"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset or noise change: y reading has added offset >0.03 or noise std >0.02 versus discovery.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E13",
+      "E14",
+      "E15"
+     ]
+    }
+   ]
+  }
+ ],
+ "candidates": [
+  {
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1",
+   "version": 1,
+   "parent_id": null,
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "0d19650e641cac11",
+   "submission_kind": "controller",
+   "submission": {
+    "machine_card": "Water tank, positive gain: more pump = higher level. Self-draining to ~0 at u=0 (E3 0.335->0.007 in 20s). Lag tau ~8-11s (drain 10s ratio 0.40; rise slopes still 0.01-0.026 after 5-10s). Dead zone small: u=0.3 holds ~0.10 vs 0 at u=0. Convex gain: 0.3->0.10 (gain 0.33), 0.5->~0.59-0.64 (gain ~1.2), 0.6->~0.68 (local gain ~0.9). Operating equilibrium for 0.6 is u~0.50-0.55 (u=0.5 slope -0.004 at 0.63, u=0.6 slope +0.004 at 0.64, zero near 0.55). Noise small +/-0.01 std<0.02. Stable, no oscillation or overshoot in open loop; rate <0.03/s observed, worst-case 0.08/s bound.",
+    "design_rationale": "Lead-lag from holds: u=0 drains to ~0 with tau~8-11s, u=0.3 equilibrates ~0.10, u=0.5 holds ~0.63 with near-zero slope, u=0.6 still rising at 0.64. Hence strongly convex static gain, local gain near 0.6 ~0.9-2.5, tau ~10s. Feedforward 0.50 for y=0.6 centers output so PI only trims residual; power-law 0.3 exponent reuses the 0.1->0.3 and 0.6->0.5 points for other targets. Kp=0.8,Ki=0.12 gives zeta~0.8 for G=1-2.5 with closed-loop ~3-4s plus integral, settling <25s without oscillation. Integral enabled only |e|<0.25 and frozen on saturation with +/-0.35 authority to kill ff error without windup during initial rise from 0. 1s measurement filter suppresses +/-0.01 noise. High-y backoff caps prevent ever approaching 0.9.",
+    "source_code": "import math\ndef _clamp(v, lo, hi):\n    if not math.isfinite(v):\n        return lo\n    if v < lo:\n        return lo\n    if v > hi:\n        return hi\n    return float(v)\n\ndef control(obs, state):\n    try:\n        y = obs.get(\"y\", 0.6)\n        target = obs.get(\"target\", 0.6)\n        dt = obs.get(\"dt\", 0.1)\n    except Exception:\n        y = 0.6\n        target = 0.6\n        dt = 0.1\n    if not math.isfinite(y):\n        y = 0.6\n    if not math.isfinite(target):\n        target = 0.6\n    if not math.isfinite(dt) or dt <= 0.0:\n        dt = 0.1\n    if dt < 0.02:\n        dt = 0.02\n    if dt > 1.0:\n        dt = 1.0\n    if y < 0.0:\n        y = 0.0\n    if y > 1.0:\n        y = 1.0\n    if target < 0.0:\n        target = 0.0\n    if target > 1.0:\n        target = 1.0\n    yf = state.get(\"yf\", None)\n    integ = state.get(\"i\", 0.0)\n    if yf is None or not math.isfinite(yf):\n        yf = y\n    if not math.isfinite(integ):\n        integ = 0.0\n    tau_f = 1.0\n    alpha = dt / (tau_f + dt)\n    if alpha < 0.0:\n        alpha = 0.0\n    if alpha > 1.0:\n        alpha = 1.0\n    yf = yf + alpha * (y - yf)\n    if yf < 0.0:\n        yf = 0.0\n    if yf > 1.0:\n        yf = 1.0\n    if target <= 0.01:\n        u_ff = 0.0\n    else:\n        r = target / 0.6\n        if r < 0.0:\n            r = 0.0\n        u_ff = 0.50 * math.pow(r, 0.30)\n    u_ff = _clamp(u_ff, 0.0, 0.80)\n    Kp = 0.80\n    Ki = 0.12\n    e = target - yf\n    enable = 0.25\n    if abs(e) < enable:\n        integ = integ + e * dt\n    else:\n        integ = integ * (1.0 - 0.05 * dt)\n    max_i = 0.35 / Ki\n    if integ > max_i:\n        integ = max_i\n    if integ < -max_i:\n        integ = -max_i\n    ui = Ki * integ\n    if ui > 0.35:\n        ui = 0.35\n        integ = ui / Ki\n    if ui < -0.35:\n        ui = -0.35\n        integ = ui / Ki\n    u_unsat = u_ff + Kp * e + ui\n    if yf >= 0.80:\n        u_max = 0.10\n    elif yf >= 0.75:\n        u_max = 0.40\n    elif yf >= 0.70:\n        u_max = 0.60\n    else:\n        u_max = 0.95\n    u_min = 0.0\n    u = u_unsat\n    if u > u_max:\n        u = u_max\n    if u < u_min:\n        u = u_min\n    if ((u >= u_max and e > 0.0) or (u <= u_min and e < 0.0)) and abs(e) < enable:\n        pass\n    u = _clamp(u, 0.0, 1.0)\n    if not math.isfinite(u):\n        u = u_ff\n    new_state = {\"yf\": float(yf), \"i\": float(integ)}\n    return (float(u), new_state)\n",
+    "predicted_behavior": "From 0: u saturates ~0.95 then P-driven decay, y reaches 0.5 in ~15s, 0.58 in ~20-25s, enters band without overshoot above 0.65. After 30s stays 0.58-0.62 with u 0.48-0.55, MAE <0.02, in-band >90%, energy sum u^2 moderate. From above: gentle drain with u cut to 0-0.3 then recover. Filtered noise causes u jitter <0.02. Never exceeds 0.8.",
+    "self_test_expectations": [
+     "First call with {} returns finite u in [0,1] and JSON state with yf,i",
+     "Constant y=0.6,target 0.6 converges u to 0.3-0.7 and stays in [0,1]",
+     "y=0,target 0.6 commands high u>0.7; y=0.8,target 0.6 commands low u<0.4",
+     "No exception, no nan/inf, no override for dt in [0.02,1.0] and y noise +/-0.02",
+     "Integral does not wind up: 30s at saturation then error reversal recovers within 10s"
+    ],
+    "operator_note": "Targets 0.6. Controller rises from low level with near-full pump then eases to ~0.5 duty. Expect slow 15-25s approach from below, staying inside 0.55-0.65 after settling, duty ~0.5. Do not force manual high pump near 0.8; safety backs off automatically."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.713386",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.392186; process alive, next valid step u=0.413132",
+    "inf_y: ok y=+inf: returned finite u=0.392186; process alive, next valid step u=0.413132",
+    "zero_dt: ok dt=0: returned finite u=0.635786; process alive, next valid step u=0.638186",
+    "negative_dt: ok dt=-0.1: returned finite u=0.635786; process alive, next valid step u=0.638186",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.353s (budget 10s)"
+   ],
+   "status": "approved"
+  },
+  {
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v2",
+   "version": 2,
+   "parent_id": "v13-s11-20261031-020922-a0e68e-v1",
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "0d19650e641cac11",
+   "submission_kind": "revision",
+   "submission": {
+    "diagnosis": "Same u now acts ~24 s later, gain/drain/noise unchanged. E14 u=0.5 for 16 s from 0 stays flat 0.0-0.01 slope -0.0002 vs E4 same u rose to 0.227 slope +0.0114. E15 continuation of same 0.5 stays flat until ~193.7 (~24.1 s after 169.6 step) then rises 0.02->0.139 slope +0.0162, matching discovery rise rate. E16 cut 0.5->0 at 201.6 keeps rising 0.136->0.333 peak at 224.0 (~22.4 s) then falls with slope -0.0116 matching discovery drain -0.0097. Discovery E2 rose within 0.2 s, so Td_old <1 s, Td_new ~24 s (+/-1 s). Noise <0.01 unchanged. Old controller therefore drives delay-induced limit cycle 0.03-0.89 period ~80 s with hard violations seen in monitoring after_change and post-change eval.",
+    "diagnosis_category": "response_slower",
+    "change_summary": "Detuned for ~24 s deadtime while keeping nominal stability: Kp 0.80->0.22, Ki 0.12->0.018, filter 1.0->2.0 s, integral only when |e|<0.12 with +-0.18 authority and freeze on saturation, feedforward 0.50->0.54 base, feedback authority clamped to ff+0.20/ff-0.30, stricter high-y caps (0.65:0.50,0.70:0.35,0.75:0.20,0.80:0.05), asymmetric slew limit 0.05/s up / 0.10/s down. Targets delay-induced limit cycle, not gain/drain.",
+    "machine_card": "Reservoir with pump 0-1, drain to ~0 at u=0, convex static gain (u=0.3~0.10, u=0.5~0.64), lag ~8-10 s nominal plus now ~24 s transport deadtime, noise std <0.01, target 0.6 band 0.55-0.65, soft 0.85 hard 0.9 forces u=0.",
+    "design_rationale": "24 s deadtime with Kp=0.8/Ki=0.12 is gain/phase unstable. Robust fix is lower bandwidth: Kc~T/(K*(Td+Tc))~0.2, Ti>>Td. Feedforward carries steady state (~0.54 for 0.6) so low feedback still meets nominal speed. Overdrive clamp + slew limit bound open-loop energy injected during deadtime, preventing 0.9 overshoot. Conditional integration + saturation freeze prevent windup while error persists 24 s. Stricter y-based caps cut early because correction is delayed. All changes preserve nominal behavior because nominal needs only ~0.54+-0.15.",
+    "source_code": "import math\ndef _clamp(v, lo, hi):\n    if not math.isfinite(v):\n        return float(lo)\n    if v < lo:\n        return float(lo)\n    if v > hi:\n        return float(hi)\n    return float(v)\n\ndef control(obs, state):\n    try:\n        y = obs.get(\"y\", 0.6)\n        target = obs.get(\"target\", 0.6)\n        dt = obs.get(\"dt\", 0.1)\n    except Exception:\n        y = 0.6\n        target = 0.6\n        dt = 0.1\n    if not math.isfinite(dt) or dt <= 0.0:\n        dt = 0.1\n    if dt < 0.02:\n        dt = 0.02\n    if dt > 1.0:\n        dt = 1.0\n    if not math.isfinite(target):\n        target = 0.6\n    target = _clamp(target, 0.0, 1.0)\n    try:\n        yf = state.get(\"yf\", None)\n        integ = state.get(\"i\", 0.0)\n        u_prev = state.get(\"up\", None)\n    except Exception:\n        yf = None\n        integ = 0.0\n        u_prev = None\n    if yf is None or not math.isfinite(yf):\n        if math.isfinite(y):\n            yf = _clamp(y, 0.0, 1.0)\n        else:\n            yf = 0.6\n    if not math.isfinite(integ):\n        integ = 0.0\n    if u_prev is not None and not math.isfinite(u_prev):\n        u_prev = None\n    if math.isfinite(y):\n        yc = _clamp(y, 0.0, 1.0)\n    else:\n        yc = float(yf)\n    tau_f = 2.0\n    alpha = dt / (tau_f + dt)\n    if alpha < 0.0:\n        alpha = 0.0\n    if alpha > 1.0:\n        alpha = 1.0\n    yf = yf + alpha * (yc - yf)\n    yf = _clamp(yf, 0.0, 1.0)\n    if target <= 0.01:\n        u_ff = 0.0\n    else:\n        r = target / 0.6\n        if r < 0.0:\n            r = 0.0\n        if r > 1.7:\n            r = 1.7\n        u_ff = 0.54 * math.pow(r, 0.40)\n    u_ff = _clamp(u_ff, 0.0, 0.80)\n    Kp = 0.22\n    Ki = 0.018\n    e = target - yf\n    integ_before = float(integ)\n    if abs(e) < 0.12:\n        integ = integ + e * dt\n    else:\n        integ = integ * (1.0 - 0.02 * dt)\n    max_i = 0.18 / Ki\n    if integ > max_i:\n        integ = max_i\n    if integ < -max_i:\n        integ = -max_i\n    ui = Ki * integ\n    if ui > 0.18:\n        ui = 0.18\n        integ = ui / Ki\n    if ui < -0.18:\n        ui = -0.18\n        integ = ui / Ki\n    up = Kp * e\n    if up > 0.20:\n        up = 0.20\n    if up < -0.20:\n        up = -0.20\n    u_t = u_ff + up + ui\n    hi_ff = u_ff + 0.20\n    lo_ff = u_ff - 0.30\n    if u_t > hi_ff:\n        u_t = hi_ff\n    if u_t < lo_ff:\n        u_t = lo_ff\n    if yf >= 0.80:\n        u_max = 0.05\n    elif yf >= 0.75:\n        u_max = 0.20\n    elif yf >= 0.70:\n        u_max = 0.35\n    elif yf >= 0.65:\n        u_max = 0.50\n    else:\n        u_max = 0.85\n    u_targ = u_t\n    if u_targ > u_max:\n        u_targ = u_max\n    if u_targ < 0.0:\n        u_targ = 0.0\n    u_targ = _clamp(u_targ, 0.0, 1.0)\n    if u_prev is None:\n        u = float(u_targ)\n    else:\n        u_prev = _clamp(float(u_prev), 0.0, 1.0)\n        delta = u_targ - u_prev\n        up_lim = 0.05 * dt\n        dn_lim = 0.10 * dt\n        if delta > up_lim:\n            delta = up_lim\n        if delta < -dn_lim:\n            delta = -dn_lim\n        u = u_prev + delta\n        u = _clamp(u, 0.0, 1.0)\n        saturated = False\n        if u_t > u_max + 1e-9 or u_t < 0.0 - 1e-9:\n            saturated = True\n        if abs(delta - (u_targ - u_prev)) > 1e-9:\n            if (e > 0.0 and u_targ > u_prev) or (e < 0.0 and u_targ < u_prev):\n                saturated = True\n        if saturated:\n            if (e > 0.0 and u_targ >= u) or (e < 0.0 and u_targ <= u):\n                integ = integ_before\n                ui = Ki * integ\n    if not math.isfinite(u):\n        u = float(u_ff)\n        integ = integ_before\n    new_state = {\"yf\": float(yf), \"i\": float(integ), \"up\": float(_clamp(u, 0.0, 1.0))}\n    return (float(_clamp(u, 0.0, 1.0)), new_state)\n",
+    "predicted_behavior": "Nominal (Td~1 s): rise to 0.55-0.65 in ~20-25 s, in-band >=0.85 after 30 s, MAE ~0.02, no overrides/hard violations. Delayed (Td~24 s): monotonic slow approach, overshoot <0.75, no hard violations, no sustained oscillation, in-band fraction >>0.11 (target >0.5) and MAE <<0.24, energy lower because u stays near 0.54+-0.15 with slew limit.",
+    "self_test_expectations": [
+     "cold start y=0.2 target 0.6 first u ~0.65-0.75 within ff+0.20 and finite",
+     "50 steps with dt 0.1-0.5 and noisy y stays 0-1 finite, |du|<=0.10*dt+eps except first step",
+     "y=NaN/inf returns finite u and recovers next valid step",
+     "dt=0 or negative defaults to 0.1 and stays finite",
+     "yf=0.82 forces u<=0.05+slew regardless of integral"
+    ],
+    "operator_note": "Controller now patient: approaches slowly, caps overdrive, cuts early above 0.65. Expect slower initial rise than before but no oscillation. Do not manually overdrive; sustained u near 0.54 holds target. If level >0.8 it will command ~0.05 until falling."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.56802",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.47984; process alive, next valid step u=0.482829",
+    "inf_y: ok y=+inf: returned finite u=0.47984; process alive, next valid step u=0.482829",
+    "zero_dt: ok dt=0: returned finite u=0.54602; process alive, next valid step u=0.54602",
+    "negative_dt: ok dt=-0.1: returned finite u=0.54602; process alive, next valid step u=0.54602",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.478s (budget 10s)"
+   ],
+   "status": "approved"
+  }
+ ],
+ "monitoring": {
+  "deployed_candidate_id": "v13-s11-20261031-020922-a0e68e-v1",
+  "baseline_window_mae": 0.012408620090020014,
+  "recent_window_mae": 0.2635328409801973,
+  "degraded": true,
+  "degraded_at_t": 89.5,
+  "disturbance_family": "actuator_lag",
+  "disturbance_at_t": 60.0
+ },
+ "stage_history": [
+  {
+   "from": "NEW",
+   "to": "EXPLORING",
+   "ts": 1793426962.677513
+  },
+  {
+   "from": "EXPLORING",
+   "to": "GENERATING",
+   "ts": 1793427282.686659
+  },
+  {
+   "from": "GENERATING",
+   "to": "STATIC_CHECK",
+   "ts": 1793427317.610098,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793427317.6175191,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793427325.347438,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "DEPLOYABLE",
+   "ts": 1793427362.217695,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "DEPLOYABLE",
+   "to": "MONITORING",
+   "ts": 1793427362.222718,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "MONITORING",
+   "to": "ADAPTING",
+   "ts": 1793427405.583895,
+   "attempt": 0,
+   "parent": "v13-s11-20261031-020922-a0e68e-v1",
+   "reidentifying": true
+  },
+  {
+   "from": "ADAPTING",
+   "to": "ADAPTING",
+   "ts": 1793427539.029938,
+   "attempt": 1,
+   "parent": "v13-s11-20261031-020922-a0e68e-v1"
+  },
+  {
+   "from": "ADAPTING",
+   "to": "STATIC_CHECK",
+   "ts": 1793427590.636002,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v2"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793427590.656632,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v2"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793427598.1085188,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v2"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "COMPLETE",
+   "ts": 1793427651.420436,
+   "candidate_id": "v13-s11-20261031-020922-a0e68e-v2",
+   "reason": "v2 promoted (nominal G2 after repair: pass)"
+  }
+ ],
+ "model_usage": {
+  "calls": 18,
+  "failed_calls": 0,
+  "prompt_tokens": 992743,
+  "completion_tokens": 120068,
+  "reasoning_tokens": 98418,
+  "cost_usd": 1.74734135
+ },
+ "elapsed_s": 688.8,
+ "finished_at": 1793427651.4213068
+}

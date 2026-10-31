@@ -1,0 +1,1 @@
+Reservoir y in [0,1], u in [0,1]. Nominal: first-order + 2-4s cold delay +5-10s lag, K~1.15, T~20-25s, hold-u for y=0.6 ~0.50-0.55, noise +-0.01. Changed: pure delay increased to ~23s (22-24s measured E13/E14) with similar K and drain. Requires wc<0.02 rad/s, no D, slow I, rate-limited PI + feedforward.

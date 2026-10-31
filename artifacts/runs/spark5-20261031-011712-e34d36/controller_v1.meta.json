@@ -1,0 +1,20 @@
+{
+  "id": "spark5-20261031-011712-e34d36-v1",
+  "run_id": "spark5-20261031-011712-e34d36",
+  "version": 1,
+  "path": "artifacts/runs/spark5-20261031-011712-e34d36/controller_v1.py",
+  "sha256": "63d0b146dd9ec4d92661f4556f8f4437b36fb7526b326ea37854c41092a92eb6",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:23:49.456061+00:00",
+  "byte_length": 2762,
+  "rationale": "Observed positive gain with 1-2s lag and self-drain to near-zero. Key nonlinearity: u=0.4 holds ~0.19 while u=0.5 holds ~0.588, then shallow slope 0.55->0.65 (+0.01y per +0.05u, local pump-rate gain ~0.08-0.10/s per unit u). Hold for 0.6 is ~0.55-0.63, so use conservative feedforward ~0.57 for 0.6 with shallow target dependence and let integral correct residual. PI with Kp=1.0, Ki=0.20 (Ti=5s) gives loop gain ~0.75 with ~2.5s total delay (plant lag + 0.8s EMA filter), stable without D. EMA tau 0.8s suppresses ~0.01 noise without adding lag. Conditional integration (|e|<0.25 and not saturated) plus I clamp [-0.20,0.25] prevents windup from the high-gain 0.4-0.5 region. Far-below error gives P~0.4-0.5 so u saturates at 0.80 for fast fill (~0.028/s, 0.2->0.6 in ~15-20s within 30s settling); near target P shrinks for soft landing. High-y guards (yf>0.80 ->0, yf>0.70 cap 0.25) guarantee no 0.9 cutoff.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Water reservoir: +u raises y (positive gain). Speed: net rise ~0.022/s at u=0.6 low-y, ~0.029/s at u=0.8 mid-y, ~0.026/s at u=0.8 y~0.5; worst-case bound 0.08/s per unit u. Fill 0.2->0.6 needs ~15-20s at u=0.8. Lag/delay ~1-2s after every step (E3/E4/E5). Dead-zone: none above 0.4, but highly nonlinear: u=0.4 holds ~0.18-0.20 (E1), u=0.5 holds ~0.588 (E7), u=0.55 holds ~0.583 (E8), u=0.6 drifts 0.585->0.60 (E9), u=0.65 drives 0.592->0.619 in 3s (E10); incremental gain ~4.0/unit in 0.4-0.5, ~0.2-0.8/unit near target. Self-draining: u=0 decays 0.395->0.02 in ~19.6s (E3), rate ~0.030/s at y~0.33, ~0.020/s at y~0.13, ~0.014/s at y~0.06, tau ~7-15s. Noise std <0.01 typically (<0.02 max) vs 0.10 band, averaging works.",
+    "predicted_behavior": "From low start (0.1-0.2): u~0.80 for ~12-15s, then taper to ~0.63 at 0.55 and ~0.58 at 0.6. Settling ~15-20s, inside 0.55-0.65 before 30s scoring window. Overshoot <0.02-0.03 (true level, filtered). Steady-state: mean error <0.015, time-in-band >90% after settling, steady duty ~0.57-0.62 (integral corrects feedforward bias). Energy ~0.33 per step steady (u^2). From near-target start: minimal transient.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "spark7-20261031-012959-a9c6d6-v5",
+  "run_id": "spark7-20261031-012959-a9c6d6",
+  "version": 5,
+  "path": "artifacts/runs/spark7-20261031-012959-a9c6d6/controller_v5.py",
+  "sha256": "023626ddb8c6dd6ad8921f7172b1e685061466b57a10c8b548f42093968315e0",
+  "parent_id": "spark7-20261031-012959-a9c6d6-v4",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:50:01.888866+00:00",
+  "byte_length": 9676,
+  "rationale": "Kept nominal PD+I core but added latched large-delay detector and gain/slew scheduling. Nominal mode keeps v4-like Kp~0.7/Ki~0.06/Kd~0.8 with 6s lead. When error stays large while filtered rate stays ~0 and initial lift fails, latch delay=1: switch to Kp=0.18/Ki=0.012/Kd=0, no lead, Tf 6s/Tr 8s, s_max top 0.75, slew 0.04/0.06 per s, tighter uff limits and one-time fast cut to <=0.65 on transition. This removes 24s-delay oscillation while preserving nominal acquisition.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir, target 0.6 band 0.55-0.65. Pre-change: lag 2-4s, hold ~0.6, gain ~1. Post-change: pure transport delay ~22-26s (~24s) with similar gain/drain. Controller must be dual-mode: aggressive when response <10s, ultra-conservative latched mode when flat.",
+    "predicted_behavior": "Nominal episodes: in-band 1.0 after 30s, MAE ~0.01, energy ~48-50, zero overrides as v4. Delayed 24s episodes: stable, zero hard violations/invalid, overrides ~0, no sustained oscillation; MAE well below degraded 0.136 and below v4 post-change 0.115, slow convergence toward band from feedforward ~0.6 plus tiny trim, initial overshoot limited by 0.65 cut on detection.",
+    "diagnosis": "Transport delay increased from 2-4s to ~24s, not gain/drain/sensor. E13 u=0 for 40s: y held ~0.40-0.43 for 15s then ROSE to 0.48 while u=0 (prior u~0.75 still in transit) then fell sharply only after ~231s (~26s after switch). E14 u=0.8 for 8s from 245.3 produced no rise during pulse, y kept falling 0.13 to 0.02. E15 u=0 hold: flat ~0.0 until ~269.4 then hump 0.0 to 0.15 lasting ~8s, i.e. 24.1s after E14 start (245.3) and 16s after E14 end. Magnitude preserved (~0.13 rise for 0.8 pulse consistent with pre-change gain) and u=0 decay rate once started similar, ruling out weaker actuator/faster outflow. Monitoring after_change also shows y stuck ~0.68 for 20s while u~0.44 before falling, classic dead-time.",
+    "diagnosis_category": "response_slower"
+  }
+}

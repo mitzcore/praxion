@@ -1,0 +1,2208 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793425955.78822,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.85,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.8,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces a detectable rise above noise within 15 s.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag, not instantaneous, so a 15 s hold shows gradual rise with curvature.",
+    "confidence": 0.6,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793425976.4096372,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces an active equilibrium around 0.13, not a rise from 0.22 because start was above equilibrium.",
+    "confidence": 0.3,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag with time constant of a few seconds, settling within ~10-15 s.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793425994.7262652,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces an active equilibrium around 0.13, and stepping to u=0.8 produces prompt rise.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag with time constant of a few seconds, settling within ~10-15 s.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793426022.2745202,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces an active equilibrium around 0.13, and stepping to u=0.8 produces prompt rise.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag with time constant ~10-20 s at high levels; settling takes >15 s and was not reached after 15 s at u=0.8.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793426045.193745,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces an active equilibrium around 0.13, and stepping to u=0.8 produces prompt rise.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag with time constant ~20-30 s or more at high levels; settling takes >20 s and was not reached after 20 s at u=0.8 with slope still ~0.02/s.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.01,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793426066.879848,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no large dead-zone: u=0.4 produces an active equilibrium around 0.13, and stepping to u=0.8 produces prompt rise.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag with time constant ~10-20 s; settling takes >20 s and was not reached after 20 s at u=0.8 with slope still ~0.02/s nor after 20 s at u=0 with slope still ~-0.019/s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793426092.895422,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-20s; settling takes >20s with slopes still ~0.02/s at u=0.8 and -0.019/s at u=0 and ~0.013/s at u=0.7.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.01,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.68,
+    "evidence_refs": [
+     "E3",
+     "E4",
+     "E6"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.35-0.45, below target, consistent with quadratic-like scaling and E6 slow rise from 0.15.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E6"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793426117.0967429,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise confirms delay not dead-zone.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-20s; settling takes >20s with slopes still ~0.02/s at u=0.8 and -0.019/s at u=0 and ~0.016/s after 18s at u=0.7.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.01,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable; E7 at u=0.7 already exceeds linear prediction 0.23 and still rises.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E3",
+     "E4",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is above 0.35, likely 0.45-0.65, still uncertain whether it alone reaches 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E6",
+     "E7"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E8",
+  "ts": 1793426147.205419,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8 immediate rise when warm confirms delay not dead-zone.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-20s; settling takes >20s with slopes still ~0.02/s at u=0.8/0.9 and -0.019/s at u=0 and ~0.016/s after 18s at u=0.7.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.005,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable; E7 at u=0.7 already exceeds linear prediction 0.23 and E8 at u=0.9 sustains ~0.02/s at y~0.38.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.5-0.7 and u~0.9-1.0 holds y near 0.6.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is above 0.35, likely 0.45-0.65, still uncertain whether it alone reaches 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E9",
+  "ts": 1793426176.68469,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8/E9 immediate rise when warm confirms delay not dead-zone.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-20s; settling takes >20s with slopes still ~0.02/s at u=0.8/0.9 and -0.019/s at u=0 and ~0.016/s after 18s at u=0.7.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.002,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable; E7 at u=0.7 already exceeds linear prediction 0.23 and E8/E9 at u=0.9/0.8 sustain ~0.02/s at y~0.38-0.53.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.65-0.85 and u~0.8-0.9 holds y near 0.6; E9 ended at 0.531 still rising at 0.0208/s after ~20s total at 0.8.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is above 0.35, likely 0.45-0.65, still uncertain whether it alone reaches 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total.",
+    "confidence": 0.62,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E10",
+  "ts": 1793426202.503057,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8/E9/E10 immediate rise when warm confirms delay not dead-zone.",
+    "confidence": 0.91,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-20s; settling takes >20s with slopes still ~0.02/s at u=0.8/0.9 and -0.019/s at u=0 and ~0.016/s after ~24s total at u=0.8.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state level at u=0.4 is ~0.13, implying much higher u (~0.8-1.0) is needed to hold target 0.6.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 possibly reachable; E7 at u=0.7 already exceeds linear prediction 0.23 and E8/E9/E10 at u=0.9/0.8 sustain ~0.016-0.021/s at y~0.38-0.59.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.65-0.85 and u~0.8-0.9 holds y near 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is above 0.35, likely 0.45-0.65, still uncertain whether it alone reaches 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total.",
+    "confidence": 0.62,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E11",
+  "ts": 1793426234.3882282,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8/E9/E10/E11 immediate response when warm confirms delay not dead-zone.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-25s; settling takes >20s with slopes still ~0.02/s at u=0.8/0.9 and -0.019/s at u=0 and +0.0109/s 4s after 0.8->0.6 step showing momentum carryover.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state at u=0.4 is ~0.13, but gain is strongly nonlinear so required u to hold 0.6 is ~0.5-0.65, not linear extrapolation; E11 0.8->0.6 from 0.59 rose to 0.633 showing 0.6 holds/rises.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 reachable; E7 at u=0.7 exceeds linear 0.23 and E8/E9/E10 sustain ~0.016-0.021/s at y~0.38-0.59 and E11 rises at 0.6.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.70-0.90 and overshoots 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8 and E11 shows even u=0.6 rises at 0.63.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.55-0.80, likely at/above 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total and E11 implies 0.6 alone is near/above equilibrium.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8",
+     "E11"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "Steady-state at u=0.6 is at or above ~0.63; E11 stepped 0.8->0.6 at ~0.59 and rose to 0.633 with +0.0109/s over 4s, though 4s is short vs 10-25s time constant so part may be momentum from prior 0.8 rise.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E10",
+     "E11"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E11",
+  "ts": 1793426477.010656,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8/E9/E10/E11 immediate response when warm confirms delay not dead-zone.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-25s; settling takes >20s with slopes still ~0.02/s at u=0.8/0.9 and -0.019/s at u=0 and +0.0109/s 4s after 0.8->0.6 step showing momentum carryover.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state at u=0.4 is ~0.13, but gain is strongly nonlinear so required u to hold 0.6 is ~0.5-0.65, not linear extrapolation; E11 0.8->0.6 from 0.59 rose to 0.633 showing 0.6 holds/rises.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 reachable; E7 at u=0.7 exceeds linear 0.23 and E8/E9/E10 sustain ~0.016-0.021/s at y~0.38-0.59 and E11 rises at 0.6.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.70-0.90 and overshoots 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8 and E11 shows even u=0.6 rises at 0.63.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.55-0.80, likely at/above 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total and E11 implies 0.6 alone is near/above equilibrium.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8",
+     "E11"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "Steady-state at u=0.6 is at or above ~0.63; E11 stepped 0.8->0.6 at ~0.59 and rose to 0.633 with +0.0109/s over 4s, though 4s is short vs 10-25s time constant so part may be momentum from prior 0.8 rise.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u produces smaller rise rate and lower held level than baseline E2-E4/E8-E10.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow: fall at u=0 is faster than E5 (~-0.019/s late) and same u holds lower level than H7-H11.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E5"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: longer delay between command change and first visible response and/or slower approach, causing continued rise after u is cut and oscillation with degraded tracking (recent MAE 0.0673 vs 0.0199 baseline).",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor offset/noise: true drain/gain/delay unchanged but reading has added offset or changed noise variance, so u=0 true fall is baseline but measured plateau/noise differs.",
+    "confidence": 0.25,
+    "evidence_refs": [
+     "E1",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E12",
+  "ts": 1793426506.2246761,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold; E12 falls from ~0.69 to ~0.24 after delay.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E6 flat then E7 sustained rise and E8/E9/E10/E11 immediate response when warm confirms delay not dead-zone.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Baseline response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-25s; E12 shows post-change behavior is much slower.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable; E12 flat phase variation ~0.02 consistent with baseline.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state at u=0.4 is ~0.13, but gain is strongly nonlinear so required u to hold 0.6 is ~0.5-0.65, not linear extrapolation; E11 0.8->0.6 from 0.59 rose to 0.633 showing 0.6 holds/rises.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 reachable.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.70-0.90 and overshoots 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8 and E11 shows even u=0.6 rises at 0.63.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.55-0.80, likely at/above 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total and E11 implies 0.6 alone is near/above equilibrium.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8",
+     "E11"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "Steady-state at u=0.6 is at or above ~0.63; E11 stepped 0.8->0.6 at ~0.59 and rose to 0.633 with +0.0109/s over 4s, though 4s is short vs 10-25s time constant so part may be momentum from prior 0.8 rise.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u produces smaller rise rate and lower held level than baseline E2-E4/E8-E10; E12 flat 20s hold at high y is delay not low gain, so weakened but rise test still needed.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E12"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow: fall at u=0 is faster than E5 (~-0.019/s late) and same u holds lower level than H7-H11; E12 late fall -0.022/s from higher level is consistent with baseline level-dependent drain, not faster.",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E5",
+     "E12"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: longer delay between command change and first visible response and/or slower approach; E12 stayed ~0.69-0.70 for ~20s after switch 0.53->0 before falling, vs 5-7s baseline cold-start, explaining oscillation and MAE 0.0673 vs 0.0199.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E12"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor offset/noise: true drain/gain/delay unchanged but reading has added offset or changed noise variance; E12 noise ~0.02 like baseline and large 0.69->0.24 swing is real, not offset/noise.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E13",
+  "ts": 1793426540.778506,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays over time due to self-drain and does not self-hold; E12 falls from ~0.69 to ~0.24 after delay, E13 continues falling under effective 0.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: u=0.4 holds ~0.13 and 0.4->0.8 rises promptly, but cold start 0->0.7 shows ~5-7s lag before rise; E12 20s flat then fall and E13 10s at 0.6 with continued fall confirm long lag not dead-zone.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Baseline response has seconds-scale lag plus slow settling: ~1-2s lag when already pumping vs ~5-7s cold-start delay, time constant ~10-25s; post-change delay is ~20-23s from E12 fall onset and E13 >10s non-response.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02-0.03) so multi-second trends are interpretable; E12 flat phase variation ~0.02 and E13 variation ~0.02 consistent with baseline.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state at u=0.4 is ~0.13, but gain is strongly nonlinear so required u to hold 0.6 is ~0.5-0.65, not linear extrapolation; E11 0.8->0.6 from 0.59 rose to 0.633 showing 0.6 holds/rises.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 reachable.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.70-0.90 and overshoots 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8 and E11 shows even u=0.6 rises at 0.63.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.55-0.80, likely at/above 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total and E11 implies 0.6 alone is near/above equilibrium.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8",
+     "E11"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "Steady-state at u=0.6 is at or above ~0.63; E11 stepped 0.8->0.6 at ~0.59 and rose to 0.633 with +0.0109/s over 4s, though 4s is short vs 10-25s time constant so part may be momentum from prior 0.8 rise.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u produces smaller rise rate and lower held level than baseline E2-E4/E8-E10; E12 20s hold at high y then normal fall and E13 fall to 0.05 under commanded 0.6 with no early rise contradict weak-gain-only and favor delay.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow: fall at u=0 is faster than E5 (~-0.019/s late) and same u holds lower level than H7-H11; E12 late fall -0.022/s from higher level and E13 -0.0136/s at low level match baseline level-dependent drain, not faster.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E5",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: longer delay between command change and first visible response and/or slower approach; E12 stayed ~0.69-0.70 for ~20-22s after switch 0.53->0 before falling vs 5-7s baseline, and E13 showed >10s continued fall after 0->0.6 with slope -0.0136, explaining oscillation and MAE 0.0673 vs 0.0199.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E12",
+     "E13"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor offset/noise: true drain/gain/delay unchanged but reading has added offset or changed noise variance; E12 noise ~0.02 like baseline and large 0.69->0.24 swing plus E13 0.22->0.06 swing are real trends, not offset/noise.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12",
+     "E13"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E14",
+  "ts": 1793426569.465129,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing pump duty u increases level y with positive steady-state gain; E13-E14 non-rise is delayed response not loss of direction.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0 the level decays due to self-drain and does not self-hold; E12 falls ~0.69 to ~0.24 after delay, E13-E14 continue falling to ~0.0 under effective 0.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "There is no permanent dead-zone: baseline cold-start 0->0.7 shows ~5-7s lag before rise; post-change E12 22s flat then fall and E13-E14 22s flat/fall at 0.6 confirm long lag not dead-zone.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Baseline has seconds-scale lag plus ~10-25s time constant; post-change delay is ~22-23s from E12 fall onset at ~205-206 after 183.1 switch and E13-E14 22s non-response with onset expected at ~245.1.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+    "confidence": 0.001,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise std is small (~0.02) so multi-second trends are interpretable; E12 flat variation ~0.02, E13 ~0.02, E14 ~0.01 consistent with baseline.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state at u=0.4 is ~0.13, but gain is strongly nonlinear so required u to hold 0.6 is ~0.5-0.65, not linear extrapolation; E11 0.8->0.6 from 0.59 rose to 0.633.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Gain increases with u so u=0.8 equilibrium is substantially above linear extrapolation from u=0.4 (>0.27), leaving target 0.6 reachable.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium at u=0.8 is ~0.70-0.90 and overshoots 0.6; E10 ended at 0.591 still rising at 0.0161/s after ~24s total at 0.8 and E11 shows even u=0.6 rises at 0.63.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Steady-state at u=0.7 is ~0.55-0.80, likely at/above 0.6; E7 ended at 0.315 still rising at 0.016/s after 18s total and E11 implies 0.6 alone is near/above equilibrium.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E8",
+     "E11"
+    ]
+   },
+   {
+    "id": "H11",
+    "statement": "Steady-state at u=0.6 is at or above ~0.63; E11 stepped 0.8->0.6 at ~0.59 and rose to 0.633 with +0.0109/s over 4s, though part may be momentum from prior 0.8 rise.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u produces smaller rise and lower held level; E12 20s hold then normal fall and E13-E14 22s fall to zero under 0.6 with no early rise contradict weak-gain-only and favor delay, though post-delay gain not yet measured.",
+    "confidence": 0.04,
+    "evidence_refs": [
+     "E2",
+     "E3",
+     "E4",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow: fall at u=0 faster and same u holds lower level; E12 late fall -0.022/s from high level and E13 -0.0136/s at low level match baseline level-dependent drain, not faster.",
+    "confidence": 0.04,
+    "evidence_refs": [
+     "E5",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response with ~22-23s delay: E12 stayed ~0.69-0.70 for ~22s after 0.53->0 before falling vs 5-7s baseline, E13 showed >10s continued fall after 0->0.6, and E14 showed no rise by 22s total with onset due at ~245.1, explaining oscillation.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E6",
+     "E7",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor offset/noise: E12 noise ~0.02 like baseline, large 0.69->0.24 swing and E13 0.22->0.06 and E14 0.05->0.0 swings are real trends, not offset/noise.",
+    "confidence": 0.03,
+    "evidence_refs": [
+     "E1",
+     "E5",
+     "E12",
+     "E13",
+     "E14"
+    ]
+   }
+  ]
+ }
+]

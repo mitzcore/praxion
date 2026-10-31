@@ -1,0 +1,1 @@
+Reservoir, target 0.6 band 0.55-0.65. Pre-change: lag 2-4s, hold ~0.6, gain ~1. Post-change: pure transport delay ~22-26s (~24s) with similar gain/drain. Controller must be dual-mode: aggressive when response <10s, ultra-conservative latched mode when flat.

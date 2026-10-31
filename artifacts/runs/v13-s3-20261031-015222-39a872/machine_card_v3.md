@@ -1,0 +1,1 @@
+Reservoir, u in [0,1] pump, y in [0,1] noisy level, target 0.6 band 0.55-0.65. Nominal: Td 2-4s, tau 10-15s, u_ss~0.58-0.65 for 0.6, K_inflow~0.045/s per u, drain to ~0. After change: Td~14-16s, same K/tau, noise +-0.015. Controller must be dual-stable: fast when Td~3-4s, detuned Smith-compensated when Td~15s, never exceed 0.85 soft / 0.9 hard.

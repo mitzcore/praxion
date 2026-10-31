@@ -1,0 +1,20 @@
+{
+  "id": "v13-s11-20261031-020922-a0e68e-v1",
+  "run_id": "v13-s11-20261031-020922-a0e68e",
+  "version": 1,
+  "path": "artifacts/runs/v13-s11-20261031-020922-a0e68e/controller_v1.py",
+  "sha256": "686ea165e103e5ae62064f6d8e033dca0f4c8a1370642774f20f0b1f395f1480",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:15:17.603869+00:00",
+  "byte_length": 2326,
+  "rationale": "Lead-lag from holds: u=0 drains to ~0 with tau~8-11s, u=0.3 equilibrates ~0.10, u=0.5 holds ~0.63 with near-zero slope, u=0.6 still rising at 0.64. Hence strongly convex static gain, local gain near 0.6 ~0.9-2.5, tau ~10s. Feedforward 0.50 for y=0.6 centers output so PI only trims residual; power-law 0.3 exponent reuses the 0.1->0.3 and 0.6->0.5 points for other targets. Kp=0.8,Ki=0.12 gives zeta~0.8 for G=1-2.5 with closed-loop ~3-4s plus integral, settling <25s without oscillation. Integral enabled only |e|<0.25 and frozen on saturation with +/-0.35 authority to kill ff error without windup during initial rise from 0. 1s measurement filter suppresses +/-0.01 noise. High-y backoff caps prevent ever approaching 0.9.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Water tank, positive gain: more pump = higher level. Self-draining to ~0 at u=0 (E3 0.335->0.007 in 20s). Lag tau ~8-11s (drain 10s ratio 0.40; rise slopes still 0.01-0.026 after 5-10s). Dead zone small: u=0.3 holds ~0.10 vs 0 at u=0. Convex gain: 0.3->0.10 (gain 0.33), 0.5->~0.59-0.64 (gain ~1.2), 0.6->~0.68 (local gain ~0.9). Operating equilibrium for 0.6 is u~0.50-0.55 (u=0.5 slope -0.004 at 0.63, u=0.6 slope +0.004 at 0.64, zero near 0.55). Noise small +/-0.01 std<0.02. Stable, no oscillation or overshoot in open loop; rate <0.03/s observed, worst-case 0.08/s bound.",
+    "predicted_behavior": "From 0: u saturates ~0.95 then P-driven decay, y reaches 0.5 in ~15s, 0.58 in ~20-25s, enters band without overshoot above 0.65. After 30s stays 0.58-0.62 with u 0.48-0.55, MAE <0.02, in-band >90%, energy sum u^2 moderate. From above: gentle drain with u cut to 0-0.3 then recover. Filtered noise causes u jitter <0.02. Never exceeds 0.8.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

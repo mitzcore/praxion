@@ -1,0 +1,207 @@
+--- a/spark5-20261031-011712-e34d36/controller_v1.py
++++ b/spark5-20261031-011712-e34d36/controller_v2.py
+@@ -7,18 +7,18 @@
+     if v > hi:
+         return hi
+     return v
+-def _ff_for_target(t):
++def _ff(t):
+     if not math.isfinite(t):
+         t = 0.6
+     if t < 0.0:
+         t = 0.0
+     if t > 1.0:
+         t = 1.0
+-    ff = 0.57 + (t - 0.6) * 1.5
+-    if ff < 0.05:
+-        ff = 0.05
+-    if ff > 0.85:
+-        ff = 0.85
++    ff = 0.545 + (t - 0.6) * 1.0
++    if ff < 0.30:
++        ff = 0.30
++    if ff > 0.75:
++        ff = 0.75
+     return ff
+ def control(obs, state):
+     try:
+@@ -26,7 +26,7 @@
+         tgt_raw = obs.get("target", 0.6)
+         dt_raw = obs.get("dt", 0.2)
+     except Exception:
+-        return (0.0, {"yf": 0.6, "i": 0.0})
++        return (0.0, {"yf": 0.6, "i": 0.0, "up": 0.5, "df": 0.0})
+     try:
+         y = float(y_raw)
+     except Exception:
+@@ -40,7 +40,7 @@
+     except Exception:
+         dt = 0.2
+     if not math.isfinite(y):
+-        y = target
++        y = target if math.isfinite(target) else 0.6
+     if not math.isfinite(target):
+         target = 0.6
+     if not math.isfinite(dt) or dt <= 0.0:
+@@ -59,62 +59,118 @@
+         target = 1.0
+     if not isinstance(state, dict):
+         state = {}
+-    yf_prev = state.get("yf", None)
+-    i_prev = state.get("i", 0.0)
++    yf_p = state.get("yf", None)
++    i_p = state.get("i", 0.0)
++    up = state.get("up", None)
++    df_p = state.get("df", 0.0)
+     try:
+-        yf_prev = float(yf_prev) if yf_prev is not None else y
++        yf_p = float(yf_p) if yf_p is not None else y
+     except Exception:
+-        yf_prev = y
++        yf_p = y
+     try:
+-        i_prev = float(i_prev)
++        i_p = float(i_p)
+     except Exception:
+-        i_prev = 0.0
+-    if not math.isfinite(yf_prev):
+-        yf_prev = y
+-    if not math.isfinite(i_prev):
+-        i_prev = 0.0
+-    if yf_prev < 0.0:
+-        yf_prev = 0.0
+-    if yf_prev > 1.0:
+-        yf_prev = 1.0
+-    if i_prev < -0.3:
+-        i_prev = -0.3
+-    if i_prev > 0.3:
+-        i_prev = 0.3
+-    tau_f = 0.8
++        i_p = 0.0
++    try:
++        df_p = float(df_p)
++    except Exception:
++        df_p = 0.0
++    try:
++        up_f = float(up) if up is not None else None
++    except Exception:
++        up_f = None
++    if not math.isfinite(yf_p):
++        yf_p = _clamp(y, 0.0, 1.0)
++    if not math.isfinite(i_p):
++        i_p = 0.0
++    if not math.isfinite(df_p):
++        df_p = 0.0
++    yf_p = _clamp(yf_p, 0.0, 1.0)
++    i_p = _clamp(i_p, -0.12, 0.15)
++    df_p = _clamp(df_p, -0.10, 0.10)
++    if up_f is not None:
++        if not math.isfinite(up_f):
++            up_f = None
++        else:
++            up_f = _clamp(up_f, 0.0, 1.0)
++    tau_f = 1.5
+     alpha = dt / (tau_f + dt)
+     if alpha < 0.02:
+         alpha = 0.02
+     if alpha > 1.0:
+         alpha = 1.0
+-    yf = alpha * y + (1.0 - alpha) * yf_prev
++    yf = alpha * _clamp(y, 0.0, 1.0) + (1.0 - alpha) * yf_p
+     yf = _clamp(yf, 0.0, 1.0)
++    raw_slope = (yf - yf_p) / dt
++    raw_slope = _clamp(raw_slope, -0.20, 0.20)
++    df = 0.25 * raw_slope + 0.75 * df_p
++    df = _clamp(df, -0.10, 0.10)
+     e = target - yf
+-    ff = _ff_for_target(target)
+-    Kp = 1.0
+-    Ki = 0.20
+-    p = Kp * e
+-    u_pre = ff + p + i_prev
+-    allow_int = True
+-    if abs(e) > 0.25:
+-        allow_int = False
+-    if u_pre >= 0.85 and e > 0.0:
+-        allow_int = False
+-    if u_pre <= 0.0 and e < 0.0:
+-        allow_int = False
+-    if allow_int:
+-        i_new = i_prev + Ki * e * dt
++    ff = _ff(target)
++    Kp = 0.40
++    Ki = 0.05
++    e_c = _clamp(e, -0.25, 0.35)
++    p = Kp * e_c
++    allow = True
++    if abs(e) > 0.18:
++        allow = False
++    if yf >= 0.70:
++        allow = False
++    if yf <= 0.05:
++        allow = False
++    if allow:
++        i_new = i_p + Ki * e * dt
+     else:
+-        i_new = i_prev * 0.999
+-    i_new = _clamp(i_new, -0.20, 0.25)
+-    u = ff + p + i_new
+-    if yf >= 0.80:
+-        u = 0.0
+-    elif yf > 0.70:
+-        if u > 0.25:
+-            u = 0.25
++        i_new = i_p * (1.0 - 0.02 * dt)
++        if not math.isfinite(i_new):
++            i_new = i_p
++    i_new = _clamp(i_new, -0.12, 0.15)
++    u_raw = ff + p + i_new
++    u_raw = _clamp(u_raw, 0.0, 1.0)
++    if up_f is None:
++        u_rl = u_raw
++    else:
++        max_up = 0.15 * dt
++        max_dn = 0.60 * dt
++        if max_up < 0.005:
++            max_up = 0.005
++        if max_dn < 0.01:
++            max_dn = 0.01
++        if u_raw > up_f:
++            du = u_raw - up_f
++            if du > max_up:
++                du = max_up
++            u_rl = up_f + du
++        elif u_raw < up_f:
++            du = up_f - u_raw
++            if du > max_dn:
++                du = max_dn
++            u_rl = up_f - du
++        else:
++            u_rl = up_f
++    u_rl = _clamp(u_rl, 0.0, 1.0)
++    y_pred = yf + df * 6.0
++    cap = 1.0
++    if yf >= 0.78:
++        cap = 0.0
++    elif yf >= 0.72:
++        cap = 0.10
++    elif yf >= 0.68:
++        cap = 0.25
++    if y_pred >= 0.75:
++        if cap > 0.25:
++            cap = 0.25
++    elif y_pred >= 0.70:
++        if cap > 0.40:
++            cap = 0.40
++    if yf > 0.62 and df > 0.015:
++        if cap > 0.40:
++            cap = 0.40
++    u = u_rl
++    if u > cap:
++        u = cap
+     u = _clamp(u, 0.0, 1.0)
+     if not math.isfinite(u):
+         u = 0.0
+         i_new = 0.0
+-    return (float(u), {"yf": float(yf), "i": float(i_new)})
++    return (float(u), {"yf": float(yf), "i": float(i_new), "up": float(u), "df": float(df)})

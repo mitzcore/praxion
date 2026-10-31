@@ -1,0 +1,103 @@
+--- a/spark2-20261031-004636-3d012e/controller_v2.py
++++ b/spark2-20261031-004636-3d012e/controller_v3.py
+@@ -56,43 +56,49 @@
+         integ = 0.0
+     yf = _clamp(yf, 0.0, 1.0)
+     rate = _clamp(rate, -0.2, 0.2)
+-    ff = _clamp(ff, 0.15, 0.85)
+-    integ = _clamp(integ, -0.35, 0.35)
++    ff = _clamp(ff, 0.20, 0.90)
++    integ = _clamp(integ, -0.60, 0.60)
+     first = ("yf" not in state)
+     if first:
+         yf = y_m
+         rate = 0.0
+     else:
+-        tau_f = 1.0
++        tau_f = 0.8
+         alpha = dt / (tau_f + dt)
+         yf_new = yf + alpha * (y_m - yf)
+         yf_new = _clamp(yf_new, 0.0, 1.0)
+         raw = (yf_new - yf) / dt
+         raw = _clamp(raw, -0.25, 0.25)
+-        tau_r = 1.2
++        tau_r = 2.0
+         beta = dt / (tau_r + dt)
+         rate = rate + beta * (raw - rate)
+         rate = _clamp(rate, -0.2, 0.2)
+         yf = yf_new
+     e = tgt - yf
+-    if abs(e) < 0.12 and abs(rate) < 0.03 and yf < 0.72 and yf > 0.15:
+-        ff = ff + e * dt * 0.04
+-        ff = _clamp(ff, 0.15, 0.85)
+-    KP = 1.3
+-    KI = 0.18
+-    KD = 2.5
+-    I_MAX = 0.35
++    if abs(e) < 0.10 and abs(rate) < 0.02 and yf < 0.72 and yf > 0.25:
++        ff = ff + e * dt * 0.03
++        ff = _clamp(ff, 0.20, 0.90)
++    KP = 0.9
++    KI = 0.20
++    KD = 3.0
++    I_MAX = 0.60
+     p_term = KP * e
+     d_term = KD * rate
+     u_test = ff + p_term + KI * integ - d_term
+     can_int = True
+-    if abs(e) > 0.12:
++    if abs(e) > 0.15:
+         can_int = False
+-    elif abs(rate) > 0.02:
++    elif abs(rate) > 0.025:
++        can_int = False
++    elif yf >= 0.72 and e < 0.0:
++        can_int = True
++    elif yf >= 0.72:
+         can_int = False
+     elif u_test >= 1.0 and e > 0.0:
+         can_int = False
+     elif u_test <= 0.0 and e < 0.0:
++        can_int = False
++    if yf < 0.15 and e > 0.0:
+         can_int = False
+     if can_int:
+         integ = integ + e * dt
+@@ -105,22 +111,24 @@
+     if y_guard >= 0.80 or y_m >= 0.84:
+         u = 0.0
+     elif y_guard >= 0.75:
+-        if u > 0.05:
+-            u = 0.05
++        if u > 0.0:
++            u = 0.0
+     elif y_guard >= 0.70:
+-        if u > 0.20:
+-            u = 0.20
+-    elif y_guard >= 0.65 and rate > 0.015:
+-        if u > 0.30:
+-            u = 0.30
+-    y_pred = yf + rate * 4.0
+-    if y_pred > 0.80:
+         if u > 0.10:
+             u = 0.10
+-    elif y_pred > 0.74:
+-        if u > 0.30:
+-            u = 0.30
+-    elif y_pred > 0.70 and rate > 0.01:
++    elif y_guard >= 0.67 and rate > 0.005:
++        if u > 0.25:
++            u = 0.25
++    y_pred8 = yf + rate * 8.0
++    if y_pred8 > 0.78:
++        u = 0.0
++    elif y_pred8 > 0.72:
++        if u > 0.10:
++            u = 0.10
++    elif y_pred8 > 0.68 and rate > 0.008:
++        if u > 0.25:
++            u = 0.25
++    elif y_pred8 > 0.64 and rate > 0.015:
+         if u > 0.40:
+             u = 0.40
+     u = _clamp(u, 0.0, 1.0)

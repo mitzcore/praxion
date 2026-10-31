@@ -1,0 +1,20 @@
+{
+  "id": "v13-s7-20261031-020602-18f408-v2",
+  "run_id": "v13-s7-20261031-020602-18f408",
+  "version": 2,
+  "path": "artifacts/runs/v13-s7-20261031-020602-18f408/controller_v2.py",
+  "sha256": "0347fb7b556f9d911fddf2934d0a52b7aedd303023aad7e3181ea3b1b2a920a2",
+  "parent_id": "v13-s7-20261031-020602-18f408-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:15:30.707886+00:00",
+  "byte_length": 4999,
+  "rationale": "Kept feedforward+PI structure but made it delay-tolerant: added latched slow-delay detector (~8s of drive without response), dual gain sets (fast Kp0.45/Ki0.055 vs slow Kp0.16/Ki0.012), slew limits (0.25/s fast, 0.04/s slow), Umax 0.82/0.68, slow feedforward trim, and predictive braking y_pred=yf+yd*Td gated on yf>0.55. This prevents integral windup and in-flight overshoot that caused 0.9+ violations under 22s deadtime while preserving nominal drive.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir y in [0,1], u in [0,1]. Nominal: first-order + deadtime Td~2-4s, Tau~15-20s, DC gain K~1.0 (u=0.6 holds ~0.60-0.63, u=0 drains to 0). Post-change: Td~22s for pump path (22.3s measured E14+E15), Tau/K/drain/noise unchanged. Control implication: need bandwidth <0.02 rad/s equivalent, Umax~0.68, slew~0.04/s, predictor horizon 22s when yf>0.55. Target 0.6 band 0.55-0.65, soft 0.85 hard 0.9.",
+    "predicted_behavior": "Delayed 22s plant: u rises to ~0.60-0.65 then backs to ~0.52 within 10s of detection, y starts moving ~22s after step, climbs at ~0.01-0.016/s without overshoot beyond ~0.72, settles 0.55-0.65, zero hard violations, in-band after 30s >0.6 vs 0.126 before, MAE ~0.06-0.09 vs 0.20 before. Nominal 3s plant: rise similar to before (u~0.64 initial), settle 0.60 +/-0.03, MAE ~0.035-0.05, in-band >0.70, no overrides.",
+    "diagnosis": "Deadtime/lag increased ~7x, gain/drain/sensor essentially unchanged. Nominal: E5 0->0.6 step flat ~3s then 0.0199/s rise; E2 0.4->0.7 lag ~2s. Post: E14 0->0.5 from rest flat 16s at 0.0001/s with noise <0.008; continuation E15 stays <0.01 until ~182.2s then breaks at 0.016/s. Total deadtime 159.9 to 182.2 = ~22.3s. Post-onset slope 0.016 at u=0.5 scales with nominal 0.02 at u=0.6, so actuator gain unchanged within ~20%. E13 u=0 fall starts immediately at -0.035/s high-level comparable to nominal E4, and zero reading/noise unchanged, ruling out outflow increase or sensor shift. Old PI with Kp0.55/Ki0.10 designed for 3s goes unstable with 22s, producing observed limit cycle 0.1-0.9 and hard violations.",
+    "diagnosis_category": "response_slower"
+  }
+}

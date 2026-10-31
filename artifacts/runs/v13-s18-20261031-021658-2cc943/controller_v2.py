@@ -1,0 +1,296 @@
+import math
+def _clamp(v, lo, hi):
+    if not math.isfinite(v):
+        return lo
+    if v < lo:
+        return lo
+    if v > hi:
+        return hi
+    return v
+def _avg_win(hist, t_now, age_lo, age_hi):
+    s = 0.0
+    n = 0
+    t_lo = t_now - age_hi
+    t_hi = t_now - age_lo
+    for pt in hist:
+        try:
+            tt = float(pt[0])
+            vv = float(pt[1])
+        except:
+            continue
+        if not math.isfinite(tt) or not math.isfinite(vv):
+            continue
+        if tt >= t_lo and tt <= t_hi:
+            s += vv
+            n += 1
+    if n == 0:
+        return (None, 0)
+    return (s / n, n)
+def control(obs, state):
+    y_in = obs.get("y", 0.6)
+    t_in = obs.get("target", 0.6)
+    dt_in = obs.get("dt", 0.2)
+    el_in = obs.get("elapsed_s", None)
+    try:
+        y_raw0 = float(y_in)
+    except:
+        y_raw0 = 0.6
+    try:
+        t_raw0 = float(t_in)
+    except:
+        t_raw0 = 0.6
+    try:
+        dt_raw0 = float(dt_in)
+    except:
+        dt_raw0 = 0.2
+    if not math.isfinite(y_raw0):
+        y_raw0 = 0.6
+    if not math.isfinite(t_raw0):
+        t_raw0 = 0.6
+    if not math.isfinite(dt_raw0) or dt_raw0 <= 0.0:
+        dt_raw0 = 0.2
+    y_raw = _clamp(y_raw0, 0.0, 1.0)
+    target = _clamp(t_raw0, 0.0, 1.0)
+    dt = _clamp(dt_raw0, 0.02, 1.0)
+    if state is None:
+        state = {}
+    try:
+        t_now_in = float(el_in)
+        if not math.isfinite(t_now_in):
+            t_now_in = None
+    except:
+        t_now_in = None
+    try:
+        yf_prev = float(state.get("yf", y_raw))
+    except:
+        yf_prev = y_raw
+    try:
+        integ_prev = float(state.get("i", 0.0))
+    except:
+        integ_prev = 0.0
+    try:
+        pu_prev = float(state.get("pu", 0.48))
+    except:
+        pu_prev = 0.48
+    try:
+        dscore_prev = float(state.get("d", 0.0))
+    except:
+        dscore_prev = 0.0
+    try:
+        t_state = float(state.get("t", 0.0))
+    except:
+        t_state = 0.0
+    if not math.isfinite(yf_prev):
+        yf_prev = y_raw
+    if not math.isfinite(integ_prev):
+        integ_prev = 0.0
+    if not math.isfinite(pu_prev):
+        pu_prev = 0.48
+    if not math.isfinite(dscore_prev):
+        dscore_prev = 0.0
+    if not math.isfinite(t_state):
+        t_state = 0.0
+    first = False
+    if "yf" not in state or "i" not in state or "pu" not in state:
+        first = True
+        yf_prev = y_raw
+        integ_prev = 0.0
+        dscore_prev = 0.0
+    if t_now_in is None:
+        if first:
+            t_now = 0.0
+        else:
+            t_now = t_state + dt
+    else:
+        if first:
+            t_now = t_now_in
+        else:
+            if t_now_in >= t_state - 1.0:
+                t_now = t_now_in
+            else:
+                t_now = t_state + dt
+    if not math.isfinite(t_now):
+        t_now = t_state + dt
+    TAUF = 2.0
+    FF0 = 0.49
+    UMAX = 0.80
+    UMIN = 0.0
+    KP_NOM = 0.75
+    TI_NOM = 16.0
+    KP_DLY = 0.28
+    TI_DLY = 36.0
+    IA_NOM = 0.22
+    IA_DLY = 0.12
+    SLU_NOM = 0.50
+    SLD_NOM = 0.80
+    SL_DLY = 0.06
+    alpha = dt / (TAUF + dt)
+    if first:
+        yf = y_raw
+    else:
+        yf = (1.0 - alpha) * yf_prev + alpha * y_raw
+    yf = _clamp(yf, 0.0, 1.0)
+    try:
+        hu = state.get("hu", [])
+        hy = state.get("hy", [])
+        if not isinstance(hu, list):
+            hu = []
+        if not isinstance(hy, list):
+            hy = []
+    except:
+        hu = []
+        hy = []
+    hu2 = []
+    hy2 = []
+    for pt in hu:
+        try:
+            if len(pt) != 2:
+                continue
+            tt = float(pt[0])
+            vv = float(pt[1])
+            if math.isfinite(tt) and math.isfinite(vv) and tt >= t_now - 45.0:
+                hu2.append([tt, _clamp(vv, 0.0, 1.0)])
+        except:
+            continue
+    for pt in hy:
+        try:
+            if len(pt) != 2:
+                continue
+            tt = float(pt[0])
+            vv = float(pt[1])
+            if math.isfinite(tt) and math.isfinite(vv) and tt >= t_now - 45.0:
+                hy2.append([tt, _clamp(vv, 0.0, 1.0)])
+        except:
+            continue
+    hu2.append([float(t_now), float(_clamp(pu_prev, 0.0, 1.0))])
+    hy2.append([float(t_now), float(yf)])
+    if len(hu2) > 400:
+        hu2 = hu2[-400:]
+    if len(hy2) > 400:
+        hy2 = hy2[-400:]
+    dscore = _clamp(dscore_prev, 0.0, 1.0)
+    span = 0.0
+    if len(hy2) >= 2:
+        try:
+            span = float(hy2[-1][0]) - float(hy2[0][0])
+        except:
+            span = 0.0
+    if not first and span >= 28.0:
+        u_rec, n1 = _avg_win(hu2, t_now, 0.0, 5.0)
+        u_old, n2 = _avg_win(hu2, t_now, 22.0, 27.0)
+        y_rec, n3 = _avg_win(hy2, t_now, 0.0, 2.0)
+        y_old, n4 = _avg_win(hy2, t_now, 22.0, 27.0)
+        if u_rec is not None and u_old is not None and y_rec is not None and y_old is not None and n1 >= 2 and n2 >= 2 and n3 >= 1 and n4 >= 1:
+            du = u_rec - u_old
+            dy = y_rec - y_old
+            if abs(du) > 0.08 and abs(dy) < 0.030:
+                dscore = dscore + 0.05
+            elif abs(du) > 0.08 and abs(dy) < 0.045 and (du * dy) < 0.0:
+                dscore = dscore + 0.03
+            else:
+                dscore = dscore - 0.015
+        else:
+            dscore = dscore - 0.005
+    else:
+        dscore = dscore - 0.002
+    dscore = _clamp(dscore, 0.0, 1.0)
+    y10, n10 = _avg_win(hy2, t_now, 9.0, 12.0)
+    ynow2, _ = _avg_win(hy2, t_now, 0.0, 2.0)
+    slope10 = 0.0
+    if y10 is not None and ynow2 is not None:
+        slope10 = (ynow2 - y10) / 10.0
+    e = target - yf
+    stuck = False
+    if not first and abs(e) > 0.10 and abs(slope10) < 0.004 and span >= 12.0:
+        stuck = True
+    KP = KP_NOM * (1.0 - dscore) + KP_DLY * dscore
+    TI = TI_NOM * (1.0 - dscore) + TI_DLY * dscore
+    if TI < 8.0:
+        TI = 8.0
+    KI = KP / TI
+    IAUTH = IA_NOM * (1.0 - dscore) + IA_DLY * dscore
+    SLEW_UP = SLU_NOM * (1.0 - dscore) + SL_DLY * dscore
+    SLEW_DN = SLD_NOM * (1.0 - dscore) + SL_DLY * dscore
+    if abs(e) > 0.20 and dscore < 0.4:
+        KP = KP * 1.25
+        KI = KP / TI
+    ISUM_MAX = IAUTH / KI if KI > 1e-6 else 1.0
+    integ_prev = _clamp(integ_prev, -ISUM_MAX, ISUM_MAX)
+    ff = FF0 + (target - 0.6) * 0.9
+    ff = _clamp(ff, 0.05, 0.80)
+    enable = (abs(e) < 0.20) and (yf < 0.78) and (y_raw < 0.85)
+    if stuck and dscore > 0.3:
+        enable = False
+    if enable:
+        rate = 1.0
+        if stuck:
+            rate = 0.3
+        if dscore > 0.6:
+            rate = rate * 0.5
+        integ_new = integ_prev + e * dt * rate
+        integ_new = _clamp(integ_new, -ISUM_MAX, ISUM_MAX)
+    else:
+        integ_new = integ_prev
+    P = KP * e
+    Iterm = KI * integ_new
+    Iterm = _clamp(Iterm, -IAUTH, IAUTH)
+    u_tmp = ff + P + Iterm
+    if stuck and dscore > 0.3:
+        lo_c = ff - 0.12
+        hi_c = ff + 0.22
+        if lo_c < 0.0:
+            lo_c = 0.0
+        if hi_c > UMAX:
+            hi_c = UMAX
+        u_tmp = _clamp(u_tmp, lo_c, hi_c)
+    if (u_tmp > UMAX and e > 0.0) or (u_tmp < UMIN and e < 0.0):
+        integ_new = integ_prev
+        Iterm = _clamp(KI * integ_new, -IAUTH, IAUTH)
+        u_tmp = ff + P + Iterm
+        if stuck and dscore > 0.3:
+            lo_c = ff - 0.12
+            hi_c = ff + 0.22
+            if lo_c < 0.0:
+                lo_c = 0.0
+            if hi_c > UMAX:
+                hi_c = UMAX
+            u_tmp = _clamp(u_tmp, lo_c, hi_c)
+    if u_tmp > UMAX:
+        u_tmp = UMAX
+    if u_tmp < UMIN:
+        u_tmp = UMIN
+    safety = False
+    if y_raw >= 0.85 or yf >= 0.84:
+        u_tmp = 0.0
+        safety = True
+        if integ_new > 0.0:
+            integ_new = 0.0
+    elif yf > 0.78:
+        if u_tmp > 0.15:
+            u_tmp = 0.15
+        safety = True
+        if integ_new > integ_prev and e > 0.0:
+            integ_new = integ_prev
+    u_out = u_tmp
+    if not safety and not first:
+        du2 = u_out - pu_prev
+        up_lim = SLEW_UP * dt
+        dn_lim = SLEW_DN * dt
+        if du2 > up_lim:
+            u_out = pu_prev + up_lim
+        elif du2 < -dn_lim:
+            u_out = pu_prev - dn_lim
+    if first:
+        if not safety:
+            du0 = u_out - ff
+            up0 = SLEW_UP * dt
+            dn0 = SLEW_DN * dt
+            if du0 > up0:
+                u_out = ff + up0
+            elif du0 < -dn0:
+                u_out = ff - dn0
+    u_out = _clamp(u_out, 0.0, 1.0)
+    if not math.isfinite(u_out):
+        u_out = _clamp(pu_prev, 0.0, 1.0)
+    new_state = {"yf": float(yf), "i": float(integ_new), "pu": float(u_out), "d": float(dscore), "t": float(t_now), "hu": hu2, "hy": hy2}
+    return (float(u_out), new_state)

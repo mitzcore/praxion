@@ -1,0 +1,20 @@
+{
+  "id": "spark2-20261031-004636-3d012e-v3",
+  "run_id": "spark2-20261031-004636-3d012e",
+  "version": 3,
+  "path": "artifacts/runs/spark2-20261031-004636-3d012e/controller_v3.py",
+  "sha256": "e84ba7666391cc7871ca60ec6f30c5f94dad2bc642d3b57239e7fd19aaa0a2a4",
+  "parent_id": "spark2-20261031-004636-3d012e-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "1a84ab41dd365d79",
+  "created_at": "2026-10-31T04:58:29.533876+00:00",
+  "byte_length": 3634,
+  "rationale": "Lowered proportional gain (1.3->0.9) and raised damping (2.5->3.0) with longer rate filter (1.2s->2.0s) and faster filter on level (1.0s->0.8s). Kept adaptive feedforward but widened to 0.20-0.90 and increased integral authority (KI 0.18->0.20, IMAX 0.35->0.60) gated by small error and small rate to handle steady-state without windup during delay. Replaced short 4s prediction and loose high-level caps with strict 8s prediction horizon and hard cuts: y>=0.75 or y_pred8>0.72 forces u=0, y>=0.70 forces u<=0.10. This brakes early for large lag while leaving nominal 0.55-0.65 operation untouched.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Water reservoir, u in [0,1] pump, y in [0,1] noisy level, drains at ~0.03/s near 0.6. Nominal lag ~1.5-2.5s, gain ~0.07/s per unit u, hold for 0.6 ~0.52. Degraded mode: effective dead-time/carryover ~8-10s, steady gain/hold roughly unchanged, causing delayed overshoot to soft 0.85/hard 0.90 limits if not braked early.",
+    "predicted_behavior": "Nominal: rise from 0.35 in ~8-12s, settle 0.60+/-0.03 with MAE <0.01, in-band 1.0 after 30s, energy ~35-40, no overrides. Degraded slow plant: rise slower, early cut when y_pred8>0.68, no sustained oscillation, peak <0.80, zero hard violations, in-band >0.70 after settling, energy lower than old windup case (~60-90 vs 120-140) because cuts prevent full 0-1 cycling.",
+    "diagnosis": "Response became much slower/longer lag, not weaker gain or larger steady drain. In E1-E8 steady slopes and hold remain nominal: u=0.65 rises 0.026/s (E5), u=0.55 still rises at 0.62-0.64 (E7), u=0 falls ~0.025-0.03/s (E3/E8) implying k~0.07/s and hold ~0.50-0.54 as before. Yet in monitoring after-change 140.3-160.3s y falls 0.53->0.40 while u rises 0.59->0.95 (same command now produces fall, not rise), and 176.3-184.3s y rises 0.77->1.0 while u=0.15->0.0 (rise continues 5-8s after cut, vs 1-2s carryover in E3/E8). Post-change episodes show same phase-lagged limit cycle: y rises to 0.67 while u falls to 0.32 then falls to 0.34 while u rises to 0.85, overshooting to 0.83-0.90 and 0.11 with 28-43 overrides. This is classic increased dead-time/carryover from ~2s to ~8-10s producing overshoot/oscillation under the old aggressive PI+D.",
+    "diagnosis_category": "response_slower"
+  }
+}

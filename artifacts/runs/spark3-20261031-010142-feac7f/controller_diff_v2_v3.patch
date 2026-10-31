@@ -1,0 +1,174 @@
+--- a/spark3-20261031-010142-feac7f/controller_v2.py
++++ b/spark3-20261031-010142-feac7f/controller_v3.py
+@@ -50,16 +50,24 @@
+         bias_prev = float(state.get("bias", 0.0))
+     except Exception:
+         bias_prev = 0.0
++    try:
++        ch_prev = float(state.get("ch", 0.0))
++    except Exception:
++        ch_prev = 0.0
+     if not math.isfinite(d_prev):
+         d_prev = 0.0
+     if not math.isfinite(integ_prev):
+         integ_prev = 0.0
+     if not math.isfinite(bias_prev):
+         bias_prev = 0.0
++    if not math.isfinite(ch_prev):
++        ch_prev = 0.0
+     d_prev = _clamp(d_prev, -0.2, 0.2)
+-    integ_prev = _clamp(integ_prev, -0.20, 0.20)
+-    bias_prev = _clamp(bias_prev, -0.10, 0.10)
++    integ_prev = _clamp(integ_prev, -0.12, 0.12)
++    bias_prev = _clamp(bias_prev, -0.05, 0.05)
++    ch_prev = _clamp(ch_prev, -1.5, 8.0)
+     y_bad = (not math.isfinite(y_raw_in))
++    y_raw_valid = (not y_bad)
+     if y_bad:
+         if math.isfinite(yf_prev):
+             y_raw = _clamp(yf_prev, 0.0, 1.0)
+@@ -71,12 +79,22 @@
+         yf_prev = y_raw
+     else:
+         yf_prev = _clamp(yf_prev, 0.0, 1.0)
++    ff0 = _clamp(0.89 * target, 0.0, 0.85)
+     if not math.isfinite(u_prev):
+-        ff_init = _clamp(0.883 * target, 0.0, 0.8)
+-        u_prev = _clamp(ff_init + bias_prev, 0.0, 1.0)
++        u_prev = _clamp(ff0 + bias_prev, 0.0, 1.0)
+     else:
+         u_prev = _clamp(u_prev, 0.0, 1.0)
+-    tau_f = 1.5
++    ff_tmp = _clamp(ff0 + bias_prev, 0.0, 0.85)
++    try:
++        dec = math.exp(-dt / 15.0)
++    except Exception:
++        dec = 1.0
++    if not math.isfinite(dec):
++        dec = 1.0
++    dec = _clamp(dec, 0.9, 1.0)
++    ch = dec * ch_prev + (u_prev - ff_tmp) * dt
++    ch = _clamp(ch, -1.5, 8.0)
++    tau_f = 1.8
+     alpha = dt / (tau_f + dt)
+     yf = yf_prev + alpha * (y_raw - yf_prev)
+     yf = _clamp(yf, 0.0, 1.0)
+@@ -84,59 +102,81 @@
+     if not math.isfinite(d_raw):
+         d_raw = 0.0
+     d_raw = _clamp(d_raw, -0.2, 0.2)
+-    tau_d = 2.5
++    tau_d = 4.0
+     alpha_d = dt / (tau_d + dt)
+     df = d_prev + alpha_d * (d_raw - d_prev)
+     if not math.isfinite(df):
+         df = d_prev
+     df = _clamp(df, -0.2, 0.2)
+     e = target - yf
+-    ff0 = _clamp(0.883 * target, 0.0, 0.8)
+     bias = bias_prev
+-    if abs(e) < 0.08 and abs(df) < 0.015 and not y_bad:
+-        bias = bias_prev + 0.02 * e * dt
+-        bias = _clamp(bias, -0.10, 0.10)
++    if abs(e) < 0.06 and abs(df) < 0.01 and (not y_bad):
++        bias = bias_prev + 0.01 * e * dt
++        bias = _clamp(bias, -0.05, 0.05)
+     ff = _clamp(ff0 + bias, 0.0, 0.85)
+-    Kp = 0.38
+-    Ki = 0.03
+-    Kd = 1.8
++    Kp = 0.28
++    Ki = 0.015
++    Kd = 0.6
+     P = Kp * e
+     integ_new = integ_prev + Ki * e * dt
+-    integ_new = _clamp(integ_new, -0.20, 0.20)
++    integ_new = _clamp(integ_new, -0.12, 0.12)
+     u_unsat = ff + P + integ_new - Kd * df
+     if (u_unsat > 1.0 and e > 0.0) or (u_unsat < 0.0 and e < 0.0):
+         integ_new = integ_prev
+         u_unsat = ff + P + integ_new - Kd * df
+-    u = _clamp(u_unsat, 0.0, 1.0)
+-    T_pred = 7.0
+-    y_pred = yf + T_pred * df
+-    y_pred = _clamp(y_pred, 0.0, 1.0)
++    u_t = _clamp(u_unsat, 0.0, 1.0)
++    y_dose = yf + 0.07 * ch
++    y_pred = yf + 3.0 * df
++    if not math.isfinite(y_dose):
++        y_dose = yf
++    if not math.isfinite(y_pred):
++        y_pred = yf
+     capped = False
+-    if (yf > 0.84) or (not y_bad and y_raw_in > 0.86 and math.isfinite(y_raw_in)):
+-        if u != 0.0:
++    if (yf > 0.84) or (y_raw_valid and y_raw_in > 0.86):
++        u_t = 0.0
++        capped = True
++    elif y_dose > 0.85 or y_pred > 0.85:
++        if u_t > 0.0:
+             capped = True
+-        u = 0.0
+-    elif yf > 0.65 and y_pred > 0.82:
+-        if u > 0.0:
++        u_t = 0.0
++    elif y_dose > 0.78 or (yf > 0.72 and y_pred > 0.78):
++        if u_t > 0.15:
+             capped = True
+-        u = 0.0
+-    elif (yf > 0.75) or (yf > 0.65 and y_pred > 0.75):
+-        if u > 0.25:
++            u_t = 0.15
++    elif y_dose > 0.70 or (yf > 0.66 and y_pred > 0.72):
++        if u_t > 0.35:
+             capped = True
+-            u = 0.25
+-    elif yf > 0.70 and df > 0.01 and y_pred > 0.70:
+-        if u > 0.45:
++            u_t = 0.35
++    elif y_dose > 0.66:
++        if u_t > 0.60:
+             capped = True
+-            u = 0.45
++            u_t = 0.60
++    elif yf > 0.75:
++        if u_t > 0.0:
++            capped = True
++        u_t = 0.0
++    elif yf > 0.70:
++        if u_t > 0.25:
++            capped = True
++            u_t = 0.25
++    elif yf > 0.65 and y_pred > 0.70:
++        if u_t > 0.40:
++            capped = True
++            u_t = 0.40
+     if capped:
+         integ_new = integ_prev
+-    max_du = 0.20 * dt
+-    du = u - u_prev
+-    if du > max_du:
+-        u = u_prev + max_du
+-    elif du < -max_du:
+-        u = u_prev - max_du
++    max_up = 0.10 * dt
++    max_dn = 0.50 * dt
++    du = u_t - u_prev
++    if du > max_up:
++        u = u_prev + max_up
++    elif du < -max_dn:
++        u = u_prev - max_dn
++    else:
++        u = u_t
+     u = _clamp(u, 0.0, 1.0)
++    if (yf > 0.84) or (y_raw_valid and y_raw_in > 0.86):
++        u = 0.0
+     if not math.isfinite(u):
+         u = ff
+         u = _clamp(u, 0.0, 1.0)
+@@ -145,4 +185,5 @@
+     state["integ"] = float(integ_new)
+     state["u_prev"] = float(u)
+     state["bias"] = float(bias)
++    state["ch"] = float(ch)
+     return (float(u), state)

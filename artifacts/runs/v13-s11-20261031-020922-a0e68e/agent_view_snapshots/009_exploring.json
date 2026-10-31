@@ -1,0 +1,1936 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 4,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 89.0,
+  "y": 0.6164
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.3,
+   "duration_s": 20.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Static gain magnitude and response lag: first discriminating mid-level hold separates zero-gain/dead-zone from positive-gain and gives initial rate and curvature needed to size later holds and controller gain.",
+   "expected_observation": "If positive-gain with drain is right, y rises monotonically from ~0.21 toward a higher quasi-equilibrium, with positive but flattening slope in last seconds and only small noise wiggles, not falling or staying flat.",
+   "verdict": "approved; worst-case bound 0.810",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2097
+    ],
+    [
+     0.4,
+     0.2054
+    ],
+    [
+     0.8,
+     0.1887
+    ],
+    [
+     1.2,
+     0.1859
+    ],
+    [
+     1.6,
+     0.1854
+    ],
+    [
+     2.0,
+     0.1685
+    ],
+    [
+     2.4,
+     0.16
+    ],
+    [
+     2.8,
+     0.1652
+    ],
+    [
+     3.2,
+     0.154
+    ],
+    [
+     3.6,
+     0.1544
+    ],
+    [
+     4.0,
+     0.1489
+    ],
+    [
+     4.4,
+     0.1507
+    ],
+    [
+     4.8,
+     0.1513
+    ],
+    [
+     5.2,
+     0.1423
+    ],
+    [
+     5.6,
+     0.1476
+    ],
+    [
+     6.0,
+     0.1463
+    ],
+    [
+     6.4,
+     0.1352
+    ],
+    [
+     6.8,
+     0.1357
+    ],
+    [
+     7.2,
+     0.1377
+    ],
+    [
+     7.6,
+     0.1375
+    ],
+    [
+     8.0,
+     0.1325
+    ],
+    [
+     8.4,
+     0.1366
+    ],
+    [
+     8.8,
+     0.1301
+    ],
+    [
+     9.2,
+     0.1307
+    ],
+    [
+     9.6,
+     0.1286
+    ],
+    [
+     10.0,
+     0.1187
+    ],
+    [
+     10.4,
+     0.1226
+    ],
+    [
+     10.8,
+     0.1177
+    ],
+    [
+     11.2,
+     0.1215
+    ],
+    [
+     11.6,
+     0.1166
+    ],
+    [
+     12.0,
+     0.1149
+    ],
+    [
+     12.4,
+     0.1101
+    ],
+    [
+     12.8,
+     0.1144
+    ],
+    [
+     13.2,
+     0.1116
+    ],
+    [
+     13.6,
+     0.1149
+    ],
+    [
+     14.0,
+     0.1122
+    ],
+    [
+     14.4,
+     0.1015
+    ],
+    [
+     14.8,
+     0.1073
+    ],
+    [
+     15.2,
+     0.1065
+    ],
+    [
+     15.6,
+     0.1096
+    ],
+    [
+     16.0,
+     0.103
+    ],
+    [
+     16.4,
+     0.0983
+    ],
+    [
+     16.8,
+     0.0979
+    ],
+    [
+     17.2,
+     0.1065
+    ],
+    [
+     17.6,
+     0.1007
+    ],
+    [
+     18.0,
+     0.0992
+    ],
+    [
+     18.4,
+     0.1034
+    ],
+    [
+     18.8,
+     0.0919
+    ],
+    [
+     19.2,
+     0.0968
+    ],
+    [
+     19.6,
+     0.0938
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 19.9,
+    "y_start": 0.21,
+    "y_end": 0.096,
+    "y_min": 0.092,
+    "y_max": 0.21,
+    "y_mean_last_5s": 0.101,
+    "u_mean_last_5s": 0.3,
+    "y_slope_last_5s_per_s": -0.002
+   },
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.7,
+   "duration_s": 10.0,
+   "command_before": 0.3,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Static gain magnitude and steady-state u needed for y=0.6 and linearity across levels: u=0.3 settled near ~0.10, so a second higher amplitude separates weak-gain vs dead-zone vs nonlinear and sizes feedforward for control.",
+   "expected_observation": "If positive-gain-with-drain is right, y should reverse from decay to a monotonic rise from ~0.09 with positive slope, gradually flattening but still positive in last seconds, reaching ~0.15-0.30 with only +/-0.01 noise and no fall or oscillation.",
+   "verdict": "approved; worst-case bound 0.786",
+   "t_start": 20.0,
+   "samples": [
+    [
+     20.0,
+     0.0863
+    ],
+    [
+     20.2,
+     0.0945
+    ],
+    [
+     20.4,
+     0.0931
+    ],
+    [
+     20.6,
+     0.0938
+    ],
+    [
+     20.8,
+     0.1017
+    ],
+    [
+     21.0,
+     0.0988
+    ],
+    [
+     21.2,
+     0.1079
+    ],
+    [
+     21.4,
+     0.1062
+    ],
+    [
+     21.6,
+     0.1161
+    ],
+    [
+     21.8,
+     0.1162
+    ],
+    [
+     22.0,
+     0.1238
+    ],
+    [
+     22.2,
+     0.1252
+    ],
+    [
+     22.4,
+     0.1348
+    ],
+    [
+     22.6,
+     0.1372
+    ],
+    [
+     22.8,
+     0.1441
+    ],
+    [
+     23.0,
+     0.1509
+    ],
+    [
+     23.2,
+     0.1496
+    ],
+    [
+     23.4,
+     0.16
+    ],
+    [
+     23.6,
+     0.1736
+    ],
+    [
+     23.8,
+     0.1758
+    ],
+    [
+     24.0,
+     0.1817
+    ],
+    [
+     24.2,
+     0.1832
+    ],
+    [
+     24.4,
+     0.192
+    ],
+    [
+     24.6,
+     0.1974
+    ],
+    [
+     24.8,
+     0.2021
+    ],
+    [
+     25.0,
+     0.2135
+    ],
+    [
+     25.2,
+     0.2176
+    ],
+    [
+     25.4,
+     0.2229
+    ],
+    [
+     25.6,
+     0.2237
+    ],
+    [
+     25.8,
+     0.2327
+    ],
+    [
+     26.0,
+     0.2396
+    ],
+    [
+     26.2,
+     0.2436
+    ],
+    [
+     26.4,
+     0.2436
+    ],
+    [
+     26.6,
+     0.2474
+    ],
+    [
+     26.8,
+     0.2632
+    ],
+    [
+     27.0,
+     0.2584
+    ],
+    [
+     27.2,
+     0.2729
+    ],
+    [
+     27.4,
+     0.2763
+    ],
+    [
+     27.6,
+     0.2872
+    ],
+    [
+     27.8,
+     0.2831
+    ],
+    [
+     28.0,
+     0.2926
+    ],
+    [
+     28.2,
+     0.2969
+    ],
+    [
+     28.4,
+     0.2987
+    ],
+    [
+     28.6,
+     0.3197
+    ],
+    [
+     28.8,
+     0.3066
+    ],
+    [
+     29.0,
+     0.3141
+    ],
+    [
+     29.2,
+     0.3189
+    ],
+    [
+     29.4,
+     0.3188
+    ],
+    [
+     29.6,
+     0.3322
+    ],
+    [
+     29.8,
+     0.3388
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 20.0,
+    "t_end": 29.9,
+    "y_start": 0.086,
+    "y_end": 0.341,
+    "y_min": 0.086,
+    "y_max": 0.341,
+    "y_mean_last_5s": 0.276,
+    "u_mean_last_5s": 0.7,
+    "y_slope_last_5s_per_s": 0.0261
+   },
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 20.0,
+   "command_before": 0.7,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Zero-input drain behavior and decay time constant: first u=0 hold separates sustained-level vs natural-drain hypotheses and gives tau needed to infer equilibria and size controller.",
+   "expected_observation": "If drain-with-positive-gain is right, y will decay monotonically from ~0.34 toward <0.15 with gradually flattening negative slope (still slightly negative in last 5 s) and only +/-0.01 noise, not rise or hold flat.",
+   "verdict": "approved; worst-case bound 0.335",
+   "t_start": 30.0,
+   "samples": [
+    [
+     30.0,
+     0.335
+    ],
+    [
+     30.4,
+     0.3514
+    ],
+    [
+     30.8,
+     0.3596
+    ],
+    [
+     31.2,
+     0.3513
+    ],
+    [
+     31.6,
+     0.3434
+    ],
+    [
+     32.0,
+     0.3325
+    ],
+    [
+     32.4,
+     0.3186
+    ],
+    [
+     32.8,
+     0.3119
+    ],
+    [
+     33.2,
+     0.2998
+    ],
+    [
+     33.6,
+     0.2867
+    ],
+    [
+     34.0,
+     0.2742
+    ],
+    [
+     34.4,
+     0.2669
+    ],
+    [
+     34.8,
+     0.2516
+    ],
+    [
+     35.2,
+     0.242
+    ],
+    [
+     35.6,
+     0.2372
+    ],
+    [
+     36.0,
+     0.2206
+    ],
+    [
+     36.4,
+     0.2106
+    ],
+    [
+     36.8,
+     0.2055
+    ],
+    [
+     37.2,
+     0.1943
+    ],
+    [
+     37.6,
+     0.1795
+    ],
+    [
+     38.0,
+     0.1755
+    ],
+    [
+     38.4,
+     0.1696
+    ],
+    [
+     38.8,
+     0.1586
+    ],
+    [
+     39.2,
+     0.1484
+    ],
+    [
+     39.6,
+     0.1374
+    ],
+    [
+     40.0,
+     0.1355
+    ],
+    [
+     40.4,
+     0.1251
+    ],
+    [
+     40.8,
+     0.1177
+    ],
+    [
+     41.2,
+     0.1145
+    ],
+    [
+     41.6,
+     0.1043
+    ],
+    [
+     42.0,
+     0.1016
+    ],
+    [
+     42.4,
+     0.0897
+    ],
+    [
+     42.8,
+     0.0818
+    ],
+    [
+     43.2,
+     0.0821
+    ],
+    [
+     43.6,
+     0.0734
+    ],
+    [
+     44.0,
+     0.0664
+    ],
+    [
+     44.4,
+     0.0591
+    ],
+    [
+     44.8,
+     0.0509
+    ],
+    [
+     45.2,
+     0.0537
+    ],
+    [
+     45.6,
+     0.0456
+    ],
+    [
+     46.0,
+     0.0415
+    ],
+    [
+     46.4,
+     0.0352
+    ],
+    [
+     46.8,
+     0.0299
+    ],
+    [
+     47.2,
+     0.0217
+    ],
+    [
+     47.6,
+     0.0255
+    ],
+    [
+     48.0,
+     0.0176
+    ],
+    [
+     48.4,
+     0.0152
+    ],
+    [
+     48.8,
+     0.0138
+    ],
+    [
+     49.2,
+     0.0049
+    ],
+    [
+     49.6,
+     0.0072
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 30.0,
+    "t_end": 49.9,
+    "y_start": 0.335,
+    "y_end": 0.007,
+    "y_min": 0.003,
+    "y_max": 0.36,
+    "y_mean_last_5s": 0.024,
+    "u_mean_last_5s": 0.0,
+    "y_slope_last_5s_per_s": -0.0097
+   },
+   "any_override": false
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 16.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Static-gain nonlinearity and steady-state u needed for y=0.6: a settled intermediate amplitude discriminates linear vs superlinear extrapolation from 0.3 and 0.7 and is needed to set feedforward for control.",
+   "expected_observation": "If positive-gain-with-drain and ~9s tau is right, y will rise monotonically from ~0.0 toward ~0.25-0.30, with positive but flattening slope in last 5s and only +/-0.01 noise, ending ~0.20-0.30 and still rising slightly, not flat at zero or falling.",
+   "verdict": "approved; worst-case bound 0.800",
+   "t_start": 50.0,
+   "samples": [
+    [
+     50.0,
+     0.0
+    ],
+    [
+     50.3,
+     0.0034
+    ],
+    [
+     50.6,
+     0.0032
+    ],
+    [
+     50.9,
+     0.0
+    ],
+    [
+     51.2,
+     0.0
+    ],
+    [
+     51.5,
+     0.0083
+    ],
+    [
+     51.8,
+     0.0154
+    ],
+    [
+     52.1,
+     0.0165
+    ],
+    [
+     52.4,
+     0.0197
+    ],
+    [
+     52.7,
+     0.0249
+    ],
+    [
+     53.0,
+     0.0267
+    ],
+    [
+     53.3,
+     0.0366
+    ],
+    [
+     53.6,
+     0.0422
+    ],
+    [
+     53.9,
+     0.0507
+    ],
+    [
+     54.2,
+     0.0554
+    ],
+    [
+     54.5,
+     0.0625
+    ],
+    [
+     54.8,
+     0.0636
+    ],
+    [
+     55.1,
+     0.0788
+    ],
+    [
+     55.4,
+     0.0813
+    ],
+    [
+     55.7,
+     0.0815
+    ],
+    [
+     56.0,
+     0.0858
+    ],
+    [
+     56.3,
+     0.0963
+    ],
+    [
+     56.6,
+     0.1018
+    ],
+    [
+     56.9,
+     0.1041
+    ],
+    [
+     57.2,
+     0.1099
+    ],
+    [
+     57.5,
+     0.1114
+    ],
+    [
+     57.8,
+     0.1152
+    ],
+    [
+     58.1,
+     0.1271
+    ],
+    [
+     58.4,
+     0.1307
+    ],
+    [
+     58.7,
+     0.1337
+    ],
+    [
+     59.0,
+     0.1446
+    ],
+    [
+     59.3,
+     0.1432
+    ],
+    [
+     59.6,
+     0.1432
+    ],
+    [
+     59.9,
+     0.1405
+    ],
+    [
+     60.2,
+     0.158
+    ],
+    [
+     60.5,
+     0.1603
+    ],
+    [
+     60.8,
+     0.1579
+    ],
+    [
+     61.1,
+     0.162
+    ],
+    [
+     61.4,
+     0.1668
+    ],
+    [
+     61.7,
+     0.1739
+    ],
+    [
+     62.0,
+     0.1782
+    ],
+    [
+     62.3,
+     0.1804
+    ],
+    [
+     62.6,
+     0.185
+    ],
+    [
+     62.9,
+     0.1833
+    ],
+    [
+     63.2,
+     0.1896
+    ],
+    [
+     63.5,
+     0.1911
+    ],
+    [
+     63.8,
+     0.1974
+    ],
+    [
+     64.1,
+     0.1988
+    ],
+    [
+     64.4,
+     0.2059
+    ],
+    [
+     64.7,
+     0.207
+    ],
+    [
+     65.0,
+     0.2157
+    ],
+    [
+     65.3,
+     0.221
+    ],
+    [
+     65.6,
+     0.216
+    ],
+    [
+     65.9,
+     0.2272
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 50.0,
+    "t_end": 65.9,
+    "y_start": 0.0,
+    "y_end": 0.227,
+    "y_min": 0.0,
+    "y_max": 0.227,
+    "y_mean_last_5s": 0.192,
+    "u_mean_last_5s": 0.5,
+    "y_slope_last_5s_per_s": 0.0114
+   },
+   "any_override": false
+  },
+  {
+   "id": "E5",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.7,
+   "duration_s": 8.0,
+   "command_before": 0.5,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "High-side static gain and u needed for y=0.6 and linearity: a higher-amplitude hold from higher baseline separates linear vs saturating vs superlinear extrapolation from u=0.3/0.5/0.7 and sizes feedforward.",
+   "expected_observation": "If positive-gain-with-drain and ~7-10s tau is right, y will rise monotonically from ~0.22 to ~0.33-0.40 with positive slope ~0.015-0.025/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+   "verdict": "approved; worst-case bound 0.776",
+   "t_start": 66.0,
+   "samples": [
+    [
+     66.0,
+     0.2157
+    ],
+    [
+     66.2,
+     0.2202
+    ],
+    [
+     66.4,
+     0.2248
+    ],
+    [
+     66.6,
+     0.2275
+    ],
+    [
+     66.8,
+     0.2307
+    ],
+    [
+     67.0,
+     0.2256
+    ],
+    [
+     67.2,
+     0.2366
+    ],
+    [
+     67.4,
+     0.2488
+    ],
+    [
+     67.6,
+     0.2392
+    ],
+    [
+     67.8,
+     0.2496
+    ],
+    [
+     68.0,
+     0.2537
+    ],
+    [
+     68.2,
+     0.2598
+    ],
+    [
+     68.4,
+     0.2617
+    ],
+    [
+     68.6,
+     0.267
+    ],
+    [
+     68.8,
+     0.2728
+    ],
+    [
+     69.0,
+     0.2789
+    ],
+    [
+     69.2,
+     0.2851
+    ],
+    [
+     69.4,
+     0.2856
+    ],
+    [
+     69.6,
+     0.2936
+    ],
+    [
+     69.8,
+     0.3007
+    ],
+    [
+     70.0,
+     0.3057
+    ],
+    [
+     70.2,
+     0.3094
+    ],
+    [
+     70.4,
+     0.3148
+    ],
+    [
+     70.6,
+     0.3228
+    ],
+    [
+     70.8,
+     0.3229
+    ],
+    [
+     71.0,
+     0.324
+    ],
+    [
+     71.2,
+     0.3258
+    ],
+    [
+     71.4,
+     0.336
+    ],
+    [
+     71.6,
+     0.3423
+    ],
+    [
+     71.8,
+     0.3489
+    ],
+    [
+     72.0,
+     0.3466
+    ],
+    [
+     72.2,
+     0.3531
+    ],
+    [
+     72.4,
+     0.3647
+    ],
+    [
+     72.6,
+     0.3699
+    ],
+    [
+     72.8,
+     0.3682
+    ],
+    [
+     73.0,
+     0.3777
+    ],
+    [
+     73.2,
+     0.3775
+    ],
+    [
+     73.4,
+     0.3836
+    ],
+    [
+     73.6,
+     0.3879
+    ],
+    [
+     73.8,
+     0.3881
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 66.0,
+    "t_end": 73.9,
+    "y_start": 0.216,
+    "y_end": 0.389,
+    "y_min": 0.216,
+    "y_max": 0.389,
+    "y_mean_last_5s": 0.336,
+    "u_mean_last_5s": 0.7,
+    "y_slope_last_5s_per_s": 0.0236
+   },
+   "any_override": false
+  },
+  {
+   "id": "E6",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.7,
+   "duration_s": 6.0,
+   "command_before": 0.7,
+   "seconds_since_command_last_changed_at_start": 8.0,
+   "uncertainty_targeted": "High-side static gain and settling toward 0.6: continuing same 0.7 command separates linear vs superlinear extrapolation and tests whether 0.7 equilibrates near target, which directly sizes feedforward.",
+   "expected_observation": "If positive-gain-with-drain and ~8-10s tau is right, y will rise monotonically from ~0.40 toward ~0.50-0.54 over 6 s with positive slope ~0.02/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+   "verdict": "approved; worst-case bound 0.818",
+   "t_start": 74.0,
+   "samples": [
+    [
+     74.0,
+     0.3977
+    ],
+    [
+     74.1,
+     0.4009
+    ],
+    [
+     74.2,
+     0.392
+    ],
+    [
+     74.3,
+     0.4028
+    ],
+    [
+     74.4,
+     0.4058
+    ],
+    [
+     74.5,
+     0.4083
+    ],
+    [
+     74.6,
+     0.4102
+    ],
+    [
+     74.7,
+     0.411
+    ],
+    [
+     74.8,
+     0.4117
+    ],
+    [
+     74.9,
+     0.4136
+    ],
+    [
+     75.0,
+     0.418
+    ],
+    [
+     75.1,
+     0.4139
+    ],
+    [
+     75.2,
+     0.4189
+    ],
+    [
+     75.3,
+     0.4274
+    ],
+    [
+     75.4,
+     0.4175
+    ],
+    [
+     75.5,
+     0.4179
+    ],
+    [
+     75.6,
+     0.4262
+    ],
+    [
+     75.7,
+     0.4261
+    ],
+    [
+     75.8,
+     0.4374
+    ],
+    [
+     75.9,
+     0.4357
+    ],
+    [
+     76.0,
+     0.4339
+    ],
+    [
+     76.1,
+     0.4374
+    ],
+    [
+     76.2,
+     0.4413
+    ],
+    [
+     76.3,
+     0.4399
+    ],
+    [
+     76.4,
+     0.4392
+    ],
+    [
+     76.5,
+     0.4445
+    ],
+    [
+     76.6,
+     0.4527
+    ],
+    [
+     76.7,
+     0.4538
+    ],
+    [
+     76.8,
+     0.4516
+    ],
+    [
+     76.9,
+     0.4521
+    ],
+    [
+     77.0,
+     0.455
+    ],
+    [
+     77.1,
+     0.4522
+    ],
+    [
+     77.2,
+     0.4565
+    ],
+    [
+     77.3,
+     0.4595
+    ],
+    [
+     77.4,
+     0.4609
+    ],
+    [
+     77.5,
+     0.4718
+    ],
+    [
+     77.6,
+     0.4704
+    ],
+    [
+     77.7,
+     0.4668
+    ],
+    [
+     77.8,
+     0.4689
+    ],
+    [
+     77.9,
+     0.4778
+    ],
+    [
+     78.0,
+     0.469
+    ],
+    [
+     78.1,
+     0.4803
+    ],
+    [
+     78.2,
+     0.4768
+    ],
+    [
+     78.3,
+     0.481
+    ],
+    [
+     78.4,
+     0.4826
+    ],
+    [
+     78.5,
+     0.4837
+    ],
+    [
+     78.6,
+     0.49
+    ],
+    [
+     78.7,
+     0.4887
+    ],
+    [
+     78.8,
+     0.4908
+    ],
+    [
+     78.9,
+     0.4982
+    ],
+    [
+     79.0,
+     0.4971
+    ],
+    [
+     79.1,
+     0.4974
+    ],
+    [
+     79.2,
+     0.4908
+    ],
+    [
+     79.3,
+     0.5005
+    ],
+    [
+     79.4,
+     0.4967
+    ],
+    [
+     79.5,
+     0.5027
+    ],
+    [
+     79.6,
+     0.5035
+    ],
+    [
+     79.7,
+     0.507
+    ],
+    [
+     79.8,
+     0.51
+    ],
+    [
+     79.9,
+     0.5097
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 74.0,
+    "t_end": 79.9,
+    "y_start": 0.398,
+    "y_end": 0.51,
+    "y_min": 0.392,
+    "y_max": 0.51,
+    "y_mean_last_5s": 0.463,
+    "u_mean_last_5s": 0.7,
+    "y_slope_last_5s_per_s": 0.0196
+   },
+   "any_override": false
+  },
+  {
+   "id": "E7",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.65,
+   "duration_s": 5.0,
+   "command_before": 0.7,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "High-side static gain and steady-state u needed for y=0.6 and near-target linearity: a 0.65 hold from 0.51 separates ss inside-band vs above-band and refines feedforward for control.",
+   "expected_observation": "If tau ~8-11s and ss(0.65) ~0.55-0.65 is right, y will rise monotonically from ~0.51 to ~0.55-0.58 over 5s with positive slope ~0.015-0.02 still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+   "verdict": "approved; worst-case bound 0.836",
+   "t_start": 80.0,
+   "samples": [
+    [
+     80.0,
+     0.5106
+    ],
+    [
+     80.1,
+     0.5179
+    ],
+    [
+     80.2,
+     0.5176
+    ],
+    [
+     80.3,
+     0.5137
+    ],
+    [
+     80.4,
+     0.5179
+    ],
+    [
+     80.5,
+     0.5179
+    ],
+    [
+     80.6,
+     0.5264
+    ],
+    [
+     80.7,
+     0.526
+    ],
+    [
+     80.8,
+     0.5248
+    ],
+    [
+     80.9,
+     0.5253
+    ],
+    [
+     81.0,
+     0.5322
+    ],
+    [
+     81.1,
+     0.5272
+    ],
+    [
+     81.2,
+     0.5292
+    ],
+    [
+     81.3,
+     0.5261
+    ],
+    [
+     81.4,
+     0.5345
+    ],
+    [
+     81.5,
+     0.5303
+    ],
+    [
+     81.6,
+     0.5348
+    ],
+    [
+     81.7,
+     0.5378
+    ],
+    [
+     81.8,
+     0.5367
+    ],
+    [
+     81.9,
+     0.5382
+    ],
+    [
+     82.0,
+     0.5318
+    ],
+    [
+     82.1,
+     0.5488
+    ],
+    [
+     82.2,
+     0.5426
+    ],
+    [
+     82.3,
+     0.5444
+    ],
+    [
+     82.4,
+     0.5399
+    ],
+    [
+     82.5,
+     0.5445
+    ],
+    [
+     82.6,
+     0.5523
+    ],
+    [
+     82.7,
+     0.55
+    ],
+    [
+     82.8,
+     0.5527
+    ],
+    [
+     82.9,
+     0.5502
+    ],
+    [
+     83.0,
+     0.5574
+    ],
+    [
+     83.1,
+     0.5544
+    ],
+    [
+     83.2,
+     0.5619
+    ],
+    [
+     83.3,
+     0.5595
+    ],
+    [
+     83.4,
+     0.56
+    ],
+    [
+     83.5,
+     0.5635
+    ],
+    [
+     83.6,
+     0.5615
+    ],
+    [
+     83.7,
+     0.5634
+    ],
+    [
+     83.8,
+     0.5609
+    ],
+    [
+     83.9,
+     0.5609
+    ],
+    [
+     84.0,
+     0.5674
+    ],
+    [
+     84.1,
+     0.5721
+    ],
+    [
+     84.2,
+     0.5666
+    ],
+    [
+     84.3,
+     0.5648
+    ],
+    [
+     84.4,
+     0.567
+    ],
+    [
+     84.5,
+     0.574
+    ],
+    [
+     84.6,
+     0.5695
+    ],
+    [
+     84.7,
+     0.5722
+    ],
+    [
+     84.8,
+     0.5711
+    ],
+    [
+     84.9,
+     0.5772
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 80.0,
+    "t_end": 84.9,
+    "y_start": 0.511,
+    "y_end": 0.577,
+    "y_min": 0.511,
+    "y_max": 0.577,
+    "y_mean_last_5s": 0.546,
+    "u_mean_last_5s": 0.65,
+    "y_slope_last_5s_per_s": 0.0128
+   },
+   "any_override": false
+  },
+  {
+   "id": "E8",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.65,
+   "duration_s": 4.0,
+   "command_before": 0.65,
+   "seconds_since_command_last_changed_at_start": 5.0,
+   "uncertainty_targeted": "High-side static gain and settling at operating point: whether u=0.65 equilibrates inside 0.55-0.65 and with what tau, which directly sets feedforward for y=0.6 and controller timing.",
+   "expected_observation": "If convex positive-gain with ~8-12s tau and ss(0.65)~0.60-0.70 is right, y will rise monotonically from ~0.575 toward ~0.61-0.63 over 4s with positive but flattening slope ~0.01/s still positive in last seconds and only +/-0.01 noise, not flat or falling.",
+   "verdict": "approved; worst-case bound 0.835",
+   "t_start": 85.0,
+   "samples": [
+    [
+     85.0,
+     0.5754
+    ],
+    [
+     85.1,
+     0.577
+    ],
+    [
+     85.2,
+     0.5831
+    ],
+    [
+     85.3,
+     0.5843
+    ],
+    [
+     85.4,
+     0.5865
+    ],
+    [
+     85.5,
+     0.5809
+    ],
+    [
+     85.6,
+     0.5819
+    ],
+    [
+     85.7,
+     0.5848
+    ],
+    [
+     85.8,
+     0.5824
+    ],
+    [
+     85.9,
+     0.584
+    ],
+    [
+     86.0,
+     0.586
+    ],
+    [
+     86.1,
+     0.5896
+    ],
+    [
+     86.2,
+     0.5927
+    ],
+    [
+     86.3,
+     0.5867
+    ],
+    [
+     86.4,
+     0.588
+    ],
+    [
+     86.5,
+     0.593
+    ],
+    [
+     86.6,
+     0.5979
+    ],
+    [
+     86.7,
+     0.5928
+    ],
+    [
+     86.8,
+     0.5949
+    ],
+    [
+     86.9,
+     0.5989
+    ],
+    [
+     87.0,
+     0.6021
+    ],
+    [
+     87.1,
+     0.5962
+    ],
+    [
+     87.2,
+     0.5998
+    ],
+    [
+     87.3,
+     0.603
+    ],
+    [
+     87.4,
+     0.6018
+    ],
+    [
+     87.5,
+     0.6045
+    ],
+    [
+     87.6,
+     0.5967
+    ],
+    [
+     87.7,
+     0.6086
+    ],
+    [
+     87.8,
+     0.5971
+    ],
+    [
+     87.9,
+     0.6
+    ],
+    [
+     88.0,
+     0.6131
+    ],
+    [
+     88.1,
+     0.6124
+    ],
+    [
+     88.2,
+     0.6104
+    ],
+    [
+     88.3,
+     0.6128
+    ],
+    [
+     88.4,
+     0.6146
+    ],
+    [
+     88.5,
+     0.6183
+    ],
+    [
+     88.6,
+     0.6185
+    ],
+    [
+     88.7,
+     0.6088
+    ],
+    [
+     88.8,
+     0.6194
+    ],
+    [
+     88.9,
+     0.6076
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 85.0,
+    "t_end": 88.9,
+    "y_start": 0.575,
+    "y_end": 0.608,
+    "y_min": 0.575,
+    "y_max": 0.619,
+    "y_mean_last_5s": 0.597,
+    "u_mean_last_5s": 0.65,
+    "y_slope_last_5s_per_s": 0.01
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing constant pump duty u increases steady-state level y (positive static gain).",
+   "confidence": 0.99,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "Step response has lag/time-constant of several seconds (~8-12s); 20s is not guaranteed to reach full equilibrium at high u.",
+   "confidence": 0.95,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "Dead zone at low u is small: u=0.3 produces a clearly positive equilibrium versus u=0.",
+   "confidence": 0.88,
+   "evidence_refs": [
+    "E1",
+    "E3",
+    "E4",
+    "E5"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0 the level decays on its own toward a near-zero equilibrium due to drainage.",
+   "confidence": 0.99,
+   "evidence_refs": [
+    "E3",
+    "E4"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state y is approximately linear in u, and the u needed to hold y=0.6 is in mid-range ~0.4-0.7.",
+   "confidence": 0.2,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor noise on y is small relative to the 0.10 control band (std < ~0.02).",
+   "confidence": 0.93,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Response to constant u is stable without sustained oscillation or overshoot.",
+   "confidence": 0.96,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H8",
+   "statement": "Static gain increases with u (convex): u=0.3 equilibrates near ~0.07-0.10 while u=0.7 is still rising past 0.51 after 14s, larger than linear extrapolation from low u.",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

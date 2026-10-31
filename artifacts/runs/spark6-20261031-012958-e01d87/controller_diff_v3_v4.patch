@@ -1,0 +1,187 @@
+--- a/spark6-20261031-012958-e01d87/controller_v3.py
++++ b/spark6-20261031-012958-e01d87/controller_v4.py
+@@ -2,7 +2,7 @@
+ def control(obs, state):
+     def _clamp(v, lo, hi):
+         if not math.isfinite(v):
+-            return (lo+hi)*0.5
++            return (lo + hi) * 0.5
+         if v < lo:
+             return lo
+         if v > hi:
+@@ -29,31 +29,30 @@
+     y_raw = _clamp(y_in, 0.0, 1.0)
+     target = _clamp(t_in, 0.0, 1.0)
+     dt = _clamp(dt_in, 0.02, 1.0)
++    KP = 0.38
++    P_LIM = 0.22
++    KI = 0.10
++    I_LIM = 0.40
++    INT_LIM = 4.0
++    TAU_F = 0.8
++    TAU_D = 0.8
++    TPRED = 2.5
+     FF_INIT = 0.66
+-    FF_MIN = 0.35
+-    FF_MAX = 0.82
+-    KP = 0.55
+-    P_LIM = 0.16
+-    KI = 0.06
+-    I_LIM = 0.30
+-    INT_LIM = 5.0
+-    KD = 0.70
+-    D_LIM = 0.12
+-    TAU_F = 1.2
+-    TAU_D = 0.9
+-    ABS_MAX = 0.86
++    FF_MIN = 0.32
++    FF_MAX = 0.85
++    ABS_MAX = 0.90
+     try:
+         yf = float(state.get("yf", y_raw))
+     except Exception:
+         yf = y_raw
+     try:
++        dfilt = float(state.get("dfilt", 0.0))
++    except Exception:
++        dfilt = 0.0
++    try:
+         integ = float(state.get("integ", 0.0))
+     except Exception:
+         integ = 0.0
+-    try:
+-        dfilt = float(state.get("dfilt", 0.0))
+-    except Exception:
+-        dfilt = 0.0
+     try:
+         prev_u = float(state.get("prev_u", FF_INIT))
+     except Exception:
+@@ -64,17 +63,17 @@
+         ff = FF_INIT
+     if not math.isfinite(yf):
+         yf = y_raw
++    if not math.isfinite(dfilt):
++        dfilt = 0.0
+     if not math.isfinite(integ):
+         integ = 0.0
+-    if not math.isfinite(dfilt):
+-        dfilt = 0.0
+     if not math.isfinite(prev_u):
+         prev_u = FF_INIT
+     if not math.isfinite(ff):
+         ff = FF_INIT
+     yf = _clamp(yf, 0.0, 1.0)
++    dfilt = _clamp(dfilt, -0.5, 0.5)
+     integ = _clamp(integ, -INT_LIM, INT_LIM)
+-    dfilt = _clamp(dfilt, -0.5, 0.5)
+     prev_u = _clamp(prev_u, 0.0, 1.0)
+     ff = _clamp(ff, FF_MIN, FF_MAX)
+     is_init = ("yf" not in state) or ("prev_u" not in state) or ("ff" not in state)
+@@ -95,58 +94,60 @@
+     beta = dt / (TAU_D + dt)
+     dfilt = dfilt + beta * (raw_rate - dfilt)
+     dfilt = _clamp(dfilt, -0.5, 0.5)
+-    err = target - yf
+-    err = _clamp(err, -1.0, 1.0)
+-    P = KP * err
++    y_pred = yf + TPRED * dfilt
++    y_pred = _clamp(y_pred, 0.0, 1.0)
++    err_f = target - yf
++    err_p = target - y_pred
++    err_f = _clamp(err_f, -1.0, 1.0)
++    err_p = _clamp(err_p, -1.0, 1.0)
++    P = KP * err_p
+     P = _clamp(P, -P_LIM, P_LIM)
+-    D = -KD * dfilt
+-    D = _clamp(D, -D_LIM, D_LIM)
+-    if yf >= 0.82:
+-        cap = 0.22
+-    elif yf > 0.65:
+-        cap = ff + 0.04 - 1.8 * (yf - 0.65)
+-        cap = _clamp(cap, 0.22, ABS_MAX)
++    if abs(err_f) > 0.30:
++        integ_rate = err_f * 0.15
++    elif abs(err_f) > 0.20:
++        integ_rate = err_f * 0.5
+     else:
+-        cap = ABS_MAX
++        integ_rate = err_f
++    integ_cand = integ + integ_rate * dt
++    integ_cand = _clamp(integ_cand, -INT_LIM, INT_LIM)
++    I_cand = KI * integ_cand
++    I_cand = _clamp(I_cand, -I_LIM, I_LIM)
++    u_tmp = ff + P + I_cand
++    cap = ABS_MAX
++    if yf >= 0.80:
++        cap = 0.35
+     if y_raw > 0.84 and cap > 0.25:
+         cap = 0.25
+-    if cap > ABS_MAX:
+-        cap = ABS_MAX
+-    if cap < 0.0:
+-        cap = 0.0
+-    integ_cand = integ + err * dt
+-    integ_cand = _clamp(integ_cand, -INT_LIM, INT_LIM)
+-    I_cand = _clamp(KI * integ_cand, -I_LIM, I_LIM)
+-    u_tmp = ff + P + I_cand + D
++    u_sat = u_tmp
++    if u_sat > cap:
++        u_sat = cap
++    if u_sat < 0.0:
++        u_sat = 0.0
+     sat_hi = (u_tmp > cap + 1e-9)
+     sat_lo = (u_tmp < 0.0 - 1e-9)
+-    allow_integ = True
+-    if (sat_hi and err > 0.0) or (sat_lo and err < 0.0):
+-        allow_integ = False
+-    if abs(err) > 0.35:
+-        pass
+-    if yf >= 0.82 and err < 0.0:
+-        allow_integ = True
+-    if allow_integ:
++    allow = True
++    if (sat_hi and err_f > 0.0) or (sat_lo and err_f < 0.0):
++        allow = False
++    if allow:
+         integ_next = integ_cand
+     else:
+         integ_next = integ
+-    I_now = _clamp(KI * integ_next, -I_LIM, I_LIM)
+-    u_tmp2 = ff + P + I_now + D
+-    u_des = u_tmp2
++    I_now = KI * integ_next
++    I_now = _clamp(I_now, -I_LIM, I_LIM)
++    u_des = ff + P + I_now
+     if u_des > cap:
+         u_des = cap
+     if u_des < 0.0:
+         u_des = 0.0
+     du = u_des - prev_u
+-    max_up = 0.45 * dt + 0.015
+-    max_dn = 0.90 * dt + 0.025
++    max_up = 0.35 * dt + 0.01
++    max_dn = 0.70 * dt + 0.02
+     if du > max_up:
+         du = max_up
+     elif du < -max_dn:
+         du = -max_dn
+     if yf >= 0.78 and u_des < prev_u:
+-        fast_dn = 2.0 * dt + 0.05
++        fast_dn = 1.5 * dt + 0.04
+         dd = u_des - prev_u
+         if dd < -fast_dn:
+             dd = -fast_dn
+@@ -157,8 +158,11 @@
+         u = ff
+     ff_next = ff
+     try:
+-        if abs(err) < 0.07 and abs(dfilt) < 0.025 and yf > 0.40 and yf < 0.78:
+-            ff_next = ff + (u - ff) * dt / 20.0
++        if abs(err_f) < 0.08 and abs(dfilt) < 0.02 and yf > 0.30 and yf < 0.80:
++            ff_next = ff + (u - ff) * dt / 15.0
++            ff_next = _clamp(ff_next, FF_MIN, FF_MAX)
++        elif abs(err_f) < 0.04 and yf >= 0.30 and yf <= 0.85:
++            ff_next = ff + (u - ff) * dt / 25.0
+             ff_next = _clamp(ff_next, FF_MIN, FF_MAX)
+     except Exception:
+         ff_next = ff

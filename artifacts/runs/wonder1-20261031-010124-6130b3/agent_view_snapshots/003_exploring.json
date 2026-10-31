@@ -1,0 +1,572 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 10,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 16.0,
+  "y": 0.3773
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 10.0,
+   "uncertainty_targeted": "Primary: direction/magnitude of gain and response timescale/lag (H1,H4,H8). Baseline y=0.2273 gives clear headroom; a null result would be informative about dead zone/low gain.",
+   "expected_observation": "If gain is positive and timescale is <10s, y should rise measurably above starting 0.2273 (e.g. +0.05 to +0.30) within a few seconds at u=0.5. No rise would support a large dead zone, very low gain, or long lag. Safety worst case: 0.2273 + 0.10*0.5*10 = 0.7273 < 0.85 soft limit.",
+   "verdict": "approved; worst-case bound 0.727",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2273
+    ],
+    [
+     0.2,
+     0.2153
+    ],
+    [
+     0.4,
+     0.2167
+    ],
+    [
+     0.6,
+     0.2081
+    ],
+    [
+     0.8,
+     0.2044
+    ],
+    [
+     1.0,
+     0.2038
+    ],
+    [
+     1.2,
+     0.1944
+    ],
+    [
+     1.4,
+     0.1933
+    ],
+    [
+     1.6,
+     0.1908
+    ],
+    [
+     1.8,
+     0.1912
+    ],
+    [
+     2.0,
+     0.1812
+    ],
+    [
+     2.2,
+     0.1789
+    ],
+    [
+     2.4,
+     0.1845
+    ],
+    [
+     2.6,
+     0.1862
+    ],
+    [
+     2.8,
+     0.1781
+    ],
+    [
+     3.0,
+     0.1692
+    ],
+    [
+     3.2,
+     0.1745
+    ],
+    [
+     3.4,
+     0.1665
+    ],
+    [
+     3.6,
+     0.1697
+    ],
+    [
+     3.8,
+     0.1569
+    ],
+    [
+     4.0,
+     0.1632
+    ],
+    [
+     4.2,
+     0.1759
+    ],
+    [
+     4.4,
+     0.1684
+    ],
+    [
+     4.6,
+     0.1676
+    ],
+    [
+     4.8,
+     0.1664
+    ],
+    [
+     5.0,
+     0.1694
+    ],
+    [
+     5.2,
+     0.1563
+    ],
+    [
+     5.4,
+     0.1771
+    ],
+    [
+     5.6,
+     0.1731
+    ],
+    [
+     5.8,
+     0.1787
+    ],
+    [
+     6.0,
+     0.1675
+    ],
+    [
+     6.2,
+     0.1599
+    ],
+    [
+     6.4,
+     0.1719
+    ],
+    [
+     6.6,
+     0.1745
+    ],
+    [
+     6.8,
+     0.17
+    ],
+    [
+     7.0,
+     0.1841
+    ],
+    [
+     7.2,
+     0.1723
+    ],
+    [
+     7.4,
+     0.1714
+    ],
+    [
+     7.6,
+     0.1754
+    ],
+    [
+     7.8,
+     0.17
+    ],
+    [
+     8.0,
+     0.1781
+    ],
+    [
+     8.2,
+     0.1778
+    ],
+    [
+     8.4,
+     0.189
+    ],
+    [
+     8.6,
+     0.1876
+    ],
+    [
+     8.8,
+     0.1845
+    ],
+    [
+     9.0,
+     0.1946
+    ],
+    [
+     9.2,
+     0.1923
+    ],
+    [
+     9.4,
+     0.2004
+    ],
+    [
+     9.6,
+     0.1878
+    ],
+    [
+     9.8,
+     0.1976
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 1.0,
+   "duration_s": 6.0,
+   "uncertainty_targeted": "Primary: dead zone vs low gain vs lag at high input (H1,H3,H4,H6); also max-input net rate magnitude (H8). A second, maximal amplitude separates a threshold between 0.5 and 1.0 from near-zero gain at all u.",
+   "expected_observation": "Safety worst case: 0.188 + 0.10*1.0*6 = 0.788 < 0.85 soft limit. If a dead zone/threshold lies between 0.5 and 1.0 or high-u gain is substantial, the E1 falling trend should arrest and y should rise measurably (e.g. >0.02 above its minimum) by the end of 6s. If y instead continues falling/flat as in the first seconds of E1, that supports near-zero gain even at u=1 or a lag longer than several seconds.",
+   "verdict": "approved; worst-case bound 0.788",
+   "t_start": 10.0,
+   "samples": [
+    [
+     10.0,
+     0.188
+    ],
+    [
+     10.1,
+     0.1971
+    ],
+    [
+     10.2,
+     0.1939
+    ],
+    [
+     10.3,
+     0.2031
+    ],
+    [
+     10.4,
+     0.2034
+    ],
+    [
+     10.5,
+     0.2017
+    ],
+    [
+     10.6,
+     0.1983
+    ],
+    [
+     10.7,
+     0.187
+    ],
+    [
+     10.8,
+     0.2024
+    ],
+    [
+     10.9,
+     0.1953
+    ],
+    [
+     11.0,
+     0.2026
+    ],
+    [
+     11.1,
+     0.1972
+    ],
+    [
+     11.2,
+     0.2007
+    ],
+    [
+     11.3,
+     0.2089
+    ],
+    [
+     11.4,
+     0.2171
+    ],
+    [
+     11.5,
+     0.217
+    ],
+    [
+     11.6,
+     0.2171
+    ],
+    [
+     11.7,
+     0.2217
+    ],
+    [
+     11.8,
+     0.2247
+    ],
+    [
+     11.9,
+     0.2344
+    ],
+    [
+     12.0,
+     0.2316
+    ],
+    [
+     12.1,
+     0.2313
+    ],
+    [
+     12.2,
+     0.2306
+    ],
+    [
+     12.3,
+     0.2386
+    ],
+    [
+     12.4,
+     0.2306
+    ],
+    [
+     12.5,
+     0.2425
+    ],
+    [
+     12.6,
+     0.2236
+    ],
+    [
+     12.7,
+     0.2548
+    ],
+    [
+     12.8,
+     0.2582
+    ],
+    [
+     12.9,
+     0.2539
+    ],
+    [
+     13.0,
+     0.2616
+    ],
+    [
+     13.1,
+     0.2558
+    ],
+    [
+     13.2,
+     0.2752
+    ],
+    [
+     13.3,
+     0.2784
+    ],
+    [
+     13.4,
+     0.2689
+    ],
+    [
+     13.5,
+     0.27
+    ],
+    [
+     13.6,
+     0.2903
+    ],
+    [
+     13.7,
+     0.2846
+    ],
+    [
+     13.8,
+     0.2937
+    ],
+    [
+     13.9,
+     0.2953
+    ],
+    [
+     14.0,
+     0.3029
+    ],
+    [
+     14.1,
+     0.3019
+    ],
+    [
+     14.2,
+     0.2961
+    ],
+    [
+     14.3,
+     0.3063
+    ],
+    [
+     14.4,
+     0.3162
+    ],
+    [
+     14.5,
+     0.3074
+    ],
+    [
+     14.6,
+     0.31
+    ],
+    [
+     14.7,
+     0.3122
+    ],
+    [
+     14.8,
+     0.3161
+    ],
+    [
+     14.9,
+     0.3279
+    ],
+    [
+     15.0,
+     0.3225
+    ],
+    [
+     15.1,
+     0.3331
+    ],
+    [
+     15.2,
+     0.3397
+    ],
+    [
+     15.3,
+     0.3461
+    ],
+    [
+     15.4,
+     0.3445
+    ],
+    [
+     15.5,
+     0.3443
+    ],
+    [
+     15.6,
+     0.3482
+    ],
+    [
+     15.7,
+     0.3622
+    ],
+    [
+     15.8,
+     0.3668
+    ],
+    [
+     15.9,
+     0.383
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases y (positive gain): a sustained u=0.5 will raise y above its starting value.",
+   "confidence": 0.35,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "At u=0 the reservoir drains on its own and y decays measurably, at a rate to be measured.",
+   "confidence": 0.75,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "There is a dead zone at low u (some u>0 below which y does not rise).",
+   "confidence": 0.55,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "There is a non-negligible delay/lag (>1s) between a u step and the y response.",
+   "confidence": 0.6,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "The steady-state response is approximately linear in u across input levels.",
+   "confidence": 0.35,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "The steady-state input needed to hold target y=0.6 lies within [0,1], plausibly 0.2-0.8.",
+   "confidence": 0.25,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small relative to the 0.10-wide target band (std <0.02).",
+   "confidence": 0.8,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H8",
+   "statement": "The response timescale is such that y changes measurably within 10s at u=0.5.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

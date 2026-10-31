@@ -1,0 +1,1 @@
+Delayed reservoir: dead-time ~4.5-5.5 s (was ~1-2 s), dominant tau ~8-10 s (was ~3-4 s), static gain ~0.045 level/s per unit u, hold for y=0.6 ~0.62-0.70 (adapts), drain ~0.025/s at y~0.6 u=0, noise sigma <0.02, hard cutoff 0.9, keep y<0.75 for margin. Controller uses Tp=6 s predictor, Kp=0.75/Kd=1.0/Ki=0.07, uff~0.62 adaptive.

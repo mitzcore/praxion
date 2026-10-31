@@ -1,0 +1,20 @@
+{
+  "id": "v13-s3-20261031-015222-39a872-v3",
+  "run_id": "v13-s3-20261031-015222-39a872",
+  "version": 3,
+  "path": "artifacts/runs/v13-s3-20261031-015222-39a872/controller_v3.py",
+  "sha256": "d33866eeccea5df6e7166499a6882449aa59029024af2283f9bf85a8e038d995",
+  "parent_id": "v13-s3-20261031-015222-39a872-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:07:25.949835+00:00",
+  "byte_length": 7810,
+  "rationale": "Kept nominal fast PI structure but added adaptive long-delay handling: online Td estimator (3.5-16s), gain-scheduling (Kp~Td^-0.7, Ki~Td^-1.4, Kd off when Td>9s), pending-inflow Smith term y_virt=yf+0.045*sum(u-u_eq)dt over Td, virtual-error PI, slowed RATE_UP with Td, and ahead-guard y_ahead=y_virt+rate*min(Td,8)*0.7 cutting to 0.35/0.12/0.0. Nominal stays at Td~4 with v1-like gains; delayed flat/rise-while-cut grows Td and detunes before overshoot.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir, u in [0,1] pump, y in [0,1] noisy level, target 0.6 band 0.55-0.65. Nominal: Td 2-4s, tau 10-15s, u_ss~0.58-0.65 for 0.6, K_inflow~0.045/s per u, drain to ~0. After change: Td~14-16s, same K/tau, noise +-0.015. Controller must be dual-stable: fast when Td~3-4s, detuned Smith-compensated when Td~15s, never exceed 0.85 soft / 0.9 hard.",
+    "predicted_behavior": "Nominal Td~4s: Td stays ~4, Kp~0.35 Ki~0.03 Kd~0.8, y_virt~yf+0.07, reach band ~13-18s, in-band >0.85 after 30s, MAE ~0.02-0.03, no overrides. Delayed Td~15s: after 6-7s flat Td ramps to 9-13s within 4s, gains halve, RATE_UP to ~0.10/s, y_virt leads yf by 0.2-0.27 causing cut while yf~0.4 and y_ahead~0.80, peak <0.85, no hard violations, slow convergence to band with in-band much improved vs v1 oscillation and MAE roughly halved; 3/5 safe becomes 5/5 safe with higher energy but no trips.",
+    "diagnosis": "Response much slower / longer transport delay with similar steady gain. Orig 2-4s lag, tau 10-15s: u=0.8 rose 0.07 to 0.27 in 9s slope 0.03, u=0.5 eq~0.44, u=0.65 approaching 0.6. After: u=1 held ~8s stays 0.112 to 0.12 slope 0.004 flat (E13), continued 7s same u=1 breaks to 0.124 to 0.272 slope 0.025 (E14), and u=0 from 0.28 keeps rising 17.4s to 0.907 before falling (E15). Eventual slope ~0.025 same magnitude as before, drain fall -0.028/s at high level consistent with level-dependent outflow not faster drain, noise still +-0.015. Implies pure dead-time grew from ~2-4s to ~14-16s (4-5x), tau/gain roughly unchanged. Old aggressive PID then pumps through delay and oscillates to hard cutoff 0.9 with MAE 0.05 to 0.39.",
+    "diagnosis_category": "response_slower"
+  }
+}

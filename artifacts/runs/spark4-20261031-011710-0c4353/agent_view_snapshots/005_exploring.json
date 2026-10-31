@@ -1,0 +1,977 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 8,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 40.0,
+  "y": 0.4546
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.4,
+   "duration_s": 10.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of gain and response lag: first amplitude response calibrates fill rate versus drain before testing decay at zero and linearity at a second amplitude.",
+   "expected_observation": "y rises gradually from ~0.38 by ~0.1-0.2 over 10s with visible lag, staying well below 0.85; a flat or falling trace would falsify positive gain.",
+   "verdict": "approved; worst-case bound 0.782",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.3816
+    ],
+    [
+     0.2,
+     0.3718
+    ],
+    [
+     0.4,
+     0.3745
+    ],
+    [
+     0.6,
+     0.3659
+    ],
+    [
+     0.8,
+     0.3606
+    ],
+    [
+     1.0,
+     0.3514
+    ],
+    [
+     1.2,
+     0.3469
+    ],
+    [
+     1.4,
+     0.3457
+    ],
+    [
+     1.6,
+     0.3391
+    ],
+    [
+     1.8,
+     0.3361
+    ],
+    [
+     2.0,
+     0.3295
+    ],
+    [
+     2.2,
+     0.3238
+    ],
+    [
+     2.4,
+     0.3228
+    ],
+    [
+     2.6,
+     0.3144
+    ],
+    [
+     2.8,
+     0.3095
+    ],
+    [
+     3.0,
+     0.3133
+    ],
+    [
+     3.2,
+     0.3123
+    ],
+    [
+     3.4,
+     0.3077
+    ],
+    [
+     3.6,
+     0.3056
+    ],
+    [
+     3.8,
+     0.3047
+    ],
+    [
+     4.0,
+     0.3022
+    ],
+    [
+     4.2,
+     0.2956
+    ],
+    [
+     4.4,
+     0.2966
+    ],
+    [
+     4.6,
+     0.3015
+    ],
+    [
+     4.8,
+     0.2927
+    ],
+    [
+     5.0,
+     0.2989
+    ],
+    [
+     5.2,
+     0.2953
+    ],
+    [
+     5.4,
+     0.2929
+    ],
+    [
+     5.6,
+     0.2909
+    ],
+    [
+     5.8,
+     0.2969
+    ],
+    [
+     6.0,
+     0.2958
+    ],
+    [
+     6.2,
+     0.2898
+    ],
+    [
+     6.4,
+     0.2886
+    ],
+    [
+     6.6,
+     0.2865
+    ],
+    [
+     6.8,
+     0.2873
+    ],
+    [
+     7.0,
+     0.2846
+    ],
+    [
+     7.2,
+     0.2843
+    ],
+    [
+     7.4,
+     0.285
+    ],
+    [
+     7.6,
+     0.2883
+    ],
+    [
+     7.8,
+     0.2822
+    ],
+    [
+     8.0,
+     0.2901
+    ],
+    [
+     8.2,
+     0.2846
+    ],
+    [
+     8.4,
+     0.2854
+    ],
+    [
+     8.6,
+     0.2789
+    ],
+    [
+     8.8,
+     0.2811
+    ],
+    [
+     9.0,
+     0.2841
+    ],
+    [
+     9.2,
+     0.2806
+    ],
+    [
+     9.4,
+     0.2833
+    ],
+    [
+     9.6,
+     0.2804
+    ],
+    [
+     9.8,
+     0.2839
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 15.0,
+   "command_before": 0.4,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Decay at u=0 and direction of gain: comparing zero-input slope to E1 u=0.4 slope separates drain rate from pump gain and tests H1/H2.",
+   "expected_observation": "y continues to decay from ~0.28 toward ~0.18-0.22 over 15s with small noise; decay should be as fast or faster than E1 net slope despite lower level if gain is positive, staying far below 0.85.",
+   "verdict": "approved; worst-case bound 0.280",
+   "t_start": 10.0,
+   "samples": [
+    [
+     10.0,
+     0.2796
+    ],
+    [
+     10.3,
+     0.2762
+    ],
+    [
+     10.6,
+     0.2835
+    ],
+    [
+     10.9,
+     0.2771
+    ],
+    [
+     11.2,
+     0.2771
+    ],
+    [
+     11.5,
+     0.2731
+    ],
+    [
+     11.8,
+     0.2661
+    ],
+    [
+     12.1,
+     0.2641
+    ],
+    [
+     12.4,
+     0.2567
+    ],
+    [
+     12.7,
+     0.2528
+    ],
+    [
+     13.0,
+     0.2454
+    ],
+    [
+     13.3,
+     0.2363
+    ],
+    [
+     13.6,
+     0.2293
+    ],
+    [
+     13.9,
+     0.2261
+    ],
+    [
+     14.2,
+     0.2127
+    ],
+    [
+     14.5,
+     0.2124
+    ],
+    [
+     14.8,
+     0.1999
+    ],
+    [
+     15.1,
+     0.1982
+    ],
+    [
+     15.4,
+     0.1947
+    ],
+    [
+     15.7,
+     0.1831
+    ],
+    [
+     16.0,
+     0.1758
+    ],
+    [
+     16.3,
+     0.1738
+    ],
+    [
+     16.6,
+     0.17
+    ],
+    [
+     16.9,
+     0.1617
+    ],
+    [
+     17.2,
+     0.1596
+    ],
+    [
+     17.5,
+     0.1558
+    ],
+    [
+     17.8,
+     0.1491
+    ],
+    [
+     18.1,
+     0.1426
+    ],
+    [
+     18.4,
+     0.1355
+    ],
+    [
+     18.7,
+     0.1274
+    ],
+    [
+     19.0,
+     0.1203
+    ],
+    [
+     19.3,
+     0.1181
+    ],
+    [
+     19.6,
+     0.118
+    ],
+    [
+     19.9,
+     0.1112
+    ],
+    [
+     20.2,
+     0.1018
+    ],
+    [
+     20.5,
+     0.1003
+    ],
+    [
+     20.8,
+     0.0993
+    ],
+    [
+     21.1,
+     0.0879
+    ],
+    [
+     21.4,
+     0.0825
+    ],
+    [
+     21.7,
+     0.0886
+    ],
+    [
+     22.0,
+     0.0724
+    ],
+    [
+     22.3,
+     0.0726
+    ],
+    [
+     22.6,
+     0.0707
+    ],
+    [
+     22.9,
+     0.0659
+    ],
+    [
+     23.2,
+     0.0617
+    ],
+    [
+     23.5,
+     0.0547
+    ],
+    [
+     23.8,
+     0.056
+    ],
+    [
+     24.1,
+     0.0487
+    ],
+    [
+     24.4,
+     0.0449
+    ],
+    [
+     24.7,
+     0.0479
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.7,
+   "duration_s": 10.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of gain and linearity at a second higher amplitude and steady-state input needed for target 0.6.",
+   "expected_observation": "y rises gradually from ~0.04 by ~0.15-0.25 over 10s, staying below ~0.35; flat or continued decay would falsify positive gain.",
+   "verdict": "approved; worst-case bound 0.740",
+   "t_start": 25.0,
+   "samples": [
+    [
+     25.0,
+     0.0403
+    ],
+    [
+     25.2,
+     0.0392
+    ],
+    [
+     25.4,
+     0.0365
+    ],
+    [
+     25.6,
+     0.0342
+    ],
+    [
+     25.8,
+     0.0307
+    ],
+    [
+     26.0,
+     0.0348
+    ],
+    [
+     26.2,
+     0.0305
+    ],
+    [
+     26.4,
+     0.0324
+    ],
+    [
+     26.6,
+     0.0214
+    ],
+    [
+     26.8,
+     0.0265
+    ],
+    [
+     27.0,
+     0.0294
+    ],
+    [
+     27.2,
+     0.0311
+    ],
+    [
+     27.4,
+     0.0273
+    ],
+    [
+     27.6,
+     0.0342
+    ],
+    [
+     27.8,
+     0.0385
+    ],
+    [
+     28.0,
+     0.0453
+    ],
+    [
+     28.2,
+     0.0493
+    ],
+    [
+     28.4,
+     0.0571
+    ],
+    [
+     28.6,
+     0.0552
+    ],
+    [
+     28.8,
+     0.0739
+    ],
+    [
+     29.0,
+     0.0762
+    ],
+    [
+     29.2,
+     0.0763
+    ],
+    [
+     29.4,
+     0.0805
+    ],
+    [
+     29.6,
+     0.0853
+    ],
+    [
+     29.8,
+     0.0979
+    ],
+    [
+     30.0,
+     0.1044
+    ],
+    [
+     30.2,
+     0.1079
+    ],
+    [
+     30.4,
+     0.1164
+    ],
+    [
+     30.6,
+     0.1221
+    ],
+    [
+     30.8,
+     0.1265
+    ],
+    [
+     31.0,
+     0.1298
+    ],
+    [
+     31.2,
+     0.1316
+    ],
+    [
+     31.4,
+     0.15
+    ],
+    [
+     31.6,
+     0.1481
+    ],
+    [
+     31.8,
+     0.1565
+    ],
+    [
+     32.0,
+     0.1675
+    ],
+    [
+     32.2,
+     0.1703
+    ],
+    [
+     32.4,
+     0.1799
+    ],
+    [
+     32.6,
+     0.1769
+    ],
+    [
+     32.8,
+     0.1863
+    ],
+    [
+     33.0,
+     0.1986
+    ],
+    [
+     33.2,
+     0.2006
+    ],
+    [
+     33.4,
+     0.2102
+    ],
+    [
+     33.6,
+     0.2119
+    ],
+    [
+     33.8,
+     0.2277
+    ],
+    [
+     34.0,
+     0.2256
+    ],
+    [
+     34.2,
+     0.2235
+    ],
+    [
+     34.4,
+     0.2308
+    ],
+    [
+     34.6,
+     0.2415
+    ],
+    [
+     34.8,
+     0.2454
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 1.0,
+   "duration_s": 5.0,
+   "command_before": 0.7,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Top-end gain and steady-state input for 0.6: a short u=1.0 burst separates linear extrapolation from saturation and tests whether target is reachable without excessive actuation.",
+   "expected_observation": "If positive gain with ~2s delay and ~10s lag is right, y holds ~0.25 for ~2s then rises by ~0.10-0.15 to ~0.35-0.40 over 5s with +/-0.01 noise, staying below 0.50; flat or falling would falsify H1.",
+   "verdict": "approved; worst-case bound 0.755",
+   "t_start": 35.0,
+   "samples": [
+    [
+     35.0,
+     0.2548
+    ],
+    [
+     35.1,
+     0.2521
+    ],
+    [
+     35.2,
+     0.2588
+    ],
+    [
+     35.3,
+     0.2603
+    ],
+    [
+     35.4,
+     0.2653
+    ],
+    [
+     35.5,
+     0.2754
+    ],
+    [
+     35.6,
+     0.2656
+    ],
+    [
+     35.7,
+     0.276
+    ],
+    [
+     35.8,
+     0.2778
+    ],
+    [
+     35.9,
+     0.2781
+    ],
+    [
+     36.0,
+     0.2786
+    ],
+    [
+     36.1,
+     0.2854
+    ],
+    [
+     36.2,
+     0.2877
+    ],
+    [
+     36.3,
+     0.2912
+    ],
+    [
+     36.4,
+     0.2951
+    ],
+    [
+     36.5,
+     0.2991
+    ],
+    [
+     36.6,
+     0.297
+    ],
+    [
+     36.7,
+     0.3048
+    ],
+    [
+     36.8,
+     0.3128
+    ],
+    [
+     36.9,
+     0.307
+    ],
+    [
+     37.0,
+     0.3177
+    ],
+    [
+     37.1,
+     0.3268
+    ],
+    [
+     37.2,
+     0.3234
+    ],
+    [
+     37.3,
+     0.3284
+    ],
+    [
+     37.4,
+     0.3369
+    ],
+    [
+     37.5,
+     0.3357
+    ],
+    [
+     37.6,
+     0.3435
+    ],
+    [
+     37.7,
+     0.3471
+    ],
+    [
+     37.8,
+     0.3514
+    ],
+    [
+     37.9,
+     0.3526
+    ],
+    [
+     38.0,
+     0.3611
+    ],
+    [
+     38.1,
+     0.362
+    ],
+    [
+     38.2,
+     0.3705
+    ],
+    [
+     38.3,
+     0.3739
+    ],
+    [
+     38.4,
+     0.3797
+    ],
+    [
+     38.5,
+     0.3802
+    ],
+    [
+     38.6,
+     0.3872
+    ],
+    [
+     38.7,
+     0.4019
+    ],
+    [
+     38.8,
+     0.3983
+    ],
+    [
+     38.9,
+     0.4045
+    ],
+    [
+     39.0,
+     0.404
+    ],
+    [
+     39.1,
+     0.4149
+    ],
+    [
+     39.2,
+     0.4183
+    ],
+    [
+     39.3,
+     0.4211
+    ],
+    [
+     39.4,
+     0.43
+    ],
+    [
+     39.5,
+     0.4333
+    ],
+    [
+     39.6,
+     0.4385
+    ],
+    [
+     39.7,
+     0.4426
+    ],
+    [
+     39.8,
+     0.4454
+    ],
+    [
+     39.9,
+     0.4503
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases level y (positive steady-state gain).",
+   "confidence": 0.92,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "At u=0, y decays on its own toward near-zero due to self-drainage.",
+   "confidence": 0.97,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "Response has small pure delay (~2s) plus multi-second lag (~8-12s time constant) to approach steady state.",
+   "confidence": 0.75,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "No large dead-zone: small u>0 produces measurably more level than u=0.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state level is approximately linear in u across [0,1].",
+   "confidence": 0.4,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state u needed to hold target y=0.6 is above 0.4, likely 0.8-1.0, because u=0.4 could not hold 0.38 and u=0.7 from low level projects to ~0.4 steady state.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small (<+/-0.02) relative to 0.10 band so averaging permits control.",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

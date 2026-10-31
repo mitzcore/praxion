@@ -1,0 +1,295 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 11,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 15.0,
+  "y": 0.1947
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.4,
+   "duration_s": 15.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of static gain and lag/delay at a moderate input, which determines what u is needed to approach the 0.6 target and how fast to actuate.",
+   "expected_observation": "If positive gain with lag is correct, y will rise gradually from ~0.21 toward ~0.35-0.55 over 15s with small noisy fluctuations, staying well below 0.85.",
+   "verdict": "approved; worst-case bound 0.810",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2097
+    ],
+    [
+     0.3,
+     0.2021
+    ],
+    [
+     0.6,
+     0.196
+    ],
+    [
+     0.9,
+     0.1903
+    ],
+    [
+     1.2,
+     0.1874
+    ],
+    [
+     1.5,
+     0.1841
+    ],
+    [
+     1.8,
+     0.1862
+    ],
+    [
+     2.1,
+     0.1735
+    ],
+    [
+     2.4,
+     0.1695
+    ],
+    [
+     2.7,
+     0.1776
+    ],
+    [
+     3.0,
+     0.1783
+    ],
+    [
+     3.3,
+     0.1744
+    ],
+    [
+     3.6,
+     0.1735
+    ],
+    [
+     3.9,
+     0.1736
+    ],
+    [
+     4.2,
+     0.1688
+    ],
+    [
+     4.5,
+     0.1809
+    ],
+    [
+     4.8,
+     0.18
+    ],
+    [
+     5.1,
+     0.1781
+    ],
+    [
+     5.4,
+     0.1787
+    ],
+    [
+     5.7,
+     0.1823
+    ],
+    [
+     6.0,
+     0.184
+    ],
+    [
+     6.3,
+     0.1827
+    ],
+    [
+     6.6,
+     0.1778
+    ],
+    [
+     6.9,
+     0.1839
+    ],
+    [
+     7.2,
+     0.1841
+    ],
+    [
+     7.5,
+     0.1823
+    ],
+    [
+     7.8,
+     0.1842
+    ],
+    [
+     8.1,
+     0.1776
+    ],
+    [
+     8.4,
+     0.1908
+    ],
+    [
+     8.7,
+     0.1763
+    ],
+    [
+     9.0,
+     0.181
+    ],
+    [
+     9.3,
+     0.1845
+    ],
+    [
+     9.6,
+     0.1903
+    ],
+    [
+     9.9,
+     0.1832
+    ],
+    [
+     10.2,
+     0.1902
+    ],
+    [
+     10.5,
+     0.1899
+    ],
+    [
+     10.8,
+     0.1862
+    ],
+    [
+     11.1,
+     0.1913
+    ],
+    [
+     11.4,
+     0.1832
+    ],
+    [
+     11.7,
+     0.193
+    ],
+    [
+     12.0,
+     0.1898
+    ],
+    [
+     12.3,
+     0.1942
+    ],
+    [
+     12.6,
+     0.1941
+    ],
+    [
+     12.9,
+     0.191
+    ],
+    [
+     13.2,
+     0.1924
+    ],
+    [
+     13.5,
+     0.1943
+    ],
+    [
+     13.8,
+     0.1902
+    ],
+    [
+     14.1,
+     0.1911
+    ],
+    [
+     14.4,
+     0.1879
+    ],
+    [
+     14.7,
+     0.1919
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases steady-state level y (positive static gain).",
+   "confidence": 0.85,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "With u=0, level y decays over time toward a low level due to self-drain rather than holding constant.",
+   "confidence": 0.8,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "Response to a step in u has lag/delay of several seconds, not instantaneous.",
+   "confidence": 0.6,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "There is a dead-zone at low u where u below ~0.2 produces negligible rise compared to noise.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state response is roughly monotonic/near-linear and holding y=0.6 requires an intermediate u in ~0.3-0.7, not saturation at 0 or 1.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor noise on y is small relative to the 0.10 control band (std <0.02), so multi-second averaging reveals true level.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

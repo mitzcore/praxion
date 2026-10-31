@@ -1,0 +1,139 @@
+--- a/spark6-20261031-012958-e01d87/controller_v4.py
++++ b/spark6-20261031-012958-e01d87/controller_v5.py
+@@ -2,7 +2,7 @@
+ def control(obs, state):
+     def _clamp(v, lo, hi):
+         if not math.isfinite(v):
+-            return (lo + hi) * 0.5
++            return (lo+hi)*0.5
+         if v < lo:
+             return lo
+         if v > hi:
+@@ -29,18 +29,18 @@
+     y_raw = _clamp(y_in, 0.0, 1.0)
+     target = _clamp(t_in, 0.0, 1.0)
+     dt = _clamp(dt_in, 0.02, 1.0)
+-    KP = 0.38
+-    P_LIM = 0.22
+-    KI = 0.10
+-    I_LIM = 0.40
+-    INT_LIM = 4.0
+-    TAU_F = 0.8
+-    TAU_D = 0.8
+-    TPRED = 2.5
++    KP = 0.32
++    P_LIM = 0.20
++    KI = 0.08
++    I_LIM = 0.28
++    INT_LIM = 3.5
++    TAU_F = 1.0
++    TAU_D = 1.0
++    TPRED = 3.2
+     FF_INIT = 0.66
+-    FF_MIN = 0.32
++    FF_MIN = 0.30
+     FF_MAX = 0.85
+-    ABS_MAX = 0.90
++    ABS_MAX = 0.86
+     try:
+         yf = float(state.get("yf", y_raw))
+     except Exception:
+@@ -96,26 +96,38 @@
+     dfilt = _clamp(dfilt, -0.5, 0.5)
+     y_pred = yf + TPRED * dfilt
+     y_pred = _clamp(y_pred, 0.0, 1.0)
+-    err_f = target - yf
+-    err_p = target - y_pred
+-    err_f = _clamp(err_f, -1.0, 1.0)
+-    err_p = _clamp(err_p, -1.0, 1.0)
++    err_f = _clamp(target - yf, -1.0, 1.0)
++    err_p = _clamp(target - y_pred, -1.0, 1.0)
+     P = KP * err_p
+     P = _clamp(P, -P_LIM, P_LIM)
+-    if abs(err_f) > 0.30:
+-        integ_rate = err_f * 0.15
+-    elif abs(err_f) > 0.20:
+-        integ_rate = err_f * 0.5
++    brake = 0.0
++    if yf > 0.50 and dfilt > 0.005:
++        w = (yf - 0.50) / 0.10
++        if w < 0.0:
++            w = 0.0
++        if w > 1.0:
++            w = 1.0
++        brake = 2.0 * dfilt * w
++        brake = _clamp(brake, 0.0, 0.25)
++    if abs(err_f) > 0.25:
++        integ_rate = err_f * 0.20
++    elif abs(err_f) > 0.15:
++        integ_rate = err_f * 0.60
+     else:
+         integ_rate = err_f
+     integ_cand = integ + integ_rate * dt
+     integ_cand = _clamp(integ_cand, -INT_LIM, INT_LIM)
+-    I_cand = KI * integ_cand
+-    I_cand = _clamp(I_cand, -I_LIM, I_LIM)
+-    u_tmp = ff + P + I_cand
++    I_cand = _clamp(KI * integ_cand, -I_LIM, I_LIM)
++    u_tmp = ff + P + I_cand - brake
+     cap = ABS_MAX
+-    if yf >= 0.80:
+-        cap = 0.35
++    if yf >= 0.70:
++        c = 0.86 - 2.2 * (yf - 0.70)
++        if c < 0.35:
++            c = 0.35
++        if c < cap:
++            cap = c
++    if y_pred >= 0.72 and cap > 0.60:
++        cap = 0.60
+     if y_raw > 0.84 and cap > 0.25:
+         cap = 0.25
+     u_sat = u_tmp
+@@ -132,22 +144,21 @@
+         integ_next = integ_cand
+     else:
+         integ_next = integ
+-    I_now = KI * integ_next
+-    I_now = _clamp(I_now, -I_LIM, I_LIM)
+-    u_des = ff + P + I_now
++    I_now = _clamp(KI * integ_next, -I_LIM, I_LIM)
++    u_des = ff + P + I_now - brake
+     if u_des > cap:
+         u_des = cap
+     if u_des < 0.0:
+         u_des = 0.0
+     du = u_des - prev_u
+-    max_up = 0.35 * dt + 0.01
+-    max_dn = 0.70 * dt + 0.02
++    max_up = 0.25 * dt + 0.008
++    max_dn = 0.50 * dt + 0.015
+     if du > max_up:
+         du = max_up
+     elif du < -max_dn:
+         du = -max_dn
+-    if yf >= 0.78 and u_des < prev_u:
+-        fast_dn = 1.5 * dt + 0.04
++    if yf >= 0.76 and u_des < prev_u:
++        fast_dn = 1.2 * dt + 0.03
+         dd = u_des - prev_u
+         if dd < -fast_dn:
+             dd = -fast_dn
+@@ -158,11 +169,13 @@
+         u = ff
+     ff_next = ff
+     try:
+-        if abs(err_f) < 0.08 and abs(dfilt) < 0.02 and yf > 0.30 and yf < 0.80:
+-            ff_next = ff + (u - ff) * dt / 15.0
++        settled = (abs(err_f) < 0.10 and abs(dfilt) < 0.025 and yf > 0.28 and yf < 0.80)
++        tight = (abs(err_f) < 0.05 and yf >= 0.30 and yf <= 0.80)
++        if tight:
++            ff_next = ff + (u - ff) * dt / 8.0
+             ff_next = _clamp(ff_next, FF_MIN, FF_MAX)
+-        elif abs(err_f) < 0.04 and yf >= 0.30 and yf <= 0.85:
+-            ff_next = ff + (u - ff) * dt / 25.0
++        elif settled:
++            ff_next = ff + (u - ff) * dt / 12.0
+             ff_next = _clamp(ff_next, FF_MIN, FF_MAX)
+     except Exception:
+         ff_next = ff

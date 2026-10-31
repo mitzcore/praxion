@@ -1,0 +1,1 @@
+Reservoir: positive gain, delay 2-4s, lag 8-15s, noise <0.03, strongly nonlinear steep gain 0.7-0.8, nominal u_star(0.6)~0.76. Changed: effective gain ~2x (u_star(0.6)~0.54-0.60, threshold down ~0.15), delay similar, drain similar/slightly reduced. Controller must adapt u_star 0.55-0.77 and keep delay margin for both.

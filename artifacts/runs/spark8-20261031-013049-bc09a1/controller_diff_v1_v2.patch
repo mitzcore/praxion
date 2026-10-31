@@ -1,0 +1,48 @@
+--- a/spark8-20261031-013049-bc09a1/controller_v1.py
++++ b/spark8-20261031-013049-bc09a1/controller_v2.py
+@@ -41,18 +41,17 @@
+     if dt > 1.0:
+         dt = 1.0
+     Kest = 0.88
+-    Kp = 1.8
+-    Ti = 10.0
++    Kp = 0.40
++    Ti = 32.0
+     Ki = Kp / Ti
+-    Tf = 1.0
+-    Umax = 0.85
++    Tf = 2.0
++    Umax = 0.80
+     Umin = 0.0
+-    Imax = 0.35
+-    Imin = -0.35
+-    Tref = 4.0
+-    Rrate = 0.04
+-    Rup = 0.6
+-    Rdown = 2.0
++    Imax = 0.25
++    Imin = -0.25
++    Rrate = 0.02
++    Rup = 0.05
++    Rdown = 0.12
+     try:
+         yf_s = state.get("yf", None)
+         yf0 = float(yf_s)
+@@ -101,7 +100,7 @@
+         alpha = 1.0
+     yf = yf0 + alpha * (y_raw - yf0)
+     yf = _clamp(yf, 0.0, 1.0)
+-    dr_des = (target - r0) * dt / Tref
++    dr_des = target - r0
+     dr_lim = Rrate * dt
+     if dr_des > dr_lim:
+         dr_des = dr_lim
+@@ -136,6 +135,8 @@
+             allow = 0.0
+         if u > allow:
+             u = allow
++            if e > 0.0 and integ_new > 0.0:
++                integ_new = integ_new * 0.95
+     if hard:
+         u = 0.0
+         if integ_new > 0.0:

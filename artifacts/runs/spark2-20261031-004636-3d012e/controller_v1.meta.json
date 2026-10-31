@@ -1,0 +1,20 @@
+{
+  "id": "spark2-20261031-004636-3d012e-v1",
+  "run_id": "spark2-20261031-004636-3d012e",
+  "version": 1,
+  "path": "artifacts/runs/spark2-20261031-004636-3d012e/controller_v1.py",
+  "sha256": "13c9cf31aa23a820fe5dbf77049ac3427400f9c3d0c2555c5b3c1a232f898d28",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "1a84ab41dd365d79",
+  "created_at": "2026-10-31T04:52:55.737795+00:00",
+  "byte_length": 2265,
+  "rationale": "Plant is positive-gain integrator with near-constant drain and 1.5-2.5s lag. E1 flat at u=0.5/y~0.32, E6 +0.011/s at u=0.65/y~0.59, E7 +0.007/s at u=0.55/y~0.63, E2 +0.02-0.03/s at u=0.8, E4 +0.034/s at u=1.0, E3/E8 -0.026 to -0.032/s at u=0 imply k~0.05-0.07/s per unit u and drain~0.022-0.034/s, hold for 0.6 ~0.48-0.58. Hence feedforward FF=0.50 plus PI correcting residual. Kp=2.0 gives closed time constant 1/(k*Kp)~8s, crossover ~0.1 rad/s so 2s delay costs ~11deg, stable. Ki=0.25 with I_MAX=0.35 gives +-0.087 correction for hold error, gated to |e|<0.10 and conditional on saturation to prevent windup during 10s approach. EMA tau=0.8s smooths <0.02 noise without adding much lag. Safety caps at yf>=0.74/0.78 prevent soft 0.85/hard 0.9 violations.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir: more pump = higher level. Gain positive, ~0.05-0.07 level/s per unit u (worst-case 0.08). Self-draining: falls ~0.026-0.032/s at u=0 near 0.4-0.64, roughly constant, so hold for 0.6 is ~0.50+-0.07 (E6 rose at 0.65, E7 still rose at 0.55). Lag/carryover 1.5-2.5s before full slope after step (E4 2-2.5s, E3/E8 1.5-2s). No dead zone seen. Noise small std <0.02 vs 0.10 band. Level-dependent drain weak; behaves like integrator + delay over 5-8s windows.",
+    "predicted_behavior": "From 0.35-0.45 to 0.6: saturates/limits near 0.8-1.0 briefly, enters 0.55-0.65 in ~10-15s, settles to 0.59-0.61 in ~18-25s. Overshoot <0.02 if hold ~0.50, <0.04 worst-case, staying <0.75. Steady duty ~0.50-0.55. After 30s: time-in-band >90%, MAE <0.015, energy dominated by 0.25 hold power.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

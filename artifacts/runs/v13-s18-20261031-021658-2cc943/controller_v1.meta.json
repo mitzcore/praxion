@@ -1,0 +1,20 @@
+{
+  "id": "v13-s18-20261031-021658-2cc943-v1",
+  "run_id": "v13-s18-20261031-021658-2cc943",
+  "version": 1,
+  "path": "artifacts/runs/v13-s18-20261031-021658-2cc943/controller_v1.py",
+  "sha256": "ca849725c4584d5e942d00910364fdc1c495227b2049c70fdb154c95166c23ae",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T06:21:53.080967+00:00",
+  "byte_length": 3724,
+  "rationale": "Plant is first-order self-draining with positive gain, tau 12-18s, 2s lag, noise ~0.015. Measured near-equilibrium (u=0.5,y~0.63 flat 8s slope +0.0028/-0.0039) and (u=0.45 falling -0.0058 from 0.63 toward ~0.54-0.56) implies u* for 0.6 is ~0.48 with gain ~0.8-1.7 near target. Therefore feedforward 0.48 +0.9*(target-0.6) gives close steady state, PI trims residual. Kp=0.85 gives loop gain ~0.9 with K~1.1, stable with 2s delay. Ti=14s ~= tau for lambda ~10s tuning, slow enough to avoid overshoot. Filter tau 1.2s cuts noise 0.02 to ~0.008 without adding much phase vs 14s tau. Integral authority +-0.22 covers feedforward error up to 0.2, required because 0.45 vs 0.5 equilibrium unresolved by ~0.05-0.1; conditional integrate only |e|<0.18 prevents windup during 0.5+ initial error. UMAX 0.80 allows 0.03/s rise to settle in <30s while limiting energy and overshoot. Slew 0.6 up/1.2 down smooths noise, safety cut at 0.78/0.84 prevents hard cutoff at 0.9.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir, u 0-1 pump, y 0-1 noisy level. Direction: positive DC gain. Self-draining: u=0 falls 0.423->0.02 in 20s, equilibrium ~0.0-0.02. u=0.2 falls to <0.07. No large deadzone: u=0.6,0.65,0.8 all rise clearly, any deadzone <0.2. Speed: slow, tau ~12-18s (u=0.6 still +0.0117/s after 21s, u=0.65 still +0.0107/s after 20s, u=0 still -0.0147/s after 20s). Lag: no long pure delay, response in ~2s (E2/E5 rise by 2s), 2-3s persistence after step down. Gain nonlinear: low gain ~0.24/unit (0->0.2), high gain ~0.8-1.7/unit near target; u=0.5 holds ~0.63-0.64 flat 8s, u=0.45 falls 0.63->0.60 in 4s slope -0.0058 implying y_inf(0.45)~0.54-0.56, so y=0.6 needs u~0.47-0.50. y_inf(0.65)~0.75 (0.6+15*0.01). Noise std <0.02, +/-0.01-0.02 jitter vs 0.10 band.",
+    "predicted_behavior": "From low level (0.1) with target 0.6: rise at 0.025-0.035/s under 0.75-0.80, reach 0.5 in ~12-15s, enter 0.55-0.65 in ~18-22s, settle to 0.60+-0.02 by 25-30s with overshoot <0.03 (peak <0.65). After 30s: MAE <0.02, time in band >85-90%, steady duty 0.46-0.52 (0.48 nominal plus integral for plant variation). Energy ~0.23 mean u^2 at steady state. No 0.9 hits, no saturation cycling.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

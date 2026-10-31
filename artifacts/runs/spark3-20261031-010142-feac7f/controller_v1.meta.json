@@ -1,0 +1,20 @@
+{
+  "id": "spark3-20261031-010142-feac7f-v1",
+  "run_id": "spark3-20261031-010142-feac7f",
+  "version": 1,
+  "path": "artifacts/runs/spark3-20261031-010142-feac7f/controller_v1.py",
+  "sha256": "1a25ccbb65cc28a8b462dd3e0f303995cd45e94e9c9e0006720028f88fc05339",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "b24d8a294e0ba81e",
+  "created_at": "2026-10-31T05:08:52.760011+00:00",
+  "byte_length": 2630,
+  "rationale": "Feedforward 0.53 (=0.883*target) carries steady-state load so integrator only trims residual; P=0.9 gives ~0.045 correction at band edge (0.05 error) and ~0.27 at 0.3 error for 12-18 s fill without large momentum; I=0.10 with +/-0.25 clamp removes offset from 0.52-0.55 hold uncertainty without windup; 0.8 s exponential filter cuts +/-0.015 noise to ~+/-0.005 while adding <1 s lag vs 1-3 s plant lag and ~12 s drain time constant; conditional freeze on saturation plus output clamp [0,1], 1.0/s slew, and hard safety (yf>0.75 cap 0.25, yf>0.82 force 0) prevent overshoot to 0.85/0.9.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir: positive gain (more u = rise). Hold u for y=0.6 is ~0.52-0.55, nominal 0.53; DC gain ~1.13. Speed: net +0.025-0.03/s at u=0.8 mid-level, +0.02/s at u=0.7 near 0.55, +0.01/s at u=0.55 near 0.62; differential Kp ~0.24/s per unit u near target (E11 0.52 slight fall -0.002/s vs E12 0.535 flat +0.0015/s). Lag 0.5-1.5 s near target, 2-4 s from low levels (E5 2-3 s continued fall, E9-E10 3-4 s delayed fall). Dead zone: none found; u>=0.4 already lifts vs u=0. Self-draining: u=0 falls ~0.025/s at y~0.3, 0.39->0.21 in 10 s, tau ~11-16 s (~12 s). Noise +/-0.01-0.015 vs 0.10 band. No strong saturation to 0.65. Danger: 0.85 soft, 0.9 hard forces u=0; max rate 0.08/s.",
+    "predicted_behavior": "From 0.2-0.3 fill at 0.025-0.04/s, reach 0.55 in ~10-15 s, enter band by ~15-20 s, settle by <25 s well inside 30 s window. Overshoot <0.02-0.03, peak <0.65 from normal starts. After settling MAE ~0.008-0.015 (noise-limited), time in band >90-95%. Steady duty ~0.52-0.55. Energy ~0.28 u^2 per step steady, no chatter.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

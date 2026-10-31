@@ -1,0 +1,20 @@
+{
+  "id": "spark6-20261031-012958-e01d87-v3",
+  "run_id": "spark6-20261031-012958-e01d87",
+  "version": 3,
+  "path": "artifacts/runs/spark6-20261031-012958-e01d87/controller_v3.py",
+  "sha256": "15d0d7b6c74f8ac1eeeb9fd4f6cff014e9df4363d7c8d1ef2da3a9f565aeace4",
+  "parent_id": "spark6-20261031-012958-e01d87-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:43:23.066763+00:00",
+  "byte_length": 4553,
+  "rationale": "Replaced fixed FF0=0.63/MAX 0.84 aggressive PI with mid-point adaptive feedforward (ff init 0.66, range 0.35-0.82, tau ~20s) + detuned PI (Kp 0.55/P-lim 0.16, Ki 0.06/I-lim 0.30, Kd 0.70/D-lim 0.12) + delay-aware dynamic cap (0.86 when yf<0.65, ff+0.04-1.8*(yf-0.65) when yf>0.65, 0.22 when yf>=0.82) + conditional integration with anti-windup and slew limits. This directly targets measured -0.20 drop in steady-state duty and ~2x slower tau: fixed 0.63 cannot hold both 0.76 (old) and 0.56 (new) without offset/oscillation, while adaptive ff centers integral near zero for both and cap/D provide predictive braking for 3s delay + 18-22s lag.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Assumed plant for redesign: first-order + 2-4s delay, tau_new~18-22s (old ~10s), steady-state y(u): old u0.70->0.37, u0.75->~0.60, u0.80->>0.61; new u0.56-0.57->0.60-0.61, u0.62->0.73. So u_ss(0.6) in [0.54,0.78] across machines. Noise +-0.02, Sensor nominal. Design point: ff init 0.66 midpoint, adapt to 0.54-0.78, Kp small for steep old nonlinearity, D for delay damping, cap 0.86 fill / ff-based brake above 0.65, absolute max 0.86 to stay below 0.90 cutoff, never command >0.86 or <0.",
+    "predicted_behavior": "Closed loop now reaches band in ~15-25s and stays: for old machine (needs 0.76) integral climbs +0.10 from 0.66 while cap allows 0.86 fill, D brakes near 0.60, settles 0.58-0.62 with u~0.74-0.78, in-band >0.75 after 30s, MAE ~0.04; for new machine (needs 0.56) same start overshoots less because D+cap cut to ff+0.04-1.8*(y-0.65), integral unwinds -0.10, ff adapts down to ~0.56, settles 0.58-0.62 with u~0.54-0.58, in-band >0.75, MAE ~0.04, no limit cycle, no hard violations.",
+    "diagnosis": "Same command now produces smaller initial rise but higher final level and slower fall. E2 old: u=0.8 from 0.188 rises 0.134 in 6s (0.022/s); eval ep1: u=0.84 from 0.181 rises 0.075 in 6.4s (0.012/s), ~50% gain. E8 old: u=0 from 0.61 falls to 0.45 in 7s (0.023/s); eval v2 with u~0.40-0.45 falls 0.74->0.60 in 10s (0.014/s) despite higher level where drain should be faster. Steady-state: old u=0.70 equilibrates 0.37 (E9 flat), u=0.75 still rising at 0.55-0.61 (E11/E12), so u_ss_old~0.76 for 0.60; new u~0.618 holds measured 0.732 flat for 80s (v1 ep0 t30-119) and oscillation center u~0.565 holds y~0.61 (v2), so u_ss_new~0.55-0.57, drop 0.19-0.21. Delay still 3-4s (flat then rise), lag/time-constant ~8-15s -> ~18-22s. Consistent with reduced drain / stronger effective pump + larger capacity: higher ss gain, slower response, same delay. v1 offset +0.13 and v2 0.54 MAE oscillation are the result of fixed 0.63/0.70 FF mismatched by +0.07/-0.10 plus integral-cap interaction and delay.",
+    "diagnosis_category": "response_slower"
+  }
+}

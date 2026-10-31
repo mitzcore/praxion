@@ -1,0 +1,20 @@
+{
+  "id": "v13-s3-20261031-015222-39a872-v1",
+  "run_id": "v13-s3-20261031-015222-39a872",
+  "version": 1,
+  "path": "artifacts/runs/v13-s3-20261031-015222-39a872/controller_v1.py",
+  "sha256": "61765d726745ccbaa7326ade09ac5ca438b8c01eaaeb2451c8bb2007190a97f4",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T05:58:11.698712+00:00",
+  "byte_length": 2248,
+  "rationale": "First-order-plus-delay with positive gain and self-drain fits all traces. E4 u=0 drains 0.45->0.06 in 20s (-0.017/s last 5s); E1 u=0.3 still falls to 0.07 slope -0.0027 so eq~0.04; E7 u=0.5 flat at 0.44 slope -0.0006 so measured eq 0.44; E8/E9 u=0.6 rises 0.43->0.49 slope +0.0058 mean 0.478 not settled so eq>0.53; E10-12 u=0.65 rises 0.50->0.59 slope +0.0076 mean 0.578 not settled so eq~0.62-0.66; E5/E6 u=0.7 slope +0.02 and E2/E3 u=0.8 slope +0.03. So DC gain near target ~1.0-1.5, tau ~10-15s from (eq-y)/slope, lag 2-4s from E5 55-58s flat then rise and E4 35-38s flat then fall, noise +/-0.015 needs ~1.5s filter. Hence feedforward 0.64 for 0.6 plus PI correcting residual. Kp=0.9 gives loop Kp*K~1.2, crossover ~0.07 rad/s, delay 3s adds only ~12deg, robust. Ki=0.14 (Ti~6.4s) removes offset in ~10s without aggressive windup. Integral authority +/-0.28 (Ilim 2.0) exceeds possible ff error 0.05-0.10 so no permanent offset, but clamped + conditional integration prevents windup during saturation. Filter tau 1.5s smooths noise without adding lag. High-y governor prevents 0.9 cutoff.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir: pump up, drains alone. Direction positive. Speed: max ~0.03/s at u=0.8 far from eq; near target +0.0058/s at u=0.6 y~0.48, +0.0076/s at u=0.65 y~0.58; drain -0.017/s at u=0 y~0.10; worst-case bound 0.08/s per unit u. Lag 2-4s before trend changes, time constant 10-15s, settling ~30s. Nonlinear: low-u gain tiny (u=0.3 eq ~0.04-0.07) vs mid gain large (u=0.5 eq 0.44 settled), local gain near 0.6 ~1.0-1.8. No large dead-zone but strongly superlinear from 0.3 to 0.5. Self-draining to ~0 at u=0. Noise zero-mean ~+/-0.015, need seconds averaging. Measured equilibria (y with constant u): (0, ~0 falling), (0.3, 0.073 falling), (0.5, 0.44 flat), (0.6, 0.478 rising, eq>0.53), (0.65, 0.578 rising, eq~0.63), (0.7 rising, 0.8 rising). Hold 0.6 needs u~0.62-0.67, chosen 0.64.",
+    "predicted_behavior": "From low level saturates at 1.0 then backs off, enters 0.55-0.65 in ~15-25s, settles to 0.60 +/-0.02 by ~30s with overshoot <0.03 and no exceedance of 0.8. From high level cuts to 0 then recovers similarly. Steady duty ~0.62-0.67 depending on plant offset, jitter ~+/-0.015 from noise. Mean absolute error after 30s <0.02, time in band >90% in nominal plant.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

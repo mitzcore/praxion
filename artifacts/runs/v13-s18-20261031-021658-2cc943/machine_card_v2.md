@@ -1,0 +1,1 @@
+Reservoir K~1.25 tau~22s. Nominal Td~1-2s, changed Td~25s (range 24-26s). Steady u for 0.6 is ~0.48-0.53 (0.5 holds ~0.63). Gain/outflow/noise unchanged: rise/drain slopes and 0 floors identical. Controller must tolerate both Td~2s and Td~25s, hold band 0.55-0.65, avoid y>=0.85/0.9, slew-patient near target.

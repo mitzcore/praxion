@@ -1,0 +1,20 @@
+{
+  "id": "spark6-20261031-012958-e01d87-v4",
+  "run_id": "spark6-20261031-012958-e01d87",
+  "version": 4,
+  "path": "artifacts/runs/spark6-20261031-012958-e01d87/controller_v4.py",
+  "sha256": "55acf9166309fcb7eb85a2d52e99f6f751755c0f1482c0e1905452ef223d6dc2",
+  "parent_id": "spark6-20261031-012958-e01d87-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:46:17.652859+00:00",
+  "byte_length": 4758,
+  "rationale": "Replaced narrow feedforward plus capped integral with wide-range adaptive feedforward plus delay-compensated PI. P acts on 2.5 s-ahead predicted level to brake early for 2-4 s delay, I integrates with far-error desensitization and saturation anti-windup, ff slowly learns steady-state u in [0.32,0.85] when settled, safety cap only above 0.80, conservative rate limits. Targets learned hold ~0.58 for changed plant while retaining ability to hold ~0.77 nominally.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Assumed changed reservoir: first-order lag 8-15 s + 2-3 s delay, noise +-0.02, steady-state strongly nonlinear. Hold for 0.6 now ~0.55-0.62 (vs 0.73-0.80 pre), i.e. ~24% stronger effective inflow / ~30-40% reduced drain. Gain dy/du ~3-5 near 0.6. Controller must cover holds 0.45-0.85, filter tau 0.8 s, predict 2.5 s ahead, Kp~0.38, Ki~0.10, rate limit up 0.35*dt, down 0.70*dt, safety cut to 0.35 above 0.80.",
+    "predicted_behavior": "Cold start from 0.15-0.38 with u~0.82-0.90, reach 0.55 in ~12-18 s, brake via prediction, cross 0.6 without exceeding 0.70, settle to 0.60+-0.05 by 25-35 s. Steady u ~0.75-0.80 nominal, ~0.55-0.62 changed, ripple +-0.015 from noise. After 30 s in-band >0.75, MAE <0.05, no hard violations or overrides, energy lower than v1 due to lower hold on changed plant and no limit-cycle.",
+    "diagnosis": "Same command now produces much larger steady level. u=0.5 equilibrated ~0.17-0.19 pre (E1), now ~0.65-0.74 with u~0.50-0.52 (v2 t28-32 holds 0.74 with u 0.52); u=0.62 holds 0.73 (v1 steady) vs pre ~0.27 interpolated between u=0.5->0.18 and u=0.7->0.37; u~0.48 holds ~0.53 (v2 t44-48) vs pre <0.18. Shift +0.35 to +0.45 y at same u, or -0.15 to -0.20 u (0.77->0.58) for y=0.6. Dynamic rates unchanged (~0.021-0.024/s rise with u~0.84 both pre E2/E6/E7 and post v2/v3) and delay unchanged 2-3 s hold before rise/fall, noise still +-0.02, so not slower sensor/plant lag but higher effective pump gain / lower drain. Old tuned ff~0.62-0.72 therefore overshoots and sticks high with MAE~0.13 in-band 0 (v1) or winds up and cycles 0.48-0.74 (v2/v3 MAE~0.055 in-band ~0.47).",
+    "diagnosis_category": "unknown"
+  }
+}

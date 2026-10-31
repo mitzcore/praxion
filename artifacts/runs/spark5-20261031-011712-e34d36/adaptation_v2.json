@@ -1,0 +1,53 @@
+{
+ "comparison": {
+  "gate_passed": true,
+  "n_improved": 4,
+  "per_index": [
+   {
+    "index": 0,
+    "mae_v1": 0.18349283899142524,
+    "mae_v2": 0.13980268776862523,
+    "reduction": 0.23810275901198352,
+    "improved": true
+   },
+   {
+    "index": 1,
+    "mae_v1": 0.18597046387097876,
+    "mae_v2": 0.1277038835221969,
+    "reduction": 0.3133109373174745,
+    "improved": true
+   },
+   {
+    "index": 2,
+    "mae_v1": 0.1790407228614647,
+    "mae_v2": 0.1594272347155807,
+    "reduction": 0.10954763716554139,
+    "improved": false
+   },
+   {
+    "index": 3,
+    "mae_v1": 0.18722443389854931,
+    "mae_v2": 0.08266854164590391,
+    "reduction": 0.5584521746200112,
+    "improved": true
+   },
+   {
+    "index": 4,
+    "mae_v1": 0.18495522804454145,
+    "mae_v2": 0.14734282884856031,
+    "reduction": 0.20335948106815993,
+    "improved": true
+   }
+  ],
+  "median_reduction": 0.23810275901198352,
+  "reasons": [
+   "4/5 episodes cut post-change MAE by >= 20% (need >= 3)",
+   "v2 hard_violations=0 (must be 0)",
+   "v2 invalid_outputs=0 (must be 0)",
+   "G3 passed"
+  ]
+ },
+ "nominal_gate": true,
+ "diagnosis_category": "response_slower",
+ "diagnosis_correct": true
+}

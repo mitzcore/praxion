@@ -1,0 +1,20 @@
+{
+  "id": "spark4-20261031-011710-0c4353-v2",
+  "run_id": "spark4-20261031-011710-0c4353",
+  "version": 2,
+  "path": "artifacts/runs/spark4-20261031-011710-0c4353/controller_v2.py",
+  "sha256": "747b13fb47dc2f22b4b4e7a3aeb372ea1e35df5dddeb7ab40e310509dd36c9cb",
+  "parent_id": "spark4-20261031-011710-0c4353-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:29:05.373706+00:00",
+  "byte_length": 7624,
+  "rationale": "Detuned for ~23s delay and made it adaptive. Removed derivative (kd=0) which amplifies delayed phase. Lowered base gains to kp=0.38/ki=0.016 with ff=0.52 and tight integral limits, added slow setpoint ramp and strict u rate limit. Added online long-delay detector (12s progress window) that latches to kp=0.16/ki=0.006, ramp 0.012/s and 0.04/s rate limit when error persists without y progress, and releases after 15s of small error. Kept high-y safety clamps with fast cut bypassing rate limit. This directly targets delay-induced overshoot/limit-cycle while preserving nominal rise.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir y in [0,1], u in [0,1]. Nominal: first-order + 2-4s cold delay +5-10s lag, K~1.15, T~20-25s, hold-u for y=0.6 ~0.50-0.55, noise +-0.01. Changed: pure delay increased to ~23s (22-24s measured E13/E14) with similar K and drain. Requires wc<0.02 rad/s, no D, slow I, rate-limited PI + feedforward.",
+    "predicted_behavior": "Nominal (no change): reaches 0.55-0.65 in ~12-22s from mid starts, MAE ~0.02-0.03, in-band >=0.70 after 30s, no overrides. Delayed (~23s): no 0.9 hits or sustained limit cycle; after 12s detector latches to low gains, u holds ~0.5-0.7 without saturation, y climbs after ~23s lag and settles slowly to band in ~80-130s with in-band >>0.16 and MAE <<0.20, energy lower than before.",
+    "diagnosis": "Response is much slower / longer pure delay with intact gain. E13: step 0->0.5 at 202.5 shows zero rise for full 15s (stays at 0). E14 continuation shows first sustained rise only at ~225.6-226.5, i.e. 23.1-24.0s after the 202.5 step, rising 0.016 to 0.108 in 6s (~0.015/s) similar to nominal 0.012-0.025/s. E12 switch 0.96->0 at 162.5 falls to 0.15 then re-rises 173-184.9 to 0.44 (+0.28) 10.5-22s later from prior u in flight, then decays. Original cold delay was 2-4s (E3/E9). New delay ~22-24s (~6-10x). Gain/outflow/sensor unchanged: rise slope intact, no faster u=0 decay, no offset/noise change beyond 0-clipping.",
+    "diagnosis_category": "response_slower"
+  }
+}

@@ -1,0 +1,1 @@
+Water reservoir, y in [0,1] noisy ~0.02 std, target 0.6 band 0.55-0.65. Nonlinear positive gain: u=0.4 eq ~0.13, u=0.6 eq ~0.63+, u=0.8 eq ~0.7-0.9. Baseline deadtime 5-7s + tau 10-25s. Post-change: deadtime ~22-26s (quantified 22s flat in E12 183.1->205, 22s non-response E13-E14, onset E15 ~249), gain/drain/noise unchanged. Steady u to hold 0.6 ~0.59.

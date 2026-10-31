@@ -1,0 +1,306 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 11,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 15.0,
+  "y": 0.129
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.4,
+   "duration_s": 15.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Measures direction, rate of rise, and lag at a moderate input to estimate gain and settling time needed to choose hold-input for target.",
+   "expected_observation": "If positive-gain reservoir hypothesis is right, y rises monotonically from ~0.22 toward 0.4-0.6 over 15s with positive slope in last seconds if not yet settled, clearly above noise and well below 0.7 actual.",
+   "verdict": "approved; worst-case bound 0.823",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2232
+    ],
+    [
+     0.3,
+     0.2169
+    ],
+    [
+     0.6,
+     0.2167
+    ],
+    [
+     0.9,
+     0.207
+    ],
+    [
+     1.2,
+     0.2076
+    ],
+    [
+     1.5,
+     0.2002
+    ],
+    [
+     1.8,
+     0.1956
+    ],
+    [
+     2.1,
+     0.1964
+    ],
+    [
+     2.4,
+     0.1872
+    ],
+    [
+     2.7,
+     0.1736
+    ],
+    [
+     3.0,
+     0.1726
+    ],
+    [
+     3.3,
+     0.1613
+    ],
+    [
+     3.6,
+     0.1725
+    ],
+    [
+     3.9,
+     0.163
+    ],
+    [
+     4.2,
+     0.1427
+    ],
+    [
+     4.5,
+     0.1474
+    ],
+    [
+     4.8,
+     0.1344
+    ],
+    [
+     5.1,
+     0.1548
+    ],
+    [
+     5.4,
+     0.1582
+    ],
+    [
+     5.7,
+     0.1467
+    ],
+    [
+     6.0,
+     0.1435
+    ],
+    [
+     6.3,
+     0.1268
+    ],
+    [
+     6.6,
+     0.1513
+    ],
+    [
+     6.9,
+     0.15
+    ],
+    [
+     7.2,
+     0.1275
+    ],
+    [
+     7.5,
+     0.1503
+    ],
+    [
+     7.8,
+     0.1394
+    ],
+    [
+     8.1,
+     0.1342
+    ],
+    [
+     8.4,
+     0.1312
+    ],
+    [
+     8.7,
+     0.1453
+    ],
+    [
+     9.0,
+     0.1276
+    ],
+    [
+     9.3,
+     0.1369
+    ],
+    [
+     9.6,
+     0.1205
+    ],
+    [
+     9.9,
+     0.1224
+    ],
+    [
+     10.2,
+     0.1362
+    ],
+    [
+     10.5,
+     0.1228
+    ],
+    [
+     10.8,
+     0.1226
+    ],
+    [
+     11.1,
+     0.1216
+    ],
+    [
+     11.4,
+     0.1434
+    ],
+    [
+     11.7,
+     0.1405
+    ],
+    [
+     12.0,
+     0.1308
+    ],
+    [
+     12.3,
+     0.1488
+    ],
+    [
+     12.6,
+     0.1353
+    ],
+    [
+     12.9,
+     0.1267
+    ],
+    [
+     13.2,
+     0.1273
+    ],
+    [
+     13.5,
+     0.1204
+    ],
+    [
+     13.8,
+     0.1452
+    ],
+    [
+     14.1,
+     0.1397
+    ],
+    [
+     14.4,
+     0.1186
+    ],
+    [
+     14.7,
+     0.1428
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 14.9,
+    "y_start": 0.223,
+    "y_end": 0.134,
+    "y_min": 0.113,
+    "y_max": 0.233,
+    "y_mean_last_5s": 0.134,
+    "u_mean_last_5s": 0.4,
+    "y_slope_last_5s_per_s": 0.0003
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+   "confidence": 0.85,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "At u=0 the level decays over time due to self-drain and does not self-hold.",
+   "confidence": 0.8,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "There is no large dead-zone: u=0.4 produces a detectable rise above noise within 15 s.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "Response has seconds-scale lag, not instantaneous, so a 15 s hold shows gradual rise with curvature.",
+   "confidence": 0.6,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state response is approximately linear and u in 0.3-0.6 holds y near target 0.6.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor noise std is small (<0.02) so second-scale trends are interpretable.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

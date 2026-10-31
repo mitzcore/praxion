@@ -1,0 +1,20 @@
+{
+  "id": "spark8-20261031-013049-bc09a1-v1",
+  "run_id": "spark8-20261031-013049-bc09a1",
+  "version": 1,
+  "path": "artifacts/runs/spark8-20261031-013049-bc09a1/controller_v1.py",
+  "sha256": "cc2e099db1538c5a6550e51a700c94dc5cfccb2835c3e35fb76ba752188cbdd5",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:35:19.763948+00:00",
+  "byte_length": 3979,
+  "rationale": "First-order-plus-delay fit to E2-E6: delay 1.5-2.5s (E3 keeps rising 1.2s after u=0, E4 flat 3s), tau 12-15s from drain slope ~0.027-0.03/s at y~0.33-0.45 (tau=y/slope), K~0.85-0.97 from (y+tau*slope)/u: E2 0.88, E4 0.90, E5 0.97. Chose Kest=0.88, tau~13s. Feedforward uff=r/Kest gives ~0.68 at 0.6 so feedback only trims K error. P Kp=1.8 gives loop gain Kp*K~1.58, closed tau~13/2.58~5s, crossover ~0.12 rad/s, delay phase ~14deg + filter 7deg, large margin, robust to 30% K error. I Ti=10s (Ki=0.18) removes bias within ~10-15s. Integral authority +-0.35 covers K 0.65-1.2. Filter Tf=1.0s (alpha=dt/(1+dt)) cuts noise std ~0.015 to ~0.003 with 1s lag << tau. Reference governor r with Tref=4s + rate 0.04/s makes step trackable (max feasible rise near 0.6 is ~0.013/s at u=0.9) and prevents integrator kick on first call (r init = yf). Output clamp 0-0.85 plus linear backoff above yf=0.75 and hard 0 above 0.83/0.86 prevents 0.9 cutoff. Asymmetric slew (up 0.6/s, down 2.0/s) lets noise through minimally but allows fast safety cut.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir: u up -> y up, drains at u=0. No deadzone tested (0.5 responds). K~0.85-0.95 linear (0.88 nominal): y_ss=K*u. Tau~12-15s (nominal 13s). Pure delay ~1.5-2.5s seen in E3-E4. Drain slope ~0.027-0.03/s at y 0.33-0.45. Rise slope ~0.024-0.03/s at u 0.7-0.9. Noise std ~0.01-0.015, band 0.10 so averaging works. Self-draining yes: u=0 decays to <0.27 in 10s. Hold 0.6 needs u~0.63-0.73 (0.6/0.88=0.68 nominal). Never reaches steady state in 5-10s tests. Even full u=0.85 steady ~0.75, so 0.9 cutoff only reachable if K>1.05 plus overshoot. Speed: 0.3 to 0.6 needs ~10s at u~0.85.",
+    "predicted_behavior": "From y~0.3 to 0.6: saturates at 0.85 for ~3-5s, rises ~0.03/s, r catches target in ~7.5s, y enters 0.55-0.65 in ~12-16s, settles +-0.02 in ~18-22s with overshoot <0.025 (filtered). Steady u ~0.66-0.72 depending on true K, integral trims residual. After 30s: MAE <0.015, in-band >90%, energy ~0.47 per s (0.68^2). Noise-induced u chatter <0.015 rms. No 0.85/0.9 violations in nominal K 0.8-1.0.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

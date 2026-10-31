@@ -1,0 +1,1 @@
+Water reservoir, u in [0,1] pump, y in [0,1] noisy level, drains at ~0.03/s near 0.6. Nominal lag ~1.5-2.5s, gain ~0.07/s per unit u, hold for 0.6 ~0.52. Degraded mode: effective dead-time/carryover ~8-10s, steady gain/hold roughly unchanged, causing delayed overshoot to soft 0.85/hard 0.90 limits if not braked early.

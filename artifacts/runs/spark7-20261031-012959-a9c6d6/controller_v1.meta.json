@@ -1,0 +1,20 @@
+{
+  "id": "spark7-20261031-012959-a9c6d6-v1",
+  "run_id": "spark7-20261031-012959-a9c6d6",
+  "version": 1,
+  "path": "artifacts/runs/spark7-20261031-012959-a9c6d6/controller_v1.py",
+  "sha256": "353a9f1f23931572b2fd90ef5f080e58fa759acf5fc416cf0718496190f458d5",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:35:56.249605+00:00",
+  "byte_length": 3554,
+  "rationale": "Plant is positive-gain, self-draining, lagged ~2-4s, noisy ~+/-0.015, strongly nonlinear with apparent dead-zone: u=0.5 decays like u=0 to ~0.16 (E1), u=0.75 flat at ~0.15-0.18 (E5), u>=0.8 rises at +0.019/s (E6), u=1.0 rises +0.02 to +0.025/s (E2,E7), u=0.9 rises +0.028/s at 0.46-0.57 (E8), u=0 drains -0.02 to -0.03/s at high level (E11) and -0.021/s at mid level (E3), u=0.55 decays -0.018/s at 0.47-0.36 (E12). Short E9/E10 rises at u=0.8/0.6 are lag carryover (E11 shows 2-3s flat after u->0, E5 shows 4s dip). Linear ss from E1 (0.16/0.5) would need u=1.87 to hold 0.6, impossible, so gain must rise with u; interpolating E12 (<0.36 at 0.55) and E8/E9 (>0.65 at 0.8) gives hold ~0.70-0.80, center ~0.75. Therefore FF=1.15*target=0.69 for 0.6 is set slightly LOW to approach from below and let integrator find residual, avoiding 0.9 cutoff. Kp=1.1 below /2.5 above gives climb at Umax but strong braking above to handle lag momentum (~0.05-0.08 carryover). Ki=0.35 with |e|<0.25 gate and saturation freeze corrects FF error in ~10s without windup during initial 0.4 error climb. Kd=1.0 on filtered rate damps 0.02-0.03/s climbs by -0.02 to -0.03. Tf=1.2s and Tr=0.8s cut noise std ~0.01-0.015 by ~5x while adding only ~1s vs plant 2-4s lag. Safety ceiling (0.75->0.55, 0.78->0.40, 0.80->0.20) guarantees backoff before soft 0.85/hard 0.9 even if true>filtered.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir, pump up / drain down. Direction: +u raises y. Speed: net +0.019/s at u=0.8 low (E6 0.20->0.33/7s), +0.020/s at u=1.0 low (E2 0.177->0.295/6s), +0.025/s at u=1.0 mid (E7 0.335->0.46/5s), +0.028/s at u=0.9 mid-high (E8 0.46->0.57/4s); drain -0.021/s mid (E3 0.36->0.21/7s), -0.02 to -0.03/s high at u=0 (E11 0.69->0.49/10s), -0.018/s at u=0.55 (E12 0.47->0.36/6s). Pump authority vs drain ~0.05/s at u=1. Lag: 2-4s flat/carryover seen in E3 (4s rise after u->0), E5 (4s dip after 0->0.75), E11 (2-3s flat after 0.6->0). Dead-zone/nonlinear: u=0.5 sinks to ~0.16 like u=0 (E1), u=0.75 holds ~0.16 (E5), clear rise only >=0.8; linear model fails, superlinear. Self-draining: yes, holds ~0.16 at u=0.5, drains to zero if long. Noise: +/-0.015-0.02 ripple, std ~0.01-0.015. Hold for y=0.6 estimated 0.70-0.80.",
+    "predicted_behavior": "From 0.2-0.4 start: saturate ~0.92 for ~10-15s, rise ~0.02-0.025/s, enter 0.55-0.65 in ~15-22s, settle inside band by ~25-30s with <0.04 overshoot (braking from asymmetric Kp + D). After 30s: MAE ~0.01-0.02, in-band >85%, steady duty ~0.69+0.0-0.10 = 0.70-0.80, energy ~0.49-0.64 per step. No 0.9 cutoff contact; filtered safety starts cutting at 0.72-0.75.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

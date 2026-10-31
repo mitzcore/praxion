@@ -1,0 +1,1 @@
+Reservoir: K~0.88, tau~8-15 s, noise std<0.02. Nominal D~1-3 s, degraded D~24-25 s. u_ss(0.6)~0.68. y in [0,1], hard cutoff 0.9, soft 0.85. Target 0.6 band 0.55-0.65.

@@ -1,0 +1,1 @@
+Reservoir FOPDT: dc hold u~0.53 at y=0.6 (gain ~1.13 y/u), K~0.05-0.06/s, tau~12-20s. Nominal dead-time 0.5-2s. Changed dead-time ~7-9s (typ 8s), gain/drain/noise ~unchanged. Target 0.6 band 0.55-0.65, hard cutoff 0.9.

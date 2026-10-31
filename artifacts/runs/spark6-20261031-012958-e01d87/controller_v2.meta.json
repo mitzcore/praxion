@@ -1,0 +1,20 @@
+{
+  "id": "spark6-20261031-012958-e01d87-v2",
+  "run_id": "spark6-20261031-012958-e01d87",
+  "version": 2,
+  "path": "artifacts/runs/spark6-20261031-012958-e01d87/controller_v2.py",
+  "sha256": "e73b6392a8bff921082ab564b623d82717744a436993cde586f2d18221a66aa8",
+  "parent_id": "spark6-20261031-012958-e01d87-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:38:27.979741+00:00",
+  "byte_length": 4323,
+  "rationale": "Fixed FF 0.75->0.63 and expanded integral authority 0.08->0.32 with KI 0.055->0.18 and KP 0.28->0.65. Old I could only do 0.67-0.83, insufficient for new equilibrium ~0.51. New range 0.31-0.95 (capped 0.84) covers both nominal ~0.76 and changed ~0.51. Kept safety caps and added full conditional anti-windup plus faster slew up/down so integrator can learn new steady-state without windup or overshoot above 0.85.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir nominal: delay 2-4s, lag 8-15s, dead-zone below ~0.7, u_eq(0.6)=0.75-0.80, drain to zero at u=0 tau~10s. Changed: u_eq(0.6)~0.51 (down 0.24), u=0.62 holds 0.73, drain much weaker / gain much stronger. Controller must cover u_eq 0.50-0.80 with same delay/lag.",
+    "predicted_behavior": "Changed plant: u settles 0.50-0.58 to hold 0.60, y enters 0.55-0.65 within ~20-25s and stays, in-band after 30s >0.70, mae <0.05, no overrides/hard violations. Nominal plant: u settles 0.74-0.80, same in-band performance as before but with slightly faster rise and <0.05 overshoot, y<0.85.",
+    "diagnosis": "Same u now holds much higher y and level falls much slower. Nominally u=0.62-0.65 equilibrates <=0.3 (E1 0.5 decays, E4 0.65 only 0.11->0.19, E9 0.7 decays 0.43->0.37) and u=0.7 equilibrates ~0.37. In evaluation u~0.62 holds y~0.73 flat for 90s (ep0 t30-120 y 0.72-0.75, ep1 same) with no decay, and u~0.77 reaches 0.6 by ~18s then keeps climbing to 0.73 even as u falls to 0.62. Equivalent u_eq(0.6) fell from 0.75-0.78 to ~0.50-0.55 (using linear drain: 0.62*0.6/0.73=0.51), delta -0.22. Initial rise at u~0.84 from 0.35 to 0.49 in 12s ~0.011/s vs nominal 0.026/s (E6), but steady-state dominates. Old controller with FF 0.75 and I_lim 0.08 can only reach 0.67 min, leaving +0.13 steady error (mae 0.1321, in-band 0.0). This is effective gain up ~30-35% / outflow down ~30% / +0.13 measurement offset. Opposite direction to weaker/increased options.",
+    "diagnosis_category": "unknown"
+  }
+}

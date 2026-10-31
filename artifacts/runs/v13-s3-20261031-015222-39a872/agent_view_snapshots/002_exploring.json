@@ -1,0 +1,312 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 11,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 20.0,
+  "y": 0.0694
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.3,
+   "duration_s": 20.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Primary gain magnitude and lag/delay: a mid-level long hold separates fast-large vs slow-small response and is required to size control gain and settling allowance.",
+   "expected_observation": "If positive gain with lag is correct, y rises from ~0.23 with 1-3s lag toward ~0.3-0.5, slope flattening but still >0 over last seconds unless settled; noise visible but mean trend up.",
+   "verdict": "approved; worst-case bound 0.827",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2273
+    ],
+    [
+     0.4,
+     0.2167
+    ],
+    [
+     0.8,
+     0.2044
+    ],
+    [
+     1.2,
+     0.1944
+    ],
+    [
+     1.6,
+     0.1907
+    ],
+    [
+     2.0,
+     0.1798
+    ],
+    [
+     2.4,
+     0.1802
+    ],
+    [
+     2.8,
+     0.1699
+    ],
+    [
+     3.2,
+     0.162
+    ],
+    [
+     3.6,
+     0.1525
+    ],
+    [
+     4.0,
+     0.1413
+    ],
+    [
+     4.4,
+     0.1415
+    ],
+    [
+     4.8,
+     0.1343
+    ],
+    [
+     5.2,
+     0.1191
+    ],
+    [
+     5.6,
+     0.1306
+    ],
+    [
+     6.0,
+     0.1198
+    ],
+    [
+     6.4,
+     0.1189
+    ],
+    [
+     6.8,
+     0.1117
+    ],
+    [
+     7.2,
+     0.1088
+    ],
+    [
+     7.6,
+     0.1068
+    ],
+    [
+     8.0,
+     0.1043
+    ],
+    [
+     8.4,
+     0.1102
+    ],
+    [
+     8.8,
+     0.1007
+    ],
+    [
+     9.2,
+     0.1036
+    ],
+    [
+     9.6,
+     0.0943
+    ],
+    [
+     10.0,
+     0.0898
+    ],
+    [
+     10.4,
+     0.1005
+    ],
+    [
+     10.8,
+     0.0934
+    ],
+    [
+     11.2,
+     0.0833
+    ],
+    [
+     11.6,
+     0.0896
+    ],
+    [
+     12.0,
+     0.0924
+    ],
+    [
+     12.4,
+     0.0786
+    ],
+    [
+     12.8,
+     0.0923
+    ],
+    [
+     13.2,
+     0.0946
+    ],
+    [
+     13.6,
+     0.0944
+    ],
+    [
+     14.0,
+     0.0911
+    ],
+    [
+     14.4,
+     0.0881
+    ],
+    [
+     14.8,
+     0.0714
+    ],
+    [
+     15.2,
+     0.0781
+    ],
+    [
+     15.6,
+     0.0695
+    ],
+    [
+     16.0,
+     0.0815
+    ],
+    [
+     16.4,
+     0.074
+    ],
+    [
+     16.8,
+     0.0858
+    ],
+    [
+     17.2,
+     0.0796
+    ],
+    [
+     17.6,
+     0.0789
+    ],
+    [
+     18.0,
+     0.0704
+    ],
+    [
+     18.4,
+     0.0689
+    ],
+    [
+     18.8,
+     0.0742
+    ],
+    [
+     19.2,
+     0.0712
+    ],
+    [
+     19.6,
+     0.0622
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 19.9,
+    "y_start": 0.227,
+    "y_end": 0.058,
+    "y_min": 0.058,
+    "y_max": 0.227,
+    "y_mean_last_5s": 0.073,
+    "u_mean_last_5s": 0.3,
+    "y_slope_last_5s_per_s": -0.0027
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases level y with positive steady-state gain.",
+   "confidence": 0.9,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "With u=0 the reservoir drains on its own so y decays toward a low equilibrium.",
+   "confidence": 0.8,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "Response has short lag/delay of a few seconds and settles over tens of seconds, not instantly.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "There is no large dead-zone: u >= 0.1 produces a detectable rise.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear across u, so a second amplitude will scale proportionally.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Holding target y=0.6 requires a mid-range steady u roughly 0.4-0.7.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H7",
+   "statement": "Level sensor has moderate zero-mean noise requiring averaging over seconds, not single samples.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

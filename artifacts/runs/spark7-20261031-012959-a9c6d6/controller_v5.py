@@ -1,0 +1,276 @@
+import math
+def _clamp(v, lo, hi):
+    if not math.isfinite(v):
+        return (lo + hi) * 0.5
+    if v < lo:
+        return lo
+    if v > hi:
+        return hi
+    return v
+def control(obs, state):
+    try:
+        if not isinstance(state, dict):
+            state = {}
+        try:
+            y_in = obs.get("y", 0.6)
+            t_in = obs.get("target", 0.6)
+            dt_in = obs.get("dt", 0.2)
+        except Exception:
+            y_in = 0.6
+            t_in = 0.6
+            dt_in = 0.2
+        yf_s = state.get("yf", None)
+        yfb = 0.6
+        if isinstance(yf_s, (float, int)) and math.isfinite(float(yf_s)):
+            yfb = float(yf_s)
+        if not math.isfinite(y_in):
+            y_in = yfb
+        if not math.isfinite(t_in):
+            t_in = 0.6
+        if not math.isfinite(dt_in) or dt_in <= 0:
+            dt_in = 0.2
+        y = _clamp(float(y_in), 0.0, 1.0)
+        target = _clamp(float(t_in), 0.0, 1.0)
+        dt = float(dt_in)
+        if dt < 0.02:
+            dt = 0.02
+        if dt > 1.0:
+            dt = 1.0
+        yf_prev = state.get("yf", None)
+        rf_prev = state.get("rf", 0.0)
+        integ_prev = state.get("integ", 0.0)
+        uprev_s = state.get("uprev", None)
+        uff_prev = state.get("uff", 0.62)
+        t_prev = state.get("t", 0.0)
+        y0_prev = state.get("y0", None)
+        lowT_prev = state.get("lowT", 0.0)
+        delay_prev = state.get("delay", 0)
+        usum_prev = state.get("usum", 0.0)
+        n_prev = state.get("n", 0)
+        if not math.isfinite(rf_prev):
+            rf_prev = 0.0
+        if not math.isfinite(integ_prev):
+            integ_prev = 0.0
+        if not math.isfinite(uff_prev):
+            uff_prev = 0.62
+        if not math.isfinite(t_prev):
+            t_prev = 0.0
+        if not math.isfinite(lowT_prev):
+            lowT_prev = 0.0
+        if not math.isfinite(usum_prev):
+            usum_prev = 0.0
+        try:
+            n_prev = int(n_prev)
+        except Exception:
+            n_prev = 0
+        if n_prev < 0:
+            n_prev = 0
+        if n_prev > 100000:
+            n_prev = 100000
+        try:
+            delay_prev = int(delay_prev)
+        except Exception:
+            delay_prev = 0
+        if delay_prev not in (0, 1):
+            delay_prev = 0
+        rf_prev = _clamp(float(rf_prev), -0.15, 0.15)
+        integ_prev = _clamp(float(integ_prev), -0.30, 0.30)
+        uff = _clamp(float(uff_prev), 0.35, 0.85)
+        uprev = None
+        if isinstance(uprev_s, (float, int)) and math.isfinite(float(uprev_s)):
+            uprev = _clamp(float(uprev_s), 0.0, 1.0)
+        first = True
+        if isinstance(yf_prev, (float, int)) and math.isfinite(float(yf_prev)):
+            first = False
+        t_cur = float(t_prev) + dt
+        if first:
+            yf = y
+            rf = 0.0
+            y0 = y
+            lowT = 0.0
+            avg_u = uprev if uprev is not None else 0.8
+        else:
+            yfp = _clamp(float(yf_prev), 0.0, 1.0)
+            if delay_prev == 0:
+                Tf = 2.0
+                Tr = 2.5
+            else:
+                Tf = 6.0
+                Tr = 8.0
+            a = dt / (Tf + dt)
+            yf = (1.0 - a) * yfp + a * y
+            yf = _clamp(yf, 0.0, 1.0)
+            raw = (yf - yfp) / dt
+            raw = _clamp(raw, -0.15, 0.15)
+            b = dt / (Tr + dt)
+            rf = (1.0 - b) * float(rf_prev) + b * raw
+            rf = _clamp(rf, -0.15, 0.15)
+            if isinstance(y0_prev, (float, int)) and math.isfinite(float(y0_prev)):
+                y0 = _clamp(float(y0_prev), 0.0, 1.0)
+            else:
+                y0 = yf
+            lowT = float(lowT_prev)
+            if n_prev > 0:
+                avg_u = float(usum_prev) / float(n_prev)
+            else:
+                avg_u = uprev if uprev is not None else 0.8
+            if not math.isfinite(avg_u):
+                avg_u = 0.8
+        err_now = _clamp(target - yf, -1.0, 1.0)
+        delay_new = delay_prev
+        trans = False
+        if delay_prev == 0 and not first:
+            cond_flat = (abs(err_now) > 0.12 and abs(rf) < 0.008)
+            if cond_flat:
+                lowT = lowT + dt
+            else:
+                lowT = lowT - 2.0 * dt
+                if lowT < 0.0:
+                    lowT = 0.0
+            if lowT > 30.0:
+                lowT = 30.0
+            trig1 = (t_cur > 8.0 and lowT > 6.0)
+            trig2 = (t_cur > 10.0 and (yf - y0) < 0.06 and (target - yf) > 0.12 and avg_u > 0.65)
+            trig3 = (t_cur > 12.0 and abs(err_now) > 0.15 and abs(rf) < 0.005 and avg_u > 0.60)
+            if trig1 or trig2 or trig3:
+                delay_new = 1
+                trans = True
+        elif delay_prev == 1:
+            delay_new = 1
+            lowT = float(lowT_prev) if not first else 0.0
+        if trans:
+            integ_prev = 0.0
+            if uff > 0.65:
+                uff = 0.62
+        if delay_new == 0:
+            Kp = 0.70
+            Ki = 0.06
+            Kd = 0.8
+            Tp = 6.0
+        else:
+            Kp = 0.18
+            Ki = 0.012
+            Kd = 0.0
+            Tp = 0.0
+        if Tp > 0.0:
+            y_pred = yf + Tp * rf
+        else:
+            y_pred = yf
+        y_pred = _clamp(y_pred, 0.0, 1.0)
+        err = _clamp(target - yf, -1.0, 1.0)
+        err_pred = _clamp(target - y_pred, -1.0, 1.0)
+        P = Kp * err_pred
+        if delay_new == 0:
+            P = _clamp(P, -0.30, 0.30)
+        else:
+            P = _clamp(P, -0.15, 0.15)
+        D = -Kd * rf
+        D = _clamp(D, -0.15, 0.15)
+        if delay_new == 0:
+            if yf > 0.78:
+                s_max = 0.30
+            elif yf > 0.73:
+                s_max = 0.45
+            elif yf > 0.68:
+                s_max = 0.60
+            elif yf > 0.64:
+                s_max = 0.75
+            else:
+                s_max = 0.85
+        else:
+            if yf > 0.78:
+                s_max = 0.25
+            elif yf > 0.73:
+                s_max = 0.40
+            elif yf > 0.68:
+                s_max = 0.55
+            elif yf > 0.64:
+                s_max = 0.65
+            else:
+                s_max = 0.75
+        if y > 0.83:
+            s_max = 0.20
+        elif y > 0.80:
+            if s_max > 0.30:
+                s_max = 0.30
+        integ = float(integ_prev)
+        if delay_new == 0:
+            if abs(err) < 0.22 and abs(err) > 0.015:
+                u_test = uff + P + integ + D
+                blocked_high = (u_test > s_max) and (err > 0)
+                blocked_low = (u_test < 0.0) and (err < 0)
+                pred_block = (y_pred > target + 0.04) and (err > 0)
+                if (not blocked_high) and (not blocked_low) and (not pred_block):
+                    integ = integ + Ki * err * dt
+                    integ = _clamp(integ, -0.30, 0.30)
+        else:
+            integ = _clamp(integ, -0.20, 0.20)
+            if abs(err) < 0.25 and abs(err) > 0.02 and yf > 0.25 and yf < 0.80:
+                u_test = uff + P + integ + D
+                blocked_high = (u_test > s_max) and (err > 0)
+                blocked_low = (u_test < 0.0) and (err < 0)
+                if (not blocked_high) and (not blocked_low):
+                    integ = integ + Ki * err * dt
+                    integ = _clamp(integ, -0.20, 0.20)
+        u = uff + P + integ + D
+        if delay_new == 0:
+            if y_pred > target:
+                over = y_pred - target
+                cap_pred = uff - 0.9 * over
+                if u > cap_pred:
+                    u = cap_pred
+        else:
+            if yf > target:
+                over = yf - target
+                cap_pred = uff - 0.7 * over
+                if u > cap_pred:
+                    u = cap_pred
+        if u > s_max:
+            u = s_max
+        if u < 0.0:
+            u = 0.0
+        if u > 1.0:
+            u = 1.0
+        if trans:
+            if u > 0.65:
+                u = 0.65
+        if uprev is not None and not trans:
+            if delay_new == 0:
+                up_lim = uprev + 0.25 * dt
+                dn_lim = uprev - 0.40 * dt
+            else:
+                up_lim = uprev + 0.04 * dt
+                dn_lim = uprev - 0.06 * dt
+            if u > up_lim:
+                u = up_lim
+            elif u < dn_lim:
+                u = dn_lim
+        elif uprev is not None and trans:
+            up_lim = uprev + 0.04 * dt
+            if u > up_lim:
+                u = up_lim
+        if not math.isfinite(u):
+            u = uff
+        u = _clamp(u, 0.0, 1.0)
+        if delay_new == 0:
+            if abs(err) < 0.09 and abs(rf) < 0.007 and yf > 0.30 and yf < 0.80:
+                uff = uff + 0.05 * err * dt
+                uff = _clamp(uff, 0.35, 0.85)
+        else:
+            if abs(err) < 0.07 and abs(rf) < 0.004 and yf > 0.30 and yf < 0.80:
+                uff = uff + 0.015 * err * dt
+                uff = _clamp(uff, 0.40, 0.72)
+            else:
+                uff = _clamp(uff, 0.40, 0.72)
+        usum_new = float(usum_prev) + float(u)
+        n_new = int(n_prev) + 1
+        if n_new > 100000:
+            usum_new = usum_new * 0.5
+            n_new = 50000
+        ns = {"yf": float(_clamp(yf, 0.0, 1.0)), "rf": float(_clamp(rf, -0.15, 0.15)), "integ": float(_clamp(integ, -0.30, 0.30)), "uprev": float(u), "uff": float(uff), "t": float(t_cur), "y0": float(y0), "lowT": float(_clamp(lowT, 0.0, 30.0)), "delay": int(delay_new), "usum": float(usum_new), "n": int(n_new)}
+        return (float(u), ns)
+    except Exception:
+        try:
+            return (0.0, {"yf": 0.6, "rf": 0.0, "integ": 0.0, "uprev": 0.0, "uff": 0.62, "t": 0.0, "y0": 0.6, "lowT": 0.0, "delay": 0, "usum": 0.0, "n": 0})
+        except Exception:
+            return (0.0, {})

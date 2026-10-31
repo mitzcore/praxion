@@ -1,0 +1,20 @@
+{
+  "id": "v13-s14-20261031-015222-af63b9-v1",
+  "run_id": "v13-s14-20261031-015222-af63b9",
+  "version": 1,
+  "path": "artifacts/runs/v13-s14-20261031-015222-af63b9/controller_v1.py",
+  "sha256": "6b4964cdd564f8d4e117a7b5de83d3050c6088c3aa328a75f3f6c07773510e94",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "0d19650e641cac11",
+  "created_at": "2026-10-31T05:58:04.111149+00:00",
+  "byte_length": 3162,
+  "rationale": "Evidence shows positive gain, strong non-linearity (u=0.4 eq ~0.134 vs u=0.8 still rising at 0.59 with ~0.016-0.021/s), warm lag 1-2s, cold-start delay 5-7s, tau ~10-25s, noise ~0.02-0.03, self-drain ~0.018/s at u=0. Feedforward 0.55 is biased slightly low to avoid hard-cutoff overshoot; integral +-0.32 can correct to 0.23-0.87 covering any plausible u* for 0.6 (0.4-0.8). Kp=0.8 gives gentle proportional, Ki=0.045 gives Ti~18s for stability with delay, integral frozen when e>0.20 to prevent transit windup during 20+s climb, filtered D (Kd=1.8, rate tau 2s) brakes 0.02/s rises by ~0.036, y-filter tau 1.2s rejects noise, staged safety caps above 0.68-0.80 force drain before 0.9 true can be reached.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Reservoir: u up -> y up. No permanent dead-zone; cold-start 0->0.7 flat ~5-7s then rises, warm response 1-2s lag. Rate ~0.016-0.021/s at u=0.7-0.9 for y 0.2-0.59, drain ~-0.019/s at u=0. Time constant 10-25s, settling >20s, momentum after steps lasts seconds. Measured equilibria: u=0.4 holds ~0.134 (E1 flat slope 0.0003); u=0.8 from 0.13 rose to 0.59 over ~24s still +0.016/s (E2-E4,E9-E10) so eq 0.70-0.90; u=0.6 at y~0.63 still +0.0109/s over 4s (E11) but partly momentum, so u* for 0.6 is uncertain ~0.50-0.65. Self-draining: u=0 falls 0.51->0.15 in 20s. Noise std ~0.02-0.03, spikes to 0.03. Gain highly nonlinear: 0.4->0.13 but 0.6-> >0.6. Never near 0.9 in tests; worst-case rate 0.08/s per unit u.",
+    "predicted_behavior": "From low start (~0.15) u ~0.87-0.91 then ~0.6 during climb, reaching 0.55 in ~20-25s, entering band by ~25-28s, overshoot <0.03-0.05 due to D-braking and y>0.70 cap, then integral trims to steady duty (u* learned) with MAE <0.02 in band and >90% time in 0.55-0.65 after 30s. Steady u = FF+I ~0.5-0.7. Noise causes +-0.01 u dither only.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

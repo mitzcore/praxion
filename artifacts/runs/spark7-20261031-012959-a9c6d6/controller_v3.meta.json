@@ -1,0 +1,20 @@
+{
+  "id": "spark7-20261031-012959-a9c6d6-v3",
+  "run_id": "spark7-20261031-012959-a9c6d6",
+  "version": 3,
+  "path": "artifacts/runs/spark7-20261031-012959-a9c6d6/controller_v3.py",
+  "sha256": "e8880a74609241ea3ef293c2ace723f41b82f02dbedc4e3e5ed045f3cbe9421a",
+  "parent_id": "spark7-20261031-012959-a9c6d6-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "d9206efcefe117cb",
+  "created_at": "2026-10-31T05:40:25.825845+00:00",
+  "byte_length": 4309,
+  "rationale": "Retuned for +3s dead-time with delay-robust PI: longer filters (Tf/Tr 1.8->3.0s), prediction horizon 3.2->5.0s, Kp 0.75->0.50, Kd 0.6->0.45 with tight clamp, Ki 0.40->0.10 with +/-0.25 limits and freeze when |err|>0.25, base 1.10*target->1.20*target (~0.72) to reduce windup, rate limit 0.60/s->0.30/s. This keeps full 0.92 fill when far but brakes early and integrates slowly near target to stop delay-induced limit cycle.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Reservoir with large input dead-zone: u<=0.55-0.75 sinks (-0.015 to -0.018/s), u~0.75 holds, u>=0.8 rises (+0.019-0.028/s). Net gain ~0.02/s at u=1. Drain ~0.017-0.021/s at u=0. Lag nominal ~1.5-2.5s dead-time + ~3s time-constant, degraded ~4.5-5.5s dead-time + ~5-6s lag. Noise <0.02. Hold for y=0.6 ~0.72-0.80. Target 0.6 band 0.55-0.65, must rise 0.45 in <~22s at full power.",
+    "predicted_behavior": "On delayed plant: initial 0.92 fill for ~15-18s, y_pred with 5s horizon brakes early, peak <0.65-0.68, then gentle settle to 0.58-0.62 without second overshoot; in-band after 30s >0.75-0.85, MAE ~0.035-0.050, energy similar or lower. On nominal 2s plant: slightly early braking gives slower approach but still in-band by ~20-25s, no oscillation, in-band >0.80. If prediction wrong, result will show either persistent undershoot (gain loss) or fast oscillation (sensor), refuting delay hypothesis.",
+    "diagnosis": "Same command now produces same steady rise (~0.019-0.020/s at u~0.92: E2 0.177->0.295/6s vs post t0-19s 0.179->0.571) so actuator gain and outflow unchanged, and it still overshoots to 0.73-0.79 so authority remains. What changed is timing: initial flat before rise grew from ~1.5-2s (E2, E6) to ~4.5-5s (all post episodes t0-4.8 flat/decay despite u=0.92), and fall after u-cut similarly delayed ~3-4s (e.g. v1 ep1 u->0.26 at 30s but y stays ~0.72 until 33-34s). Under-predicted delay with Kp=0.75/Ki=0.40 causes overshoot to ~0.74 then undershoot to ~0.49 sustained ~40s period, in-band 0.35->0.18. Estimated new dead-time ~4.5-5.5s vs old ~1.5-2.5s (+~3s) and effective lag ~6s vs ~3s.",
+    "diagnosis_category": "response_slower"
+  }
+}

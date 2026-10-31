@@ -1,0 +1,1233 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793424615.015189,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.85,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.6,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Response has lag / first-order time constant 2-10 s and pure delay < 3 s, not instantaneous.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "There is a dead-zone: u below ~0.15 produces negligible rise.",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is in u in [0.3, 0.7].",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793424632.828498,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response has lag / first-order time constant 2-10 s and pure delay < 3 s, not instantaneous.",
+    "confidence": 0.25,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "There is an effective dead-zone/minimum effective input: u=0.5 produces negligible rise within 10 s, so threshold may be >0.5.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.25,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+    "confidence": 0.4,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793424657.488651,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay <2 s with dominant lag / time constant of order 10 s or more.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise within 10 s at y~0.2 while u=0.8 produces clear rise, so effective threshold is between 0.5 and 0.8.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order tens of seconds.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793424678.9101791,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.03,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise within 10 s at y~0.2 while u=0.8 produces clear rise, so effective threshold is between 0.5 and 0.8 or equilibrium at u=0.5 is near 0.18.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E3",
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.5, likely in u in [0.6, 1.0].",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793424700.6407502,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E3",
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793424737.1705248,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E3",
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793424771.476922,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so effective threshold/nonlinearity is between 0.5 and 0.65.",
+    "confidence": 0.78,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E3",
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.04,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is above 0.65, likely in u in [0.75, 1.0].",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.55, so target band is reachable without requiring u>0.9.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E2",
+     "E6"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793424805.908563,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so response is strongly nonlinear with low gain below ~0.6 and higher gain above.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E3",
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is below 0.8 and above 0.6, likely in u in [0.65, 0.78], because u=0.8 drives through 0.6 with +0.02/s slope while u=0.5 and u=0.65 equilibrate far below.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E2",
+     "E6",
+     "E7"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E8",
+  "ts": 1793424834.247353,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low input: u=0.5 produces negligible rise with equilibrium near 0.17-0.19, while u=0.65 and u=0.8 produce clear rises, so response is strongly nonlinear with low gain below ~0.6 and higher gain above.",
+    "confidence": 0.84,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E3",
+     "E1",
+     "E8"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is below 0.8 and above 0.6, likely in u in [0.65, 0.78], because u=0.8 drives through 0.6 with +0.02/s slope while u=0.5 and u=0.65 equilibrate far below.",
+    "confidence": 0.68,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E2",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E9",
+  "ts": 1793424863.738741,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.91,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.8-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E3",
+     "E1",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and no flattening.",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened), implying very steep steady-state gain between 0.7 and 0.8.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E9"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E10",
+  "ts": 1793424889.027046,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.75-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E3",
+     "E1",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and u=0.75 drives 0.37 to 0.48 with positive slope and no flattening.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened) while u=0.75 rises from same level, implying very steep steady-state gain between 0.7 and 0.8.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E11",
+  "ts": 1793424915.105856,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain); u=0 does not raise level.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step to u=0.5 from ~0.23 produces Delta-y > 0.05 within 10 s.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response is not instantaneous: pure delay 2-4 s with dominant lag / time constant of order 8-15 s.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Effective dead-zone / low gain at low-mid input: u=0.5 equilibrates near 0.17-0.19, u=0.65 rises only at low level, u=0.7 fails to hold 0.43 and settles near 0.37, while u=0.75-0.9 produce clear rises, so response is strongly nonlinear with steep gain increase between 0.7 and 0.8.",
+    "confidence": 0.91,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "At u=0 the level decays on its own toward near-zero with time constant of order 10 s, faster at higher level.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E3",
+     "E1",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Steady-state y vs u is approximately linear over u in [0.2, 0.8].",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Steady-state input needed to hold target y=0.6 is in (0.7, 0.8], likely 0.73-0.80, because u=0.7 decays from 0.43 to ~0.37 while u=0.8 drives 0.39 to 0.61 with positive slope and u=0.75 drives 0.37 to 0.55 with positive slope and no flattening.",
+    "confidence": 0.78,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H8",
+    "statement": "Sensor noise standard deviation is < 0.03 and zero-mean.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H9",
+    "statement": "Equilibrium for u=0.8 exceeds 0.60, so target band is reachable without requiring u>0.9; u=0.8 held 5+4 s drove 0.39 to 0.61 with no flattening.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E2",
+     "E6",
+     "E7",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H10",
+    "statement": "Equilibrium for u=0.7 is near 0.36-0.38 (E9 fell 0.43 to ~0.37 and flattened) while u=0.75 rises from same level and from 0.46 to 0.55 in 5 s, implying very steep steady-state gain between 0.7 and 0.8.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E9",
+     "E10",
+     "E11"
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,122 @@
+--- a/spark7-20261031-012959-a9c6d6/controller_v1.py
++++ b/spark7-20261031-012959-a9c6d6/controller_v2.py
+@@ -30,7 +30,7 @@
+             dt_in = 0.2
+         y = _clamp(y_in, 0.0, 1.0)
+         target = _clamp(t_in, 0.0, 1.0)
+-        dt = y_in * 0.0 + dt_in
++        dt = dt_in
+         if dt < 0.02:
+             dt = 0.02
+         if dt > 1.0:
+@@ -38,12 +38,20 @@
+         yf_prev = state.get("yf", None)
+         rf_prev = state.get("rf", 0.0)
+         integ_prev = state.get("integ", 0.0)
++        uprev = state.get("uprev", None)
+         if not math.isfinite(rf_prev):
+             rf_prev = 0.0
+         if not math.isfinite(integ_prev):
+             integ_prev = 0.0
+         rf_prev = _clamp(rf_prev, -0.15, 0.15)
+-        integ_prev = _clamp(integ_prev, -0.35, 0.35)
++        integ_prev = _clamp(integ_prev, -0.40, 0.40)
++        if isinstance(uprev, float) or isinstance(uprev, int):
++            if math.isfinite(uprev):
++                uprev = _clamp(float(uprev), 0.0, 1.0)
++            else:
++                uprev = None
++        else:
++            uprev = None
+         first = True
+         if isinstance(yf_prev, float) or isinstance(yf_prev, int):
+             if math.isfinite(yf_prev):
+@@ -53,29 +61,31 @@
+             rf = 0.0
+         else:
+             yf_prev = _clamp(float(yf_prev), 0.0, 1.0)
+-            Tf = 1.2
++            Tf = 1.8
+             a = dt / (Tf + dt)
+             yf = (1.0 - a) * yf_prev + a * y
+             yf = _clamp(yf, 0.0, 1.0)
+             raw_rate = (yf - yf_prev) / dt
+             raw_rate = _clamp(raw_rate, -0.15, 0.15)
+-            Tr = 0.8
++            Tr = 1.8
+             b = dt / (Tr + dt)
+             rf = (1.0 - b) * rf_prev + b * raw_rate
+             rf = _clamp(rf, -0.15, 0.15)
+-        ff = 1.15 * target
+-        ff = _clamp(ff, 0.0, 0.80)
++        Tp = 3.2
++        y_pred = yf + Tp * rf
++        y_pred = _clamp(y_pred, 0.0, 1.0)
++        base = 1.10 * target
++        base = _clamp(base, 0.0, 0.75)
++        err_pred = target - y_pred
+         err = target - yf
++        err_pred = _clamp(err_pred, -1.0, 1.0)
+         err = _clamp(err, -1.0, 1.0)
+-        if err > 0:
+-            Kp = 1.1
+-        else:
+-            Kp = 2.5
+-        P = Kp * err
+-        P = _clamp(P, -0.5, 0.5)
+-        Kd = 1.0
++        Kp = 0.75
++        P = Kp * err_pred
++        P = _clamp(P, -0.45, 0.45)
++        Kd = 0.6
+         D = -Kd * rf
+-        D = _clamp(D, -0.25, 0.25)
++        D = _clamp(D, -0.20, 0.20)
+         if yf > 0.80:
+             s_max = 0.20
+         elif yf > 0.78:
+@@ -89,28 +99,37 @@
+         if y > 0.85:
+             if s_max > 0.20:
+                 s_max = 0.20
+-        Ki = 0.35
++        Ki = 0.40
++        if abs(err) < 0.015 and yf > 0.55 and yf < 0.65:
++            Ki = 0.12
+         integ = integ_prev
+-        if abs(err) < 0.25:
+-            u_test = ff + P + integ + D
++        if abs(err) < 0.30:
++            u_test = base + P + integ + D
+             blocked_high = (u_test > s_max) and (err > 0)
+             blocked_low = (u_test < 0.0) and (err < 0)
+             if not blocked_high and not blocked_low:
+                 integ = integ + Ki * err * dt
+-                integ = _clamp(integ, -0.35, 0.35)
+-        u = ff + P + integ + D
++                integ = _clamp(integ, -0.40, 0.40)
++        u = base + P + integ + D
+         if u > s_max:
+             u = s_max
+         if u < 0.0:
+             u = 0.0
+         if u > 1.0:
+             u = 1.0
++        if uprev is not None:
++            maxd = 0.6 * dt
++            if u > uprev + maxd:
++                u = uprev + maxd
++            elif u < uprev - maxd:
++                u = uprev - maxd
+         if not math.isfinite(u):
+             u = 0.0
+-        ns = {"yf": float(_clamp(yf, 0.0, 1.0)), "rf": float(_clamp(rf, -0.15, 0.15)), "integ": float(_clamp(integ, -0.35, 0.35))}
++        u = _clamp(u, 0.0, 1.0)
++        ns = {"yf": float(_clamp(yf, 0.0, 1.0)), "rf": float(_clamp(rf, -0.15, 0.15)), "integ": float(_clamp(integ, -0.40, 0.40)), "uprev": float(u)}
+         return (float(u), ns)
+     except Exception:
+         try:
+-            return (0.0, {"yf": 0.6, "rf": 0.0, "integ": 0.0})
++            return (0.0, {"yf": 0.6, "rf": 0.0, "integ": 0.0, "uprev": 0.0})
+         except Exception:
+             return (0.0, {})

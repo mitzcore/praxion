@@ -1,0 +1,301 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 11,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 10.0,
+  "y": 0.3272
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 10.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of DC gain and response lag plus noise level at a mid input; needed to map target level to pump range and to set safe controller speed without oscillation.",
+   "expected_observation": "If positive gain with modest lag is correct, y will start rising from ~0.34 within 1-2 s at roughly 0.01-0.03 per s toward ~0.45-0.55, with small noisy ripple, and will not reach steady state in 10 s if time constant is several seconds.",
+   "verdict": "approved; worst-case bound 0.840",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.3402
+    ],
+    [
+     0.2,
+     0.3322
+    ],
+    [
+     0.4,
+     0.3264
+    ],
+    [
+     0.6,
+     0.317
+    ],
+    [
+     0.8,
+     0.3072
+    ],
+    [
+     1.0,
+     0.3124
+    ],
+    [
+     1.2,
+     0.2892
+    ],
+    [
+     1.4,
+     0.2989
+    ],
+    [
+     1.6,
+     0.3007
+    ],
+    [
+     1.8,
+     0.2928
+    ],
+    [
+     2.0,
+     0.2816
+    ],
+    [
+     2.2,
+     0.2777
+    ],
+    [
+     2.4,
+     0.2951
+    ],
+    [
+     2.6,
+     0.2848
+    ],
+    [
+     2.8,
+     0.277
+    ],
+    [
+     3.0,
+     0.281
+    ],
+    [
+     3.2,
+     0.2721
+    ],
+    [
+     3.4,
+     0.2958
+    ],
+    [
+     3.6,
+     0.2816
+    ],
+    [
+     3.8,
+     0.2977
+    ],
+    [
+     4.0,
+     0.2909
+    ],
+    [
+     4.2,
+     0.305
+    ],
+    [
+     4.4,
+     0.2943
+    ],
+    [
+     4.6,
+     0.3036
+    ],
+    [
+     4.8,
+     0.3058
+    ],
+    [
+     5.0,
+     0.3021
+    ],
+    [
+     5.2,
+     0.2951
+    ],
+    [
+     5.4,
+     0.3
+    ],
+    [
+     5.6,
+     0.3089
+    ],
+    [
+     5.8,
+     0.2959
+    ],
+    [
+     6.0,
+     0.3002
+    ],
+    [
+     6.2,
+     0.3088
+    ],
+    [
+     6.4,
+     0.3206
+    ],
+    [
+     6.6,
+     0.3149
+    ],
+    [
+     6.8,
+     0.3166
+    ],
+    [
+     7.0,
+     0.3037
+    ],
+    [
+     7.2,
+     0.3104
+    ],
+    [
+     7.4,
+     0.3212
+    ],
+    [
+     7.6,
+     0.3208
+    ],
+    [
+     7.8,
+     0.3191
+    ],
+    [
+     8.0,
+     0.3172
+    ],
+    [
+     8.2,
+     0.3173
+    ],
+    [
+     8.4,
+     0.3138
+    ],
+    [
+     8.6,
+     0.3333
+    ],
+    [
+     8.8,
+     0.3251
+    ],
+    [
+     9.0,
+     0.3291
+    ],
+    [
+     9.2,
+     0.3302
+    ],
+    [
+     9.4,
+     0.3293
+    ],
+    [
+     9.6,
+     0.328
+    ],
+    [
+     9.8,
+     0.3218
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u raises the steady-state level y (positive DC gain).",
+   "confidence": 0.9,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "At u=0 the level decays on its own due to drainage rather than holding constant.",
+   "confidence": 0.85,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "There is no large dead-zone; even u ~0.1-0.2 produces a measurable rise versus u=0.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "Response lag/delay is short: pure delay <2 s and dominant time constant <10 s.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear across u so a mid-level step estimates gain at other levels.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Holding y=0.6 at steady state requires a moderate pump u in [0.3, 0.7].",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small (std <0.02) relative to the 0.10 control band so second-scale averaging reveals true level.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

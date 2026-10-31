@@ -1,0 +1,874 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "after_change_max_single_experiment_s": 40.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 9,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 30.0,
+  "y": 0.201
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 12.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Reduces gain-magnitude and lag uncertainty to calibrate later steps and hold-input estimate for target control.",
+   "expected_observation": "If positive gain with lag is correct, y should rise steadily from ~0.22 toward ~0.4-0.6 with a few seconds lag and visible noise ripple.",
+   "verdict": "approved; worst-case bound 0.823",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2232
+    ],
+    [
+     0.2,
+     0.2247
+    ],
+    [
+     0.4,
+     0.233
+    ],
+    [
+     0.6,
+     0.2167
+    ],
+    [
+     0.8,
+     0.2134
+    ],
+    [
+     1.0,
+     0.2147
+    ],
+    [
+     1.2,
+     0.2076
+    ],
+    [
+     1.4,
+     0.2012
+    ],
+    [
+     1.6,
+     0.191
+    ],
+    [
+     1.8,
+     0.1956
+    ],
+    [
+     2.0,
+     0.1965
+    ],
+    [
+     2.2,
+     0.1856
+    ],
+    [
+     2.4,
+     0.1876
+    ],
+    [
+     2.6,
+     0.171
+    ],
+    [
+     2.8,
+     0.1515
+    ],
+    [
+     3.0,
+     0.1748
+    ],
+    [
+     3.2,
+     0.1785
+    ],
+    [
+     3.4,
+     0.1717
+    ],
+    [
+     3.6,
+     0.177
+    ],
+    [
+     3.8,
+     0.1604
+    ],
+    [
+     4.0,
+     0.1564
+    ],
+    [
+     4.2,
+     0.1497
+    ],
+    [
+     4.4,
+     0.1507
+    ],
+    [
+     4.6,
+     0.1487
+    ],
+    [
+     4.8,
+     0.1441
+    ],
+    [
+     5.0,
+     0.1606
+    ],
+    [
+     5.2,
+     0.1472
+    ],
+    [
+     5.4,
+     0.1708
+    ],
+    [
+     5.6,
+     0.1776
+    ],
+    [
+     5.8,
+     0.1482
+    ],
+    [
+     6.0,
+     0.1591
+    ],
+    [
+     6.2,
+     0.141
+    ],
+    [
+     6.4,
+     0.1591
+    ],
+    [
+     6.6,
+     0.1699
+    ],
+    [
+     6.8,
+     0.1555
+    ],
+    [
+     7.0,
+     0.1585
+    ],
+    [
+     7.2,
+     0.1492
+    ],
+    [
+     7.4,
+     0.167
+    ],
+    [
+     7.6,
+     0.1557
+    ],
+    [
+     7.8,
+     0.1643
+    ],
+    [
+     8.0,
+     0.1612
+    ],
+    [
+     8.2,
+     0.1608
+    ],
+    [
+     8.4,
+     0.1591
+    ],
+    [
+     8.6,
+     0.1657
+    ],
+    [
+     8.8,
+     0.157
+    ],
+    [
+     9.0,
+     0.1587
+    ],
+    [
+     9.2,
+     0.1723
+    ],
+    [
+     9.4,
+     0.1617
+    ],
+    [
+     9.6,
+     0.1547
+    ],
+    [
+     9.8,
+     0.1572
+    ],
+    [
+     10.0,
+     0.1735
+    ],
+    [
+     10.2,
+     0.1735
+    ],
+    [
+     10.4,
+     0.1722
+    ],
+    [
+     10.6,
+     0.175
+    ],
+    [
+     10.8,
+     0.1629
+    ],
+    [
+     11.0,
+     0.1864
+    ],
+    [
+     11.2,
+     0.1865
+    ],
+    [
+     11.4,
+     0.1867
+    ],
+    [
+     11.6,
+     0.1663
+    ],
+    [
+     11.8,
+     0.1728
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 1.0,
+   "duration_s": 6.0,
+   "command_before": 0.5,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Reduces gain-magnitude and dead-zone uncertainty by testing max amplitude versus E1 0.5 level to determine what input can lift level toward target.",
+   "expected_observation": "If high-input gain with dead-zone above ~0.5 is correct, y should stop decaying and rise within 2-4 s toward ~0.25-0.35 with visible pump effect; if y keeps decaying like E1, max pump authority is very low.",
+   "verdict": "approved; worst-case bound 0.777",
+   "t_start": 12.0,
+   "samples": [
+    [
+     12.0,
+     0.177
+    ],
+    [
+     12.1,
+     0.1751
+    ],
+    [
+     12.2,
+     0.1784
+    ],
+    [
+     12.3,
+     0.1964
+    ],
+    [
+     12.4,
+     0.1789
+    ],
+    [
+     12.5,
+     0.1768
+    ],
+    [
+     12.6,
+     0.1844
+    ],
+    [
+     12.7,
+     0.1879
+    ],
+    [
+     12.8,
+     0.1807
+    ],
+    [
+     12.9,
+     0.1773
+    ],
+    [
+     13.0,
+     0.1843
+    ],
+    [
+     13.1,
+     0.1943
+    ],
+    [
+     13.2,
+     0.1803
+    ],
+    [
+     13.3,
+     0.1789
+    ],
+    [
+     13.4,
+     0.191
+    ],
+    [
+     13.5,
+     0.1766
+    ],
+    [
+     13.6,
+     0.1899
+    ],
+    [
+     13.7,
+     0.1947
+    ],
+    [
+     13.8,
+     0.2052
+    ],
+    [
+     13.9,
+     0.1888
+    ],
+    [
+     14.0,
+     0.1977
+    ],
+    [
+     14.1,
+     0.2042
+    ],
+    [
+     14.2,
+     0.2136
+    ],
+    [
+     14.3,
+     0.193
+    ],
+    [
+     14.4,
+     0.1882
+    ],
+    [
+     14.5,
+     0.209
+    ],
+    [
+     14.6,
+     0.2054
+    ],
+    [
+     14.7,
+     0.2181
+    ],
+    [
+     14.8,
+     0.2201
+    ],
+    [
+     14.9,
+     0.2136
+    ],
+    [
+     15.0,
+     0.2105
+    ],
+    [
+     15.1,
+     0.2192
+    ],
+    [
+     15.2,
+     0.2105
+    ],
+    [
+     15.3,
+     0.2133
+    ],
+    [
+     15.4,
+     0.2194
+    ],
+    [
+     15.5,
+     0.2254
+    ],
+    [
+     15.6,
+     0.227
+    ],
+    [
+     15.7,
+     0.2201
+    ],
+    [
+     15.8,
+     0.2304
+    ],
+    [
+     15.9,
+     0.2531
+    ],
+    [
+     16.0,
+     0.2468
+    ],
+    [
+     16.1,
+     0.2433
+    ],
+    [
+     16.2,
+     0.248
+    ],
+    [
+     16.3,
+     0.2383
+    ],
+    [
+     16.4,
+     0.2498
+    ],
+    [
+     16.5,
+     0.2556
+    ],
+    [
+     16.6,
+     0.2599
+    ],
+    [
+     16.7,
+     0.2686
+    ],
+    [
+     16.8,
+     0.2727
+    ],
+    [
+     16.9,
+     0.2694
+    ],
+    [
+     17.0,
+     0.2782
+    ],
+    [
+     17.1,
+     0.2703
+    ],
+    [
+     17.2,
+     0.2757
+    ],
+    [
+     17.3,
+     0.2813
+    ],
+    [
+     17.4,
+     0.2747
+    ],
+    [
+     17.5,
+     0.2898
+    ],
+    [
+     17.6,
+     0.2805
+    ],
+    [
+     17.7,
+     0.2968
+    ],
+    [
+     17.8,
+     0.2971
+    ],
+    [
+     17.9,
+     0.295
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 12.0,
+   "command_before": 1.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Measures u=0 drain decay rate and time constant, needed to estimate feedforward hold input and integrator requirement for target control.",
+   "expected_observation": "If drain with lag is correct, y should decay gradually from ~0.30 toward ~0.18-0.22 over 10-12 s, not instantly, with ~0.01 noise ripple; if y stays flat, drain is negligible.",
+   "verdict": "approved; worst-case bound 0.301",
+   "t_start": 18.0,
+   "samples": [
+    [
+     18.0,
+     0.3005
+    ],
+    [
+     18.2,
+     0.3003
+    ],
+    [
+     18.4,
+     0.3161
+    ],
+    [
+     18.6,
+     0.3079
+    ],
+    [
+     18.8,
+     0.3207
+    ],
+    [
+     19.0,
+     0.3322
+    ],
+    [
+     19.2,
+     0.347
+    ],
+    [
+     19.4,
+     0.3434
+    ],
+    [
+     19.6,
+     0.3492
+    ],
+    [
+     19.8,
+     0.3503
+    ],
+    [
+     20.0,
+     0.359
+    ],
+    [
+     20.2,
+     0.3453
+    ],
+    [
+     20.4,
+     0.3662
+    ],
+    [
+     20.6,
+     0.3602
+    ],
+    [
+     20.8,
+     0.347
+    ],
+    [
+     21.0,
+     0.3442
+    ],
+    [
+     21.2,
+     0.3537
+    ],
+    [
+     21.4,
+     0.3483
+    ],
+    [
+     21.6,
+     0.3409
+    ],
+    [
+     21.8,
+     0.362
+    ],
+    [
+     22.0,
+     0.3459
+    ],
+    [
+     22.2,
+     0.3613
+    ],
+    [
+     22.4,
+     0.3594
+    ],
+    [
+     22.6,
+     0.3378
+    ],
+    [
+     22.8,
+     0.3396
+    ],
+    [
+     23.0,
+     0.3403
+    ],
+    [
+     23.2,
+     0.3182
+    ],
+    [
+     23.4,
+     0.3202
+    ],
+    [
+     23.6,
+     0.3292
+    ],
+    [
+     23.8,
+     0.3189
+    ],
+    [
+     24.0,
+     0.306
+    ],
+    [
+     24.2,
+     0.3259
+    ],
+    [
+     24.4,
+     0.3216
+    ],
+    [
+     24.6,
+     0.2935
+    ],
+    [
+     24.8,
+     0.2992
+    ],
+    [
+     25.0,
+     0.2887
+    ],
+    [
+     25.2,
+     0.2934
+    ],
+    [
+     25.4,
+     0.272
+    ],
+    [
+     25.6,
+     0.2837
+    ],
+    [
+     25.8,
+     0.2795
+    ],
+    [
+     26.0,
+     0.2682
+    ],
+    [
+     26.2,
+     0.2598
+    ],
+    [
+     26.4,
+     0.2613
+    ],
+    [
+     26.6,
+     0.2659
+    ],
+    [
+     26.8,
+     0.2491
+    ],
+    [
+     27.0,
+     0.253
+    ],
+    [
+     27.2,
+     0.2435
+    ],
+    [
+     27.4,
+     0.251
+    ],
+    [
+     27.6,
+     0.2337
+    ],
+    [
+     27.8,
+     0.2303
+    ],
+    [
+     28.0,
+     0.2163
+    ],
+    [
+     28.2,
+     0.2248
+    ],
+    [
+     28.4,
+     0.2052
+    ],
+    [
+     28.6,
+     0.2223
+    ],
+    [
+     28.8,
+     0.2116
+    ],
+    [
+     29.0,
+     0.212
+    ],
+    [
+     29.2,
+     0.2011
+    ],
+    [
+     29.4,
+     0.2107
+    ],
+    [
+     29.6,
+     0.1691
+    ],
+    [
+     29.8,
+     0.2072
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases y with positive steady-state gain.",
+   "confidence": 0.7,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "At u=0 the level decays on its own due to drainage.",
+   "confidence": 0.7,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "There is no large dead-zone; u=0.5 produces a clear rise above drain and noise.",
+   "confidence": 0.1,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "Response has lag/time-constant of a few seconds, not instantaneous.",
+   "confidence": 0.6,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state input to hold y=0.6 is in [0.3, 0.7].",
+   "confidence": 0.15,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Response is approximately linear across input levels.",
+   "confidence": 0.25,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise standard deviation is small, <0.02.",
+   "confidence": 0.75,
+   "evidence_refs": [
+    "E1",
+    "E2"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

@@ -1,0 +1,523 @@
+{
+ "plant": {
+  "description": "A water reservoir. Input u in [0,1] is pump duty and raises the level; the reservoir drains on its own. Output y in [0,1] is a noisy level reading.",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.6,
+  "band": [
+   0.55,
+   0.65
+  ],
+  "scored_after_settling_s": 30.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 20.0,
+  "worst_case_rate_per_unit_u_per_s": 0.08,
+  "experiments_remaining": 10,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 14.0,
+  "y": 0.4597
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 8.0,
+   "uncertainty_targeted": "Gain magnitude and initial lag: first slope measurement discriminates zero-gain/dead-zone vs responsive system and is required to size any future holding input for target 0.6.",
+   "expected_observation": "If positive-gain with drain is correct, y rises from ~0.38 by ~0.1-0.2 over 8 s with measurable slope within 2-3 s, giving first rise-rate estimate; if flat, dead-zone or large lag is indicated.",
+   "verdict": "approved; worst-case bound 0.782",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.3816
+    ],
+    [
+     0.2,
+     0.3718
+    ],
+    [
+     0.4,
+     0.3745
+    ],
+    [
+     0.6,
+     0.3659
+    ],
+    [
+     0.8,
+     0.3606
+    ],
+    [
+     1.0,
+     0.3514
+    ],
+    [
+     1.2,
+     0.3469
+    ],
+    [
+     1.4,
+     0.3457
+    ],
+    [
+     1.6,
+     0.3392
+    ],
+    [
+     1.8,
+     0.3368
+    ],
+    [
+     2.0,
+     0.3312
+    ],
+    [
+     2.2,
+     0.3265
+    ],
+    [
+     2.4,
+     0.3266
+    ],
+    [
+     2.6,
+     0.3194
+    ],
+    [
+     2.8,
+     0.3158
+    ],
+    [
+     3.0,
+     0.3209
+    ],
+    [
+     3.2,
+     0.3213
+    ],
+    [
+     3.4,
+     0.3181
+    ],
+    [
+     3.6,
+     0.3175
+    ],
+    [
+     3.8,
+     0.3181
+    ],
+    [
+     4.0,
+     0.3171
+    ],
+    [
+     4.2,
+     0.3121
+    ],
+    [
+     4.4,
+     0.3146
+    ],
+    [
+     4.6,
+     0.3211
+    ],
+    [
+     4.8,
+     0.314
+    ],
+    [
+     5.0,
+     0.3217
+    ],
+    [
+     5.2,
+     0.3198
+    ],
+    [
+     5.4,
+     0.3189
+    ],
+    [
+     5.6,
+     0.3186
+    ],
+    [
+     5.8,
+     0.3262
+    ],
+    [
+     6.0,
+     0.3268
+    ],
+    [
+     6.2,
+     0.3223
+    ],
+    [
+     6.4,
+     0.3228
+    ],
+    [
+     6.6,
+     0.3223
+    ],
+    [
+     6.8,
+     0.3247
+    ],
+    [
+     7.0,
+     0.3235
+    ],
+    [
+     7.2,
+     0.3248
+    ],
+    [
+     7.4,
+     0.3272
+    ],
+    [
+     7.6,
+     0.332
+    ],
+    [
+     7.8,
+     0.3275
+    ]
+   ],
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "status": "completed",
+   "command_u": 0.8,
+   "duration_s": 6.0,
+   "uncertainty_targeted": "Gain magnitude and hold input for 0.6: second amplitude discriminates whether E1 decay means strong drain requiring high hold input versus dead-zone/no-gain, which is required to size any controller for target 0.6.",
+   "expected_observation": "If positive-gain with drain is correct, y should rise from ~0.34 with clearly positive slope, reaching ~0.4-0.5 over 6 s, in contrast to E1 decay at u=0.5; if flat or falling, pump gain/dead-zone hypothesis must be revised.",
+   "verdict": "approved; worst-case bound 0.817",
+   "t_start": 8.0,
+   "samples": [
+    [
+     8.0,
+     0.337
+    ],
+    [
+     8.1,
+     0.3271
+    ],
+    [
+     8.2,
+     0.3331
+    ],
+    [
+     8.3,
+     0.33
+    ],
+    [
+     8.4,
+     0.3354
+    ],
+    [
+     8.5,
+     0.3342
+    ],
+    [
+     8.6,
+     0.3304
+    ],
+    [
+     8.7,
+     0.3343
+    ],
+    [
+     8.8,
+     0.3342
+    ],
+    [
+     8.9,
+     0.3333
+    ],
+    [
+     9.0,
+     0.3389
+    ],
+    [
+     9.1,
+     0.3391
+    ],
+    [
+     9.2,
+     0.3377
+    ],
+    [
+     9.3,
+     0.3386
+    ],
+    [
+     9.4,
+     0.3433
+    ],
+    [
+     9.5,
+     0.3399
+    ],
+    [
+     9.6,
+     0.3437
+    ],
+    [
+     9.7,
+     0.3495
+    ],
+    [
+     9.8,
+     0.3511
+    ],
+    [
+     9.9,
+     0.3532
+    ],
+    [
+     10.0,
+     0.351
+    ],
+    [
+     10.1,
+     0.3518
+    ],
+    [
+     10.2,
+     0.3572
+    ],
+    [
+     10.3,
+     0.3544
+    ],
+    [
+     10.4,
+     0.3642
+    ],
+    [
+     10.5,
+     0.3666
+    ],
+    [
+     10.6,
+     0.3692
+    ],
+    [
+     10.7,
+     0.3696
+    ],
+    [
+     10.8,
+     0.3797
+    ],
+    [
+     10.9,
+     0.3706
+    ],
+    [
+     11.0,
+     0.3752
+    ],
+    [
+     11.1,
+     0.3767
+    ],
+    [
+     11.2,
+     0.3802
+    ],
+    [
+     11.3,
+     0.3829
+    ],
+    [
+     11.4,
+     0.3843
+    ],
+    [
+     11.5,
+     0.3878
+    ],
+    [
+     11.6,
+     0.3869
+    ],
+    [
+     11.7,
+     0.3958
+    ],
+    [
+     11.8,
+     0.3941
+    ],
+    [
+     11.9,
+     0.3967
+    ],
+    [
+     12.0,
+     0.4063
+    ],
+    [
+     12.1,
+     0.4066
+    ],
+    [
+     12.2,
+     0.4081
+    ],
+    [
+     12.3,
+     0.4136
+    ],
+    [
+     12.4,
+     0.4147
+    ],
+    [
+     12.5,
+     0.4163
+    ],
+    [
+     12.6,
+     0.4171
+    ],
+    [
+     12.7,
+     0.4265
+    ],
+    [
+     12.8,
+     0.4279
+    ],
+    [
+     12.9,
+     0.4289
+    ],
+    [
+     13.0,
+     0.4347
+    ],
+    [
+     13.1,
+     0.4344
+    ],
+    [
+     13.2,
+     0.4372
+    ],
+    [
+     13.3,
+     0.4412
+    ],
+    [
+     13.4,
+     0.4444
+    ],
+    [
+     13.5,
+     0.4465
+    ],
+    [
+     13.6,
+     0.4497
+    ],
+    [
+     13.7,
+     0.4532
+    ],
+    [
+     13.8,
+     0.4518
+    ],
+    [
+     13.9,
+     0.462
+    ]
+   ],
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing pump duty u increases level y (positive steady-state gain).",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "Response to a step in u shows lag/delay of 1-5 s before full slope is seen, not an instantaneous jump.",
+   "confidence": 0.55,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "There is a dead zone at low u (e.g., u < 0.1-0.2) where pump produces little or no rise.",
+   "confidence": 0.4,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0 the level decays on its own due to drainage.",
+   "confidence": 0.9,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear across u, i.e., doubling u roughly doubles rise from drain equilibrium.",
+   "confidence": 0.4,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state input needed to hold target 0.6 is in mid-range approx 0.4-0.7.",
+   "confidence": 0.3,
+   "evidence_refs": [
+    "E1"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small relative to control band, e.g., std < 0.02 vs 0.10 band width.",
+   "confidence": 0.7,
+   "evidence_refs": [
+    "E1"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

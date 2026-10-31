@@ -1,0 +1,1 @@
+Reservoir with pump 0-1, drain to ~0 at u=0, convex static gain (u=0.3~0.10, u=0.5~0.64), lag ~8-10 s nominal plus now ~24 s transport deadtime, noise std <0.01, target 0.6 band 0.55-0.65, soft 0.85 hard 0.9 forces u=0.

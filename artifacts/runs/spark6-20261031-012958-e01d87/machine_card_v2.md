@@ -1,0 +1,1 @@
+Reservoir nominal: delay 2-4s, lag 8-15s, dead-zone below ~0.7, u_eq(0.6)=0.75-0.80, drain to zero at u=0 tau~10s. Changed: u_eq(0.6)~0.51 (down 0.24), u=0.62 holds 0.73, drain much weaker / gain much stronger. Controller must cover u_eq 0.50-0.80 with same delay/lag.
