@@ -429,7 +429,7 @@ class Orchestrator:
             self._event("adaptation_result", candidate_id=cand.candidate_id, gate3_passed=cmp.get("gate_passed"),
                         n_improved=cmp.get("n_improved"), median_reduction=cmp.get("median_reduction"),
                         nominal_gate_passed=nominal.gate_passed, diagnosis_correct=diag_ok)
-            # Promotion rule (decided 2026-11-01): the repaired controller is judged on the machine as it
+            # Promotion rule (decided 2026-10-31): the repaired controller is judged on the machine as it
             # now is: >= GATE3_MIN_PASS scenarios improved by >= GATE3_MIN_MAE_REDUCTION and zero hard
             # violations / invalid outputs on the post-change suite. Nominal (pre-change) performance is
             # re-scored and reported next to it, not gated.

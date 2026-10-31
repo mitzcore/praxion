@@ -29,7 +29,7 @@ The protocol is what the agent may measure, what it is shown, and the prompts. I
 | v1.2 | `d9206efcefe117cb` | per-experiment `command_before` and seconds since the command last changed; delay measured from the last command change; after-change experiments up to 40 s under the same envelope | run spark3: a delay of about 22 s measured as 7 to 9 s |
 | v1.3 | `0d19650e641cac11` | prompt says the budget counts experiments, not seconds, and that equilibrium needs settled holds; warning about tight integral clamps; trusted `measured_summary` per experiment and per evaluation episode, computed only from measured y and applied u | run spark6 failed G2 on all 5 candidates (equilibrium duty estimated at 0.75, true about 0.58); run spark7 needed 4 candidates |
 
-One gate rule changed: the Gate 3 promotion rule now judges the changed machine only, and reports nominal performance after repair without gating on it. It was decided while no run had passed Gate 3 (decisions log, 2026-11-01). Run spark3's recorded FAILED verdict was not rewritten.
+One gate rule changed: the Gate 3 promotion rule now judges the changed machine only, and reports nominal performance after repair without gating on it. It was decided while no run had passed Gate 3 (decisions log, 2026-10-31). Run spark3's recorded FAILED verdict was not rewritten.
 
 ## All live runs
 

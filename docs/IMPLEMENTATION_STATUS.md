@@ -2,7 +2,7 @@
 
 Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
-_Last updated: 2026-11-01 03:40 — Phase 5: all engineering verified; benchmarks regenerated over 13 live runs; awaiting Mithran for commit, public repo, voice-over_
+_Last updated: 2026-10-31 — Phase 5: all engineering verified; benchmarks regenerated over 13 live runs; awaiting Mithran for commit, public repo, voice-over_
 
 ## Current phase: 5 Ship (Phase 4 exit met)
 
@@ -107,7 +107,7 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 
 ## In progress
 
-- **Verified 2026-11-01 03:30:** `uv run pytest -q -m "not live"` → 460 passed (Docker + slow included). `scripts/run_evaluation.py --sandbox docker` → `docs/BENCHMARKS.md` over 13 live runs (cross-run: v1.0 G3 0/2, v1.1 1/1, v1.2 4/5, v1.3 5/5). Demo recording `artifacts/demo/v13-s11-*/demo.webm` 2:55, segments.json, audit.png. README / DEMO_SCRIPT / PROVENANCE updated to v1.3 numbers; total live spend $25.27 over 14 runs.
+- **Verified 2026-10-31:** `uv run pytest -q -m "not live"` → 460 passed (Docker + slow included). `scripts/run_evaluation.py --sandbox docker` → `docs/BENCHMARKS.md` over 13 live runs (cross-run: v1.0 G3 0/2, v1.1 1/1, v1.2 4/5, v1.3 5/5). Demo recording `artifacts/demo/v13-s11-*/demo.webm` 2:55, segments.json, audit.png. README / DEMO_SCRIPT / PROVENANCE updated to v1.3 numbers; total live spend $25.27 over 14 runs.
 - **Needs Mithran:** initial git commit (nothing committed yet), public GitHub repo `praxion`, voice-over on the replay video per docs/DEMO_SCRIPT.md, submission by Nov 4 6 PM ET. Protocol v1.3 batch on the same five seeds launched (`v13-s*`). Benchmarks regeneration running.
 - Then: batch over plant seeds for the distribution (Phase 4), README/DEMO_SCRIPT, video, repo (Phase 5).
 
@@ -117,14 +117,14 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 
 ## Decisions log
 
-- 2026-11-01: Protocol v1.3 (prompt hash 0d19650e641cac11): discovery prompt states the budget is counted in experiments not seconds and that equilibrium needs settled holds; authoring prompt warns that integral clamps tighter than the plausible feed-forward error guarantee a permanent offset; trusted `measured_summary` (start/end/last-tail mean of y and u, slope, measured in-band) per experiment and per evaluation episode, computed only from measured y and applied u; G2-failure feedback lists those facts. Reason: run spark6 (seed 3) failed G2 on all 5 candidates because 4–8 s experiments never reached steady state (equilibrium duty estimated 0.75 vs ≈0.58) and the integral clamp could not correct the offset; run spark7 (seed 14) needed 4 candidates for the same reason.
-- 2026-11-01: Supervisor fix: a u=0 proposal is always approvable (bound == y cannot rise). Reason: run spark5 had both after-change drain proposals refused at y ≥ 0.85, blocking the safest action. Test added.
-- 2026-11-01: Protocol v1.2 (prompt hash d9206efcefe117cb): per-experiment `command_before` and `seconds_since_command_last_changed_at_start`; prompt instructs measuring delay from the last command change; after-change experiments up to 40 s under the same worst-case envelope. Reason: run spark3 under-estimated a ≈22 s delay as 7–9 s by measuring within single experiments.
-- 2026-11-01: **Gate 3 promotion rule**: judged on the changed machine only (≥3/5 scenarios with ≥20% post-change MAE reduction vs frozen v1, zero hard violations, zero invalid outputs). Nominal G2 after repair is re-scored and reported, not gated. Reason: the repaired controller is for the machine as it now is; requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. Decided while no run had passed G3 (run spark3 v2: 5/5 improved by 28% median but 7 hard violations → still FAIL under the new rule). `max_adaptation_attempts` 2 → 3.
-- 2026-11-01: Leak scanner: structural key check + specific identifiers + seed numbers outside model free text (reason: false positive on the word "hidden" stopped a $2.24 Wonder run). Orchestrator still refuses to send any view the scanner flags.
-- 2026-11-01: Protocol v1.1 (re-identification experiments after degradation, 4 max; 150-point post-change traces). Reason: measured under-estimation of the delay in run #2 repairs.
-- 2026-11-01: `adaptation_latency` redefined as settling time (frozen metric; changed before official scoring; reason: 0 s for limit-cycling controllers).
-- 2026-11-01: Operator API exposes trusted data (disturbance family, hidden params in evaluation audit). Acceptable: the operator is not the agent; documented in README.
+- 2026-10-31: Protocol v1.3 (prompt hash 0d19650e641cac11): discovery prompt states the budget is counted in experiments not seconds and that equilibrium needs settled holds; authoring prompt warns that integral clamps tighter than the plausible feed-forward error guarantee a permanent offset; trusted `measured_summary` (start/end/last-tail mean of y and u, slope, measured in-band) per experiment and per evaluation episode, computed only from measured y and applied u; G2-failure feedback lists those facts. Reason: run spark6 (seed 3) failed G2 on all 5 candidates because 4–8 s experiments never reached steady state (equilibrium duty estimated 0.75 vs ≈0.58) and the integral clamp could not correct the offset; run spark7 (seed 14) needed 4 candidates for the same reason.
+- 2026-10-31: Supervisor fix: a u=0 proposal is always approvable (bound == y cannot rise). Reason: run spark5 had both after-change drain proposals refused at y ≥ 0.85, blocking the safest action. Test added.
+- 2026-10-31: Protocol v1.2 (prompt hash d9206efcefe117cb): per-experiment `command_before` and `seconds_since_command_last_changed_at_start`; prompt instructs measuring delay from the last command change; after-change experiments up to 40 s under the same worst-case envelope. Reason: run spark3 under-estimated a ≈22 s delay as 7–9 s by measuring within single experiments.
+- 2026-10-31: **Gate 3 promotion rule**: judged on the changed machine only (≥3/5 scenarios with ≥20% post-change MAE reduction vs frozen v1, zero hard violations, zero invalid outputs). Nominal G2 after repair is re-scored and reported, not gated. Reason: the repaired controller is for the machine as it now is; requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. Decided while no run had passed G3 (run spark3 v2: 5/5 improved by 28% median but 7 hard violations → still FAIL under the new rule). `max_adaptation_attempts` 2 → 3.
+- 2026-10-31: Leak scanner: structural key check + specific identifiers + seed numbers outside model free text (reason: false positive on the word "hidden" stopped a $2.24 Wonder run). Orchestrator still refuses to send any view the scanner flags.
+- 2026-10-31: Protocol v1.1 (re-identification experiments after degradation, 4 max; 150-point post-change traces). Reason: measured under-estimation of the delay in run #2 repairs.
+- 2026-10-31: `adaptation_latency` redefined as settling time (frozen metric; changed before official scoring; reason: 0 s for limit-cycling controllers).
+- 2026-10-31: Operator API exposes trusted data (disturbance family, hidden params in evaluation audit). Acceptable: the operator is not the agent; documented in README.
 
 - 2026-10-31: `DISTURBANCE_EPISODE_S` 180 → 300 s (frozen config; changed before any official scoring because 180 s hides slowly growing delay-induced oscillation; measured v1: 0.017 → 0.086 MAE).
 - 2026-10-31: Detector floor kept at 0.05 after sweep (24/25 lag detections, 0/150 false alarms). Monitor calibration window moved to [43, 58] s. Live monitored rollout 300 s, stop 40 s after detection.

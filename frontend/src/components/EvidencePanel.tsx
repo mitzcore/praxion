@@ -124,7 +124,7 @@ function Adaptation({ files, verdicts, stage, protocol }: { files: EvalFile[]; v
   return (
     <>
       <div className="small muted">
-        Promotion rule (decided 2026-11-01): Gate 3 = post-change suite, ≥ 3/5 scenarios improved ≥ 20% vs frozen v1, zero hard
+        Promotion rule (decided 2026-10-31): Gate 3 = post-change suite, ≥ 3/5 scenarios improved ≥ 20% vs frozen v1, zero hard
         violations, zero invalid outputs. Nominal G2 after repair is re-scored and reported, not gated.
       </div>
       {files.map((f) => {

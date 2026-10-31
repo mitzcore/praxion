@@ -142,7 +142,7 @@ Summary: G1 5/5, G2 5/5 on the first candidate, G3 5/5, diagnosis 5/5, nominal k
 
 ### The promotion rule
 
-A repair is promoted on the changed machine's criteria only: ≥ 3/5 disturbance scenarios with ≥ 20% lower post-change MAE than frozen v1, zero hard violations, and zero invalid outputs. Nominal G2 after repair is re-scored and reported, as in the "nominal kept" column, but it does not gate promotion. The repaired controller is for the machine as it now is. Requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. We decided this on 2026-11-01, while no run had yet passed Gate 3 (decisions log in `docs/IMPLEMENTATION_STATUS.md`). Run spark3 recorded FAILED under the earlier rule, which also required nominal G2. That recorded verdict was not rewritten.
+A repair is promoted on the changed machine's criteria only: ≥ 3/5 disturbance scenarios with ≥ 20% lower post-change MAE than frozen v1, zero hard violations, and zero invalid outputs. Nominal G2 after repair is re-scored and reported, as in the "nominal kept" column, but it does not gate promotion. The repaired controller is for the machine as it now is. Requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. We decided this on 2026-10-31, while no run had yet passed Gate 3 (decisions log in `docs/IMPLEMENTATION_STATUS.md`). Run spark3 recorded FAILED under the earlier rule, which also required nominal G2. That recorded verdict was not rewritten.
 
 ## Quickstart
 
