@@ -35,6 +35,24 @@ def test_mock_runs_excluded_by_default_and_seed_required(tmp_path: Path) -> None
     assert runs[0].plant_seed == 11 and runs[0].is_mock
 
 
+def test_non_tank_profiles_are_skipped(tmp_path: Path) -> None:
+    art, run_dir = _build(tmp_path)
+    # Older bundle: profile only visible through the evaluator audit's hidden-parameter kind.
+    (run_dir / "evaluation_v1.json").write_text(json.dumps(
+        {"comparison": {"audit": [{"plant_seed": 11, "hidden_params": {"kind": "thermal_twin_fopdt"}}]}}))
+    runs, skipped = bm.discover_runs(art / "runs", include_mock=True)
+    assert runs == [] and "tclab_sim" in skipped[0]["reason"] and "tank" in skipped[0]["reason"]
+    # Newer bundle: profile recorded in result.json wins.
+    rp = run_dir / "result.json"
+    res = json.loads(rp.read_text()); res["profile"] = {"name": "tclab"}; rp.write_text(json.dumps(res))
+    _, skipped = bm.discover_runs(art / "runs", include_mock=True)
+    assert "'tclab'" in skipped[0]["reason"]
+    # Tank audits (no kind) and tank profiles are kept.
+    res["profile"] = {"name": "tank"}; rp.write_text(json.dumps(res))
+    runs, skipped = bm.discover_runs(art / "runs", include_mock=True)
+    assert len(runs) == 1 and skipped == []
+
+
 def test_hash_failure_aborts_run_rows(tmp_path: Path) -> None:
     art, run_dir = _build(tmp_path)
     p = run_dir / "controller_v1.py"

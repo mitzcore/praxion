@@ -2,7 +2,8 @@
 
 One call reproduces every number in ``docs/BENCHMARKS.md``:
 
-* discover recorded runs under ``<artifact_root>/runs/*/result.json`` (mock runs skipped unless asked),
+* discover recorded runs under ``<artifact_root>/runs/*/result.json`` (mock runs skipped unless asked;
+  runs recorded on a non-tank plant profile are skipped, because this evaluator rebuilds the tank),
 * verify every registered candidate's hash through the Registry (a failing hash aborts that run's rows),
 * score EVERY candidate fresh on the frozen held-out scenarios and on every disturbance family in
   ``DISTURBANCE_FAMILIES`` (sandboxed: docker, or subprocess_dev_only for development),
@@ -259,6 +260,24 @@ def plant_seed_from_run(run_dir: Path) -> int | None:
     return None
 
 
+def plant_profile_from_run(run_dir: Path, result: dict[str, Any]) -> str:
+    """Plant profile a bundle was recorded on. Newer bundles record it in result.json["profile"]; older ones
+    only reveal it through the evaluator audit's hidden-parameter kind (tank audits carry no ``kind``)."""
+    prof = result.get("profile")
+    if isinstance(prof, dict) and prof.get("name"):
+        return str(prof["name"])
+    for name in sorted(run_dir.glob("evaluation_v*.json"), key=lambda p: p.name):
+        try:
+            audit = json.loads(name.read_text()).get("comparison", {}).get("audit") or []
+        except (OSError, json.JSONDecodeError):
+            continue
+        for a in audit:
+            kind = (a.get("hidden_params") or {}).get("kind") if isinstance(a, dict) else None
+            if kind and kind != "tank":
+                return "tclab_sim" if "thermal" in str(kind) else str(kind)
+    return "tank"
+
+
 def discover_runs(runs_root: Path, *, include_mock: bool, plant_seed_override: int | None = None,
                   run_ids: Iterable[str] | None = None) -> tuple[list[RunInfo], list[dict[str, str]]]:
     """Runs with a result.json. Returns (runs, skipped[{run_id, reason}])."""
@@ -278,6 +297,11 @@ def discover_runs(runs_root: Path, *, include_mock: bool, plant_seed_override: i
         is_mock = result.get("agent_mode") == "mock"
         if is_mock and not include_mock:
             skipped.append({"run_id": d.name, "reason": "mock run (excluded; use --include-mock)"})
+            continue
+        profile = plant_profile_from_run(d, result)
+        if profile != "tank":
+            skipped.append({"run_id": d.name, "reason": f"plant profile {profile!r}: this evaluator re-scores the tank "
+                            "only; MVP-2 results are reported from the in-run bundle in docs/IMPLEMENTATION_STATUS.md"})
             continue
         seed = plant_seed_from_run(d)
         src = "evaluation_v*.json comparison.audit"
