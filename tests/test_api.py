@@ -391,4 +391,27 @@ def test_old_tank_run_defaults_to_tank_display(client: TestClient) -> None:
     prof = client.get(f"/api/runs/{RUN_ID}").json()["display_profile"]
     assert prof["source"] == "default_tank" and prof["name"] == "tank"
     assert prof["band"] == [0.55, 0.65] and prof["y_scale"] == 1.0 and prof["y_offset"] == 0.0
-    assert client.get(f"/api/runs/{RUN_ID}/evaluations", params={"traces": "none"}).json()["twin_fit"] is None
+    ev = client.get(f"/api/runs/{RUN_ID}/evaluations", params={"traces": "none"}).json()
+    assert ev["twin_fit"] is None and ev["twin_fit_after_change"] is None
+
+
+def test_changed_machine_twin_exposed(tmp_path: Path) -> None:
+    run_id = "tc-20261101-000000-cccccc"
+    app = _mini_run(tmp_path, run_id, result_profile=TCLAB_PROFILE, trace_profile=None, twin={"K_c": 64.7})
+    d = tmp_path / run_id
+    after = {"K_c": 28.8, "tau_s": 96.9, "L_s": 10.1, "Ta_c": 19.6, "report": {"rmse": 0.0031}}
+    (d / "twin_fit_after_change.json").write_text(json.dumps(after))
+    (d / "evaluation_disturbance_v1.json").write_text(json.dumps(
+        {"candidate_id": f"{run_id}-v1", "suite": "disturbance:changed_machine", "gate_name": "G3-candidate",
+         "gate_passed": True, "episodes": [{"index": i, "trace": {"steps": [], "disturbance_at": None}} for i in range(10)]}))
+    with (d / "event_log.jsonl").open("a") as f:
+        f.write(json.dumps({"seq": 5, "ts": 5.0, "run_id": run_id, "kind": "changed_twin_fitted", "stage": "ADAPTING",
+                            "n_traces": 4, "report": {"rmse": 0.0031}}) + "\n")
+        f.write(json.dumps({"seq": 6, "ts": 6.0, "run_id": run_id, "kind": "evaluation", "stage": "ADAPTING",
+                            "candidate_id": f"{run_id}-v1", "suite": "disturbance", "scored_on": "changed_machine_twin"}) + "\n")
+    ev = app.get(f"/api/runs/{run_id}/evaluations").json()
+    assert ev["twin_fit_after_change"] == after and ev["twin_fit"] == {"K_c": 64.7}
+    [dist] = ev["disturbance"]
+    assert dist["data"]["suite"] == "disturbance:changed_machine" and len(dist["data"]["episodes"]) == 10
+    evs = app.get(f"/api/runs/{run_id}/events", params={"after": 4}).json()
+    assert [e["kind"] for e in evs] == ["changed_twin_fitted", "evaluation"] and evs[1]["scored_on"] == "changed_machine_twin"

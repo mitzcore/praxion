@@ -13,6 +13,8 @@ const ICON: Record<string, string> = {
   ready_to_generate: "✓",
   ready_to_revise: "✓",
   twin_fitted: "≈",
+  changed_twin_fitted: "≈",
+  changed_twin_skipped: "⊘",
   operator_disturbance_prompt: "☞",
   operator_disturbance_applied: "⚡",
   reidentification_budget_exhausted: "⌛",
@@ -55,7 +57,10 @@ function tone(e: RunEvent): string {
     case "operator_disturbance_applied":
       return "warn";
     case "twin_fitted":
+    case "changed_twin_fitted":
       return "info";
+    case "changed_twin_skipped":
+      return "warn";
     case "stage":
       return e.to === "FAILED" ? "bad" : e.to === "STOPPED" ? "warn" : "neutral";
     case "model_call":
@@ -122,6 +127,7 @@ function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>, prof: Displa
       return { title: `sandbox interface tests ${PF(e.ok)}`, lines: (e.detail ?? []).map(String) };
     case "evaluation": {
       const a: Json = e.aggregate ?? {};
+      if (e.scored_on === "changed_machine_twin") L.push("scored on the changed-machine twin (refitted from after-change experiments)");
       L.push(`${a.n_passed ?? "—"}/${a.n_episodes ?? "—"} episodes passed · median MAE ${fmtNum(a.median_mae, 4)} · in-band ${fmtPct(a.mean_in_band_fraction)}`);
       for (const r of e.reasons ?? []) L.push(String(r));
       return { title: `evaluation · ${e.suite} · ${e.gate} ${PF(e.gate_passed)}`, lines: L };
@@ -141,6 +147,15 @@ function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>, prof: Displa
       L.push("used only to score gates; never shown to Muse");
       return { title: "digital twin fitted", lines: L };
     }
+    case "changed_twin_fitted": {
+      const r: Json = e.report ?? {};
+      L.push(`refitted by trusted code from ${e.n_traces} after-change experiments · RMSE ${fmtNum(r.rmse, 4)} (normalized y) over ${r.n_points ?? "—"} points`);
+      L.push("repairs are scored on this changed-machine twin; never shown to Muse");
+      for (const w of r.warnings ?? []) L.push(`warning: ${w}`);
+      return { title: "changed-machine twin fitted", lines: L };
+    }
+    case "changed_twin_skipped":
+      return { title: "changed-machine twin not fitted", lines: [String(e.reason ?? "")] };
     case "operator_disturbance_prompt":
       return { title: "operator prompted to apply the physical change", lines: e.note ? [String(e.note)] : [] };
     case "operator_disturbance_applied":

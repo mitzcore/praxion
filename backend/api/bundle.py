@@ -304,6 +304,7 @@ def evaluations(d: Path, traces: str = "all") -> dict[str, Any]:
         "repair_verdicts": repair_verdicts(d),
         "protocol": protocol(d),
         "twin_fit": _read_json(d / "twin_fit.json"),
+        "twin_fit_after_change": _read_json(d / "twin_fit_after_change.json"),
     }
 
 

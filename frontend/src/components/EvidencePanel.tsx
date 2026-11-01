@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { isCelsius, toDisplay, TANK_DISPLAY, type DisplayProfile, type EvalFile, type Evaluations, type Json, type RepairVerdict, type RunDetail, type RunEvent } from "../api";
+import { CHANGED_MACHINE_SUITE, isCelsius, suiteLabel, toDisplay, TANK_DISPLAY, type DisplayProfile, type EvalFile, type Evaluations, type Json, type RepairVerdict, type RunDetail, type RunEvent } from "../api";
 import { downsample, fmtNum, fmtPct } from "../format";
 
 const SERIES_COLORS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
@@ -80,7 +80,7 @@ function MetricTable({ title, files, protocol }: { title: string; files: EvalFil
                 {r.who}
                 {r.baseline && <div className="tag-baseline">fixed baseline (never shown to Muse)</div>}
               </td>
-              <td className="mono small">{r.suite}</td>
+              <td className={r.suite === CHANGED_MACHINE_SUITE ? "small" : "mono small"}>{suiteLabel(r.suite)}</td>
               <td>
                 {r.gatePassed == null ? (
                   <span className="muted">—</span>
@@ -119,14 +119,55 @@ function MetricTable({ title, files, protocol }: { title: string; files: EvalFil
 
 const FINAL = ["COMPLETE", "FAILED", "STOPPED"];
 
-function Adaptation({ files, verdicts, stage, protocol }: { files: EvalFile[]; verdicts: RepairVerdict[]; stage: string; protocol: string | null }) {
+function TwinCompare({ before, after }: { before: Json | null; after: Json | null }) {
+  if (!before || !after) return null;
+  const rows: [string, string, number][] = [
+    ["K (gain at u=1)", "°C", 2],
+    ["tau", "s", 1],
+    ["dead time", "s", 1],
+    ["ambient", "°C", 1],
+  ];
+  const keys = ["K_c", "tau_s", "L_s", "Ta_c"];
+  return (
+    <div className="metric-block">
+      <h3>Trusted twins used for scoring (fitted by trusted code; never shown to Muse)</h3>
+      <table className="tbl num twin-tbl">
+        <thead>
+          <tr>
+            <th>parameter</th>
+            <th>original twin (twin_fit.json, discovery experiments)</th>
+            <th>changed-machine twin (twin_fit_after_change.json, after-change experiments)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([label, unit, dg], i) => (
+            <tr key={label}>
+              <td>{label}</td>
+              <td className="mono">{fmtNum(before[keys[i]], dg)} {unit}</td>
+              <td className="mono">{fmtNum(after[keys[i]], dg)} {unit}</td>
+            </tr>
+          ))}
+          <tr>
+            <td>fit RMSE</td>
+            <td className="mono">{fmtNum(before.report?.rmse, 4)} (normalized y)</td>
+            <td className="mono">{fmtNum(after.report?.rmse, 4)} (normalized y)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Adaptation({ files, verdicts, stage, protocol, changedSuite, twins }: { files: EvalFile[]; verdicts: RepairVerdict[]; stage: string; protocol: string | null; changedSuite: boolean; twins: React.ReactNode }) {
   const ended = FINAL.includes(stage);
   return (
     <>
       <div className="small muted">
-        Promotion rule (decided 2026-11-01): Gate 3 = post-change suite, ≥ 3/5 scenarios improved ≥ 20% vs frozen v1, zero hard
-        violations, zero invalid outputs. Nominal G2 after repair is re-scored and reported, not gated.
+        Promotion rule (decided 2026-11-01): Gate 3 = post-change suite, ≥ 3 scenarios improved ≥ 20% vs frozen v1 (thresholds as
+        stated in each candidate's gate reasons below), zero hard violations, zero invalid outputs. Nominal G2 after repair is re-scored
+        and reported, not gated.
       </div>
+      {twins}
       {files.map((f) => {
         const c: Json = f.data.comparison ?? {};
         const v = verdicts.find((x) => x.version === f.version);
@@ -137,6 +178,7 @@ function Adaptation({ files, verdicts, stage, protocol }: { files: EvalFile[]; v
             <h3>
               Repair candidate v{f.version} vs frozen v1
               <span className="protocol">protocol {protocol ?? "—"}</span>{" "}
+              {changedSuite && <span className="protocol">scored on: {suiteLabel(CHANGED_MACHINE_SUITE)}</span>}{" "}
               <span className={`chip ${c.gate_passed ? "good" : "bad"}`} title="adaptation comparison gate (current promotion rule)">
                 G3 {c.gate_passed ? "PASS" : "FAIL"}
               </span>{" "}
@@ -241,7 +283,10 @@ function TraceCompare({ files, profile }: { files: EvalFile[]; profile: DisplayP
   return (
     <div className="metric-block">
       <div className="sub-head">
-        <h3>Same-seed disturbance episode · h_true (evaluator truth){C ? ", °C" : ""}</h3>
+        <h3>
+          {files.some((f) => f.data.suite === CHANGED_MACHINE_SUITE) ? "Same-scenario episode on the changed-machine twin" : "Same-seed disturbance episode"}
+          {" "}· h_true (evaluator truth){C ? ", °C" : ""}
+        </h3>
         <select value={idx ?? ""} onChange={(e) => setIdx(Number(e.target.value))} aria-label="Disturbance episode">
           {indices.map((i) => (
             <option key={i} value={i}>
@@ -284,6 +329,7 @@ function TraceCompare({ files, profile }: { files: EvalFile[]; profile: DisplayP
 
 export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stage, events }: { profile?: DisplayProfile; evals: Evaluations | null; run: RunDetail | null; stage: string; events: RunEvent[] }) {
   const tf: Json | null = evals?.twin_fit ?? null;
+  const changedSuite = !!evals?.disturbance.some((f) => f.data.suite === CHANGED_MACHINE_SUITE);
   const mon = evals?.monitoring;
   const lastStage = [...events].reverse().find((e) => e.kind === "stage");
   const any = evals && (evals.heldout.length || evals.disturbance.length || evals.adaptation.length || mon);
@@ -331,9 +377,11 @@ export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stag
               </div>
             </div>
           )}
-          <MetricTable title="Post-change suite (same scenarios for every version)" files={evals!.disturbance} protocol={proto} />
+          <MetricTable title={changedSuite ? "Post-change suite · changed-machine twin (refitted from after-change experiments), same scenarios for every version" : "Post-change suite (same scenarios for every version)"} files={evals!.disturbance} protocol={proto} />
+          {!evals!.adaptation.length && <TwinCompare before={tf} after={evals!.twin_fit_after_change} />}
           {evals!.adaptation.length ? (
-            <Adaptation files={evals!.adaptation} verdicts={evals!.repair_verdicts} stage={stage} protocol={proto} />
+            <Adaptation files={evals!.adaptation} verdicts={evals!.repair_verdicts} stage={stage} protocol={proto}
+              changedSuite={changedSuite} twins={<TwinCompare before={tf} after={evals!.twin_fit_after_change} />} />
           ) : mon ? (
             <div className="metric-block">
               <h3>Adaptation</h3>

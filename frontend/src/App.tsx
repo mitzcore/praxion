@@ -208,6 +208,7 @@ export default function App() {
           repair_verdicts: evals.repair_verdicts.filter((v) => adaptSeen.has(v.candidate_id)),
           protocol: evals.protocol,
           twin_fit: events.some((e) => e.kind === "twin_fitted") ? evals.twin_fit : null,
+          twin_fit_after_change: events.some((e) => e.kind === "changed_twin_fitted") ? evals.twin_fit_after_change : null,
         }
       : null;
     return { ctrls, ev };

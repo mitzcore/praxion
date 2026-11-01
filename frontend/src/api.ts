@@ -171,7 +171,12 @@ export interface Evaluations {
   repair_verdicts: RepairVerdict[];
   protocol: { prompt_version: string | null; prompt_hash: string | null };
   twin_fit: Json | null;
+  twin_fit_after_change: Json | null;
 }
+
+export const CHANGED_MACHINE_SUITE = "disturbance:changed_machine";
+export const suiteLabel = (suite: string | null | undefined): string =>
+  suite === CHANGED_MACHINE_SUITE ? "changed-machine twin (refitted from after-change experiments)" : suite ?? "—";
 
 async function j<T>(url: string, init?: RequestInit): Promise<T> {
   const r = await fetch(url, init);
