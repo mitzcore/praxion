@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-weak-20261101-095646-62d477-v2",
+  "run_id": "tclabsim-weak-20261101-095646-62d477",
+  "version": 2,
+  "path": "artifacts/runs/tclabsim-weak-20261101-095646-62d477/controller_v2.py",
+  "sha256": "5c3d327457eea57566f4bf27b9f2b98bbf14022eb477ffdc7eeac901f28dfd5f",
+  "parent_id": "tclabsim-weak-20261101-095646-62d477-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "efaf4542800b0954",
+  "created_at": "2026-11-01T15:04:50.931673+00:00",
+  "byte_length": 4197,
+  "rationale": "Raised steady-state authority from 0.65 to 0.85 and split integral into fast + slow adaptive bias. Fast PI (Kp=1.4, Ki=0.04, +/-0.18) handles transient; slow feedforward estimator uff (Ki=0.025, clamped 0.30-0.80, updated only when |e|<0.10 and yf<0.75) learns the new hold duty. Anti-windup freezes both integrators on saturation. This directly targets +0.24 duty increase needed for 0.65x gain while preserving nominal 0.45 hold.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater tau~150-170s, delay 6-12s, amb~0.05, quantization 0.005. Old: y_ss=0.05+1.0*u, u_hold(0.5)=0.45. New: y_ss=0.05+0.65*u (range 0.60-0.68), u_hold(0.5)=0.69-0.73, tau/delay/cooling/noise unchanged. Allow u to 0.85, need +0.24 adaptive bias.",
+    "predicted_behavior": "Cold start hits 0.85 briefly then ramps down, reaches 0.475-0.525 band in ~150-220s nominal and ~200-280s weak, with <0.06 overshoot and no oscillation. Steady u settles ~0.44-0.47 nominal and ~0.67-0.72 weak, residual MAE <0.005 after 300s in both, zero overrides/hard violations.",
+    "diagnosis": "Actuator weaker by factor ~0.62-0.68 (~35% loss). Same u=0 cooling trajectory as before, same 6-12s pure delay and 0.005 quantization, but heating rise for same u is much smaller: E1 u=0.5 0.05->0.395 in 180s vs E10 u=0.5 0.11->0.309 in 200s; E12 u=0.65 flat at 0.464 implying new steady gain ~0.64 vs old ~1.0, so u_hold for 0.5 moves from ~0.45 to ~0.69. Old controller saturates integral authority and leaves ~0.02-0.05 droop, explaining MAE 0.005->0.016 with slow creep in after_change trace.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

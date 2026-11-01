@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan-20261101-095643-376310-v2",
+  "run_id": "tclabsim-fan-20261101-095643-376310",
+  "version": 2,
+  "path": "artifacts/runs/tclabsim-fan-20261101-095643-376310/controller_v2.py",
+  "sha256": "4ecc971fefb2704b7d2a996839bfb34fed8b44844f008f4f09d1a773f09ae342",
+  "parent_id": "tclabsim-fan-20261101-095643-376310-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "efaf4542800b0954",
+  "created_at": "2026-11-01T15:01:50.502329+00:00",
+  "byte_length": 4042,
+  "rationale": "Lowered warm-up cap 0.70->0.62 to cut overshoot energy for slower plant; sped filter 12s->5s to remove added lag; retuned PI 0.8/0.005 -> 0.65/0.022 with 0.15 limit for 4-5x faster unwind; added measurement-derivative brake KD=12 clamped to +/-0.10; added slow adaptive feedforward ff init tgt-0.05 that low-passes toward applied u with 120s time constant when |err|<0.05, frozen otherwise, so u* is re-learned for nominal 0.45 and changed plant without windup during warm-up.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Heater y in [0,1], u in [0,1]. Nominal ss~0.05+1.0*u, u*(0.5)~0.45, tau~150-165s, delay <15s, noise/quant ~0.005. Changed: tau~185-195s (+~25%), gain/ambient approx unchanged, u* still ~0.45. Controller must warm with cap ~0.62, brake approach, integrate ~4-5x faster with anti-windup, adapt ff slowly.",
+    "predicted_behavior": "Cold start 0.05->0.5: u=0.62 capped until y~0.24 then proportional ease plus D brake; cross 0.475 at ~180s nominal / ~210s slow, peak <0.515 nominal / <0.525 slow, re-enter band within ~80s of peak, stay in band after ~300s with in-band >0.85 after 300s, MAE <0.015, steady u~0.45 nominal / ~0.45 slow with err <0.01. No hard violations or overrides.",
+    "diagnosis": "Response is slower/laggier, not stronger loss or weaker steady gain. Discovery: u=0.5 rise 0.05->0.18 at 60s, 0.31 at 120s, 0.395 at 180s; cooling tau ~160s; ss(0.45)~0.497 with u*=0.45. Closed-loop with same FF 0.45 settles measured 0.506-0.507 at u 0.448-0.450, i.e. steady gain ~1.0 unchanged, so outflow/gain not shifted. But transient with u=0.7 reaches only 0.237 at 60s, 0.397 at 120s, 0.482 at 180s vs nominal 0.277/0.431 predicted for tau 153s; fit gives tau ~175-193s avg ~185s vs 150-165s nominal (+20-30s, +20%). Same command produces smaller early rise and overshoot 0.53-0.55 persists 300-600s: 0.03 decay takes ~300s implying tau~210s, while KI=0.005 needs 600s to unwind 0.09 integral. Pattern is longer lag producing overshoot and long high tail with unchanged u*, classic response_slower.",
+    "diagnosis_category": "response_slower"
+  }
+}

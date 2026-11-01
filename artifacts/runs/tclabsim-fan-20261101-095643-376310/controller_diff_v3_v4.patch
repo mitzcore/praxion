@@ -1,0 +1,128 @@
+--- a/tclabsim-fan-20261101-095643-376310/controller_v3.py
++++ b/tclabsim-fan-20261101-095643-376310/controller_v4.py
+@@ -42,18 +42,23 @@
+         dt = 0.05
+     if dt > 10.0:
+         dt = 10.0
+-    KP = 0.50
+-    KI = 0.010
+-    KD = 3.0
+-    D_LIM = 0.06
+-    TAU_F = 4.0
+-    TAU_S = 20.0
++    KP = 0.85
++    KI = 0.016
++    KD = 10.0
++    D_LIM = 0.12
++    TAU_F = 6.0
++    TAU_S = 32.0
+     U_MAX = 0.70
+     U_MIN = 0.0
+-    I_LIM = 0.12
+-    FF_MIN = 0.25
++    I_LIM = 0.15
++    FF_MIN = 0.30
+     FF_MAX = 0.60
+-    TAU_ADAPT = 250.0
++    TAU_ADAPT = 120.0
++    ERR_CAP_POS = 0.24
++    ERR_CAP_NEG = -0.20
++    I_GATE = 0.12
++    BRAKE_GAIN = 1.2
++    BRAKE_THRESH = 0.008
+     yf_prev = None
+     ys_prev = None
+     i_prev = 0.0
+@@ -98,7 +103,7 @@
+     if yf_prev is None:
+         yf = y_m2
+         ys = y_m2
+-        dy_slow = 0.0
++        dy = 0.0
+     else:
+         af = dt / (TAU_F + dt)
+         if af < 0.0:
+@@ -111,7 +116,7 @@
+         yf = _clamp(yf, 0.0, 1.0)
+         if ys_prev is None:
+             ys = yf
+-            dy_slow = 0.0
++            dy = 0.0
+         else:
+             a_s = dt / (TAU_S + dt)
+             if a_s < 0.0:
+@@ -122,33 +127,49 @@
+             if not math.isfinite(ys):
+                 ys = yf
+             ys = _clamp(ys, 0.0, 1.0)
+-            dy_slow = (ys - ys_prev) / dt
+-            if not math.isfinite(dy_slow):
+-                dy_slow = 0.0
+-            if dy_slow > 0.02:
+-                dy_slow = 0.02
+-            if dy_slow < -0.02:
+-                dy_slow = -0.02
+-    err = tgt - yf
+-    if not math.isfinite(err):
+-        err = 0.0
++            dy = (ys - ys_prev) / dt
++            if not math.isfinite(dy):
++                dy = 0.0
++            if dy > 0.02:
++                dy = 0.02
++            if dy < -0.02:
++                dy = -0.02
++    err_raw = tgt - yf
++    if not math.isfinite(err_raw):
++        err_raw = 0.0
++    if err_raw > ERR_CAP_POS:
++        err = ERR_CAP_POS
++    elif err_raw < ERR_CAP_NEG:
++        err = ERR_CAP_NEG
++    else:
++        err = err_raw
+     p = KP * err
+-    d = KD * dy_slow
++    d = KD * dy
+     if d > D_LIM:
+         d = D_LIM
+     if d < -D_LIM:
+         d = -D_LIM
+-    i_prop = i_prev + KI * err * dt
+-    i_prop = _clamp(i_prop, -I_LIM, I_LIM)
+-    u_unsat_prop = ff + p - d + i_prop
++    if abs(err_raw) > I_GATE:
++        i_prop = i_prev
++    else:
++        i_prop = i_prev + KI * err * dt
++        i_prop = _clamp(i_prop, -I_LIM, I_LIM)
++    u_unsat_prop = ff + p + i_prop - d
++    if yf > tgt + BRAKE_THRESH:
++        u_unsat_prop -= BRAKE_GAIN * (yf - (tgt + BRAKE_THRESH))
+     if not math.isfinite(u_unsat_prop):
+         u_unsat_prop = ff
+     u_sat_prop = _clamp(u_unsat_prop, U_MIN, U_MAX)
+     if (u_unsat_prop > U_MAX and err > 0.0) or (u_unsat_prop < U_MIN and err < 0.0):
+         i_new = i_prev
+     else:
+-        i_new = i_prop
+-    u_unsat = ff + p - d + i_new
++        if abs(err_raw) > I_GATE:
++            i_new = i_prev
++        else:
++            i_new = i_prop
++    u_unsat = ff + p + i_new - d
++    if yf > tgt + BRAKE_THRESH:
++        u_unsat -= BRAKE_GAIN * (yf - (tgt + BRAKE_THRESH))
+     if not math.isfinite(u_unsat):
+         u_unsat = ff
+         i_new = i_prev
+@@ -166,7 +187,7 @@
+         u = ff
+     u = _clamp(u, 0.0, 1.0)
+     try:
+-        if abs(err) < 0.025 and abs(dy_slow) < 0.0007 and yf < 0.68:
++        if abs(err_raw) < 0.03 and abs(dy) < 0.0009 and yf < 0.68:
+             beta = dt / (TAU_ADAPT + dt)
+             if beta < 0.0:
+                 beta = 0.0

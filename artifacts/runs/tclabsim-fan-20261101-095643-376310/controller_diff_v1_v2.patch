@@ -1,0 +1,182 @@
+--- a/tclabsim-fan-20261101-095643-376310/controller_v1.py
++++ b/tclabsim-fan-20261101-095643-376310/controller_v2.py
+@@ -1,5 +1,4 @@
+ import math
+-
+ def _clamp(x, lo, hi):
+     if not math.isfinite(x):
+         return lo
+@@ -10,13 +9,22 @@
+     return float(x)
+ 
+ def control(obs, state):
+-    y_raw = obs.get("y", 0.5)
+-    tgt_raw = obs.get("target", 0.5)
+-    dt_raw = obs.get("dt", 1.0)
++    try:
++        y_raw = obs.get("y", 0.5)
++    except Exception:
++        y_raw = 0.5
++    try:
++        tgt_raw = obs.get("target", 0.5)
++    except Exception:
++        tgt_raw = 0.5
++    try:
++        dt_raw = obs.get("dt", 1.0)
++    except Exception:
++        dt_raw = 1.0
+     try:
+         y_m = float(y_raw)
+     except Exception:
+-        y_m = 0.5
++        y_m = float('nan')
+     try:
+         tgt = float(tgt_raw)
+     except Exception:
+@@ -25,27 +33,29 @@
+         dt = float(dt_raw)
+     except Exception:
+         dt = 1.0
+-    if not math.isfinite(y_m):
+-        y_m = 0.5
+     if not math.isfinite(tgt):
+         tgt = 0.5
++    tgt = _clamp(tgt, 0.0, 1.0)
+     if not math.isfinite(dt) or dt <= 0.0:
+         dt = 1.0
+-    if dt > 5.0:
+-        dt = 5.0
+     if dt < 0.05:
+         dt = 0.05
+-    y_m = _clamp(y_m, 0.0, 1.0)
+-    tgt = _clamp(tgt, 0.0, 1.0)
+-    U_FF = 0.45
+-    KP = 0.8
+-    KI = 0.005
+-    U_MAX = 0.70
++    if dt > 10.0:
++        dt = 10.0
++    KP = 0.65
++    KI = 0.022
++    KD = 12.0
++    D_LIM = 0.10
++    TAU_F = 5.0
++    U_MAX = 0.62
+     U_MIN = 0.0
+-    I_LIM = 0.20
+-    TAU_F = 12.0
++    I_LIM = 0.15
++    FF_MIN = 0.20
++    FF_MAX = 0.65
++    TAU_ADAPT = 120.0
+     yf_prev = None
+     i_prev = 0.0
++    ff_prev = None
+     try:
+         if isinstance(state, dict):
+             v = state.get("yf", None)
+@@ -57,47 +67,94 @@
+             wf = float(w)
+             if math.isfinite(wf):
+                 i_prev = _clamp(wf, -I_LIM, I_LIM)
++            f = state.get("ff", None)
++            if f is not None:
++                ff0 = float(f)
++                if math.isfinite(ff0):
++                    ff_prev = _clamp(ff0, FF_MIN, FF_MAX)
+     except Exception:
+         yf_prev = None
+         i_prev = 0.0
++        ff_prev = None
++    if ff_prev is None:
++        ff = _clamp(tgt - 0.05, FF_MIN, FF_MAX)
++    else:
++        ff = ff_prev
++    if not math.isfinite(y_m):
++        if yf_prev is None:
++            y_m2 = tgt
++        else:
++            y_m2 = yf_prev
++    else:
++        y_m2 = _clamp(y_m, 0.0, 1.0)
+     if yf_prev is None:
+-        yf = y_m
++        yf = y_m2
++        dy = 0.0
+     else:
+         alpha = dt / (TAU_F + dt)
+         if alpha < 0.0:
+             alpha = 0.0
+         if alpha > 1.0:
+             alpha = 1.0
+-        yf = (1.0 - alpha) * yf_prev + alpha * y_m
++        yf = (1.0 - alpha) * yf_prev + alpha * y_m2
+         if not math.isfinite(yf):
+-            yf = y_m
++            yf = y_m2
+         yf = _clamp(yf, 0.0, 1.0)
++        dy = (yf - yf_prev) / dt
++        if not math.isfinite(dy):
++            dy = 0.0
++        if dy > 0.02:
++            dy = 0.02
++        if dy < -0.02:
++            dy = -0.02
+     err = tgt - yf
+     if not math.isfinite(err):
+         err = 0.0
+     p = KP * err
++    d = KD * dy
++    if d > D_LIM:
++        d = D_LIM
++    if d < -D_LIM:
++        d = -D_LIM
+     i_prop = i_prev + KI * err * dt
+     i_prop = _clamp(i_prop, -I_LIM, I_LIM)
+-    u_unsat_prop = U_FF + p + i_prop
++    u_unsat_prop = ff + p - d + i_prop
++    if not math.isfinite(u_unsat_prop):
++        u_unsat_prop = ff
+     u_sat_prop = _clamp(u_unsat_prop, U_MIN, U_MAX)
+     if (u_unsat_prop > U_MAX and err > 0.0) or (u_unsat_prop < U_MIN and err < 0.0):
+         i_new = i_prev
+     else:
+         i_new = i_prop
+-    u_unsat = U_FF + p + i_new
++    u_unsat = ff + p - d + i_new
++    if not math.isfinite(u_unsat):
++        u_unsat = ff
++        i_new = i_prev
+     u = _clamp(u_unsat, U_MIN, U_MAX)
+     if yf > 0.80:
+         u = 0.0
+         if i_new > 0.0:
+             i_new = 0.0
+     elif yf > 0.70:
+-        if u > 0.20:
+-            u = 0.20
++        if u > 0.25:
++            u = 0.25
+         if i_new > 0.05:
+             i_new = 0.05
+     if not math.isfinite(u):
+-        u = U_FF
+-        i_new = i_prev
++        u = ff
+     u = _clamp(u, 0.0, 1.0)
+-    new_state = {"yf": float(yf), "i": float(i_new)}
++    try:
++        if abs(err) < 0.05:
++            beta = dt / (TAU_ADAPT + dt)
++            if beta < 0.0:
++                beta = 0.0
++            if beta > 1.0:
++                beta = 1.0
++            ff_new = ff + (u - ff) * beta
++            ff_new = _clamp(ff_new, FF_MIN, FF_MAX)
++        else:
++            ff_new = ff
++    except Exception:
++        ff_new = ff
++    new_state = {"yf": float(yf), "i": float(i_new), "ff": float(ff_new)}
+     return (float(u), new_state)

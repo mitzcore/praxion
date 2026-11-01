@@ -1,0 +1,1 @@
+Heater y in [0,1], u in [0,1]. Nominal ss~0.05+1.0*u, u*(0.5)~0.45, tau~150-165s, delay <15s, noise/quant ~0.005. Changed: tau~185-195s (+~25%), gain/ambient approx unchanged, u* still ~0.45. Controller must warm with cap ~0.62, brake approach, integrate ~4-5x faster with anti-windup, adapt ff slowly.

@@ -2,11 +2,15 @@
 from __future__ import annotations
 
 import math
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from backend.safety.envelope import worst_case_level
+from backend.safety.envelope import MAX_RATE_AT_FULL_DUTY, worst_case_level
 from backend.schemas import Observation, ProposalVerdict, SupervisorDecision
+
+if TYPE_CHECKING:
+    from backend.profiles import PlantProfile
 
 
 class SafetyLimits(BaseModel):
@@ -19,6 +23,19 @@ class SafetyLimits(BaseModel):
     sensor_timeout_s: float = 3.0
     max_single_experiment_s: float = 20.0
     safe_fallback_u: float = 0.0
+    worst_case_rate_per_unit_u: float = MAX_RATE_AT_FULL_DUTY  # envelope rise rate at u = 1 (normalized / s)
+
+    @classmethod
+    def from_profile(cls, profile: PlantProfile) -> SafetyLimits:
+        """Limits for a plant profile. ``from_profile(TANK)`` equals ``SafetyLimits()``."""
+        return cls(
+            u_min=0.0,
+            u_max=1.0,
+            soft_high_limit=profile.soft_high_limit,
+            hard_cutoff=profile.hard_cutoff,
+            max_single_experiment_s=profile.max_single_experiment_s,
+            worst_case_rate_per_unit_u=profile.worst_case_rate_per_unit_u,
+        )
 
 
 class Supervisor:
@@ -97,7 +114,7 @@ class Supervisor:
             return reject(f"duration {d_f} exceeds max_single_experiment_s {lim.max_single_experiment_s}")
         if obs is None or not math.isfinite(obs.y):
             return reject("no_valid_observation")
-        bound = worst_case_level(obs.y, u_f, d_f, dt)
+        bound = worst_case_level(obs.y, u_f, d_f, dt, lim.worst_case_rate_per_unit_u)
         # A proposal that cannot raise the level (u == 0, so bound == y) is always approvable: draining is
         # the safest action and must never be refused merely because the level is already high.
         if bound >= lim.soft_high_limit and bound > obs.y + 1e-12:

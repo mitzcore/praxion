@@ -1,7 +1,12 @@
-import json, sys
-import matplotlib; matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+import json
 import sys
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
 run = sys.argv[1] if len(sys.argv) > 1 else "artifacts/runs/v13-s11-20261031-020922-a0e68e"
 out = "artifacts/video/assets"
 BG, FG, MUTED, BAND = "#0b1220", "#edf2ff", "#8ea0bf", "#2a7d5a"
@@ -32,12 +37,11 @@ ax.legend(loc="lower right", frameon=False); fig.tight_layout(); fig.savefig(f"{
 # 4. scorecard across 5 machines
 rows = [("seed 3", 0.186, 0.031), ("seed 7", 0.190, 0.095), ("seed 11", 0.217, 0.021), ("seed 14", 0.044, 0.010), ("seed 18", 0.027, 0.014)]
 fig,ax = plt.subplots(figsize=(16,7)); ax.set_facecolor(BG)
-import numpy as np; x = np.arange(len(rows)); w=0.36
+x = np.arange(len(rows)); w=0.36
 ax.bar(x-w/2,[r[1] for r in rows],w,color="#f4c677",label="before repair (v1 after the change)"); ax.bar(x+w/2,[r[2] for r in rows],w,color="#7be5b6",label="after repair (promoted version)")
 ax.set_xticks(x); ax.set_xticklabels([f"machine {r[0]}" for r in rows]); ax.set_ylabel("tracking error after the change (lower is better)")
 ax.set_title("4 · Five different hidden machines: repair succeeded on all five, zero safety violations", loc="left", fontsize=20, pad=14)
 ax.legend(frameon=False); ax.grid(axis="y", color="#1c2740", lw=0.6); fig.tight_layout(); fig.savefig(f"{out}/04_five_machines.png", dpi=120); plt.close(fig)
 # numbers for narration
-import statistics
 print("v1 nominal median MAE", v1n["aggregate"]["median_mae"], "pid", v1n["aggregate"].get("baseline_pid_median_mae"))
 print("v1 post", v1d["aggregate"]["median_post_disturbance_mae"], "viol", v1d["aggregate"]["total_hard_violations"], "| v2 post", v2d["aggregate"]["median_post_disturbance_mae"], "inband", v2d["aggregate"]["mean_in_band_fraction"], "viol", v2d["aggregate"]["total_hard_violations"])

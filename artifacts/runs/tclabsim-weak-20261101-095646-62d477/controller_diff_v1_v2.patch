@@ -1,0 +1,154 @@
+--- a/tclabsim-weak-20261101-095646-62d477/controller_v1.py
++++ b/tclabsim-weak-20261101-095646-62d477/controller_v2.py
+@@ -46,11 +46,17 @@
+     except Exception:
+         integ_prev = 0.0
+     try:
+-        u_prev_s = state.get("u_prev", None)
+-        if u_prev_s is not None:
+-            u_prev_s = float(u_prev_s)
++        uff_prev = state.get("uff", None)
++        if uff_prev is not None:
++            uff_prev = float(uff_prev)
+     except Exception:
+-        u_prev_s = None
++        uff_prev = None
++    amb = 0.05
++    ff_nom = target - amb
++    if ff_nom < 0.0:
++        ff_nom = 0.0
++    if ff_nom > 1.0:
++        ff_nom = 1.0
+     if yf_prev is None or not math.isfinite(yf_prev):
+         if y_meas is not None:
+             yy = y_meas
+@@ -63,54 +69,74 @@
+             yf_prev = target
+     if not math.isfinite(integ_prev):
+         integ_prev = 0.0
+-    if integ_prev < -0.20:
+-        integ_prev = -0.20
+-    if integ_prev > 0.20:
+-        integ_prev = 0.20
++    if integ_prev < -0.18:
++        integ_prev = -0.18
++    if integ_prev > 0.18:
++        integ_prev = 0.18
++    if uff_prev is None or not math.isfinite(uff_prev):
++        uff_prev = ff_nom
++    if uff_prev < 0.30:
++        uff_prev = 0.30
++    if uff_prev > 0.80:
++        uff_prev = 0.80
++    # if target jumped far, pull uff toward new nominal slowly to avoid stale bias
++    # small pull only, main adaptation is via error integration
+     if y_meas is None:
+-        y_meas = yf_prev
+-    tau_f = 10.0
++        y_meas_use = yf_prev
++    else:
++        y_meas_use = y_meas
++    tau_f = 8.0
+     alpha = dt / (tau_f + dt)
+     if alpha < 0.0:
+         alpha = 0.0
+     if alpha > 1.0:
+         alpha = 1.0
+-    yf = yf_prev + alpha * (y_meas - yf_prev)
++    yf = yf_prev + alpha * (y_meas_use - yf_prev)
+     if not math.isfinite(yf):
+         yf = yf_prev
+     if yf < 0.0:
+         yf = 0.0
+     if yf > 1.0:
+         yf = 1.0
+-    amb = 0.05
+-    ff = target - amb
+-    if ff < 0.0:
+-        ff = 0.0
+-    if ff > 1.0:
+-        ff = 1.0
+-    Kp = 1.8
+-    Ki = 0.025
+-    I_lim = 0.20
++    Kp = 1.4
++    Ki_fast = 0.04
++    Ki_slow = 0.025
++    I_lim = 0.18
++    UFF_LO = 0.30
++    UFF_HI = 0.80
++    u_hi = ff_nom + 0.40
++    if u_hi > 0.85:
++        u_hi = 0.85
++    if u_hi < 0.60:
++        u_hi = 0.60
++    u_lo = 0.0
+     e = target - yf
+-    u_hi = ff + 0.35
+-    if u_hi > 1.0:
+-        u_hi = 1.0
+-    if u_hi < 0.6:
+-        u_hi = 0.6
+-    u_lo = 0.0
+-    u_tmp = ff + Kp * e + integ_prev
+-    do_integ = True
+-    if (u_tmp > u_hi and e > 0.0) or (u_tmp < u_lo and e < 0.0):
+-        do_integ = False
+-    if do_integ:
+-        integ_new = integ_prev + Ki * e * dt
++    u_tmp = uff_prev + Kp * e + integ_prev
++    saturated_hi = u_tmp > u_hi and e > 0.0
++    saturated_lo = u_tmp < u_lo and e < 0.0
++    frozen = saturated_hi or saturated_lo
++    # safety freeze
++    if yf >= 0.82 or (y_valid and y_in >= 0.86):
++        frozen = True
++    if frozen:
++        integ_new = integ_prev
++        uff_new = uff_prev
+     else:
+-        integ_new = integ_prev
+-    if integ_new < -I_lim:
+-        integ_new = -I_lim
+-    if integ_new > I_lim:
+-        integ_new = I_lim
+-    u = ff + Kp * e + integ_new
++        integ_new = integ_prev + Ki_fast * e * dt
++        if integ_new < -I_lim:
++            integ_new = -I_lim
++        if integ_new > I_lim:
++            integ_new = I_lim
++        # slow adaptive feedforward only near target and away from safety
++        if abs(e) < 0.10 and yf < 0.75:
++            uff_new = uff_prev + Ki_slow * e * dt
++        else:
++            uff_new = uff_prev
++        if uff_new < UFF_LO:
++            uff_new = UFF_LO
++        if uff_new > UFF_HI:
++            uff_new = UFF_HI
++    u = uff_new + Kp * e + integ_new
+     if u > u_hi:
+         u = u_hi
+     if u < u_lo:
+@@ -119,17 +145,18 @@
+         u = 0.0
+         if integ_new > 0.0:
+             integ_new = 0.0
+-    if y_meas >= 0.86:
++    if y_valid and y_in >= 0.86:
+         u = 0.0
+         if integ_new > 0.0:
+             integ_new = 0.0
+     if not math.isfinite(u):
+-        u = ff
++        u = ff_nom
+     if u < 0.0:
+         u = 0.0
+     if u > 1.0:
+         u = 1.0
+     state["yf"] = float(yf)
+     state["integ"] = float(integ_new)
++    state["uff"] = float(uff_new)
+     state["u_prev"] = float(u)
+     return (float(u), state)

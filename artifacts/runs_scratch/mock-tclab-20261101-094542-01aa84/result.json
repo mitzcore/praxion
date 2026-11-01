@@ -1,0 +1,184 @@
+{
+ "run_id": "mock-tclab-20261101-094542-01aa84",
+ "stage": "EXPLORING",
+ "model_id": "MOCK-NOT-MUSE",
+ "agent_mode": "mock",
+ "prompt_version": "v1.4",
+ "prompt_hash": "efaf4542800b0954",
+ "sandbox_mode": "subprocess_dev_only",
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.4,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.070",
+    "u": 0.4,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 0.0
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "u_before": 0.4,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.7,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.090",
+    "u": 0.7,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 8.0
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "u_before": 0.7,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.0,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.067",
+    "u": 0.0,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 16.0
+  }
+ ],
+ "ledger_history": [
+  {
+   "after_experiment": null,
+   "ts": 1793544342.518502,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E1",
+   "ts": 1793544342.5224562,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E2",
+   "ts": 1793544342.5256882,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E3",
+   "ts": 1793544342.529901,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": {
+  "deployed_candidate_id": null,
+  "baseline_window_mae": null,
+  "recent_window_mae": null,
+  "degraded": false,
+  "degraded_at_t": null,
+  "disturbance_family": null,
+  "disturbance_at_t": null
+ },
+ "stage_history": [
+  {
+   "from": "NEW",
+   "to": "EXPLORING",
+   "ts": 1793544342.5173068
+  }
+ ],
+ "model_usage": {
+  "calls": 4,
+  "failed_calls": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cost_usd": 0.0
+ },
+ "elapsed_s": 0.6,
+ "finished_at": 1793544343.154295
+}

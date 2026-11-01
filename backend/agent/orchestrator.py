@@ -38,6 +38,7 @@ from backend.evaluation import suite as evalsuite
 from backend.evaluation.monitor import DegradationDetector, run_monitored_rollout
 from backend.evaluation.report import EvaluationReport
 from backend.plant.base import PlantAdapter
+from backend.profiles import TANK, PlantProfile
 from backend.safety.supervisor import Supervisor
 from backend.schemas import DisturbanceSpec
 from backend.storage.artifacts import RunStore
@@ -50,13 +51,33 @@ class AgentLike(Protocol):
 
 
 class OrchestratorConfig(BaseModel):
+    model_config = {"arbitrary_types_allowed": True}
     plant_seed: int = 1  # TRUSTED. Never in the agent view.
     sandbox_mode: str = "docker"
-    monitor_calibrate_s: float = 58.0  # window [43, 58] s: settled, and just before any disturbance at 60 s
-    monitor_pre_s: float = 60.0  # nominal rollout before any disturbance
-    monitor_duration_s: float = 300.0  # live monitored run (not the scored suite); detection under delay takes ~90-115 s
-    monitor_post_detection_s: float = 40.0  # how long to keep observing after detection
+    profile: PlantProfile = TANK
+    # Evaluator plant. None → the evaluator instantiates the default simulator (TankSimulator) for the
+    # profile; a callable → used as plant_factory; "twin" → a ThermalTwin is fitted by trusted code from
+    # the discovery experiments after exploration and used for every gate (physical-plant path).
+    eval_plant_factory: Any = None
+    # Physical plants: the operator applies the disturbance by hand when prompted; nothing is scheduled.
+    operator_disturbance: bool = False
     max_adaptation_attempts: int = 3
+
+    @property
+    def monitor_calibrate_s(self) -> float:
+        return self.profile.monitor_calibrate_s
+
+    @property
+    def monitor_pre_s(self) -> float:
+        return self.profile.monitor_pre_s
+
+    @property
+    def monitor_duration_s(self) -> float:
+        return self.profile.monitor_duration_s
+
+    @property
+    def monitor_post_detection_s(self) -> float:
+        return self.profile.monitor_post_detection_s
 
 
 EventHook = Callable[[dict[str, Any]], None]
@@ -128,9 +149,11 @@ class Orchestrator:
             self.plant.reset(self.cfg.plant_seed)
             self.s.current_obs = self.plant.observe()
             self._event("run_started", model=self.s.model_id, prompt_version=PROMPT_VERSION, prompt_hash=PROMPT_HASH,
-                        agent_mode=self.s.agent_mode, sandbox_mode=self.cfg.sandbox_mode)
+                        agent_mode=self.s.agent_mode, sandbox_mode=self.cfg.sandbox_mode,
+                        profile=self._profile_summary())
             self._transition("EXPLORING")
             self._explore()
+            self._prepare_eval_plant()
             self._transition("GENERATING")
             approved = self._author_until_approved()
             if approved is None:
@@ -145,6 +168,27 @@ class Orchestrator:
         finally:
             self._persist_summary()
         return self.s
+
+    def _prepare_eval_plant(self) -> None:
+        """Physical-plant path: fit a trusted digital twin from the discovery experiments and use it
+        for every hidden-scenario gate. The twin parameters never enter the agent view."""
+        if self.cfg.eval_plant_factory != "twin":
+            return
+        from backend.plant.thermal_twin import fit_twin, twin_factory
+
+        traces = [e.trace for e in self.s.experiments if e.trace is not None and e.status == "completed"]
+        params = fit_twin(traces, dt=self.plant.dt)
+        report = getattr(params, "report", None)
+        self._eval_plant_factory = twin_factory(params)
+        self.store.write_json("twin_fit.json", params.model_dump(mode="json") if hasattr(params, "model_dump") else str(params))
+        self._event("twin_fitted", n_traces=len(traces),
+                    report=report.model_dump(mode="json") if hasattr(report, "model_dump") else report)
+
+    def _eval_factory(self) -> Any:
+        f = getattr(self, "_eval_plant_factory", None)
+        if f is not None:
+            return f
+        return self.cfg.eval_plant_factory if callable(self.cfg.eval_plant_factory) else None
 
     def _explore(self) -> None:
         while self.s.experiments_remaining() > 0:
@@ -321,8 +365,11 @@ class Orchestrator:
 
     # ============================================================= evaluation
     def _evaluate_heldout(self, cand: CandidateRecord) -> EvaluationReport:
+        kw: dict[str, Any] = {"profile": self.cfg.profile}
+        if self._eval_factory() is not None:
+            kw["plant_factory"] = self._eval_factory()
         report = evalsuite.evaluate_heldout(lambda: self._make_controller(cand), candidate_id=cand.candidate_id,
-                                            plant_seed=self.cfg.plant_seed, limits=self.sup.limits)
+                                            plant_seed=self.cfg.plant_seed, limits=self.sup.limits, **kw)
         cand.evaluation = report
         cand.status = "evaluated"
         self.store.write_json(f"evaluation_v{cand.version}.json", report.model_dump(mode="json"))
@@ -349,14 +396,25 @@ class Orchestrator:
             m.deployed_candidate_id = deployed.candidate_id
             m.disturbance_family = disturbance_family
             m.disturbance_at_t = self.cfg.monitor_pre_s if disturbance_family else None
-            spec = DisturbanceSpec(family=disturbance_family, at_t=self.cfg.monitor_pre_s) if disturbance_family else None  # type: ignore[arg-type]
-            self._event("disturbance_scheduled", scheduled=disturbance_family is not None)  # family deliberately omitted
+            if self.cfg.operator_disturbance:
+                spec = None  # the operator applies it by hand when prompted at monitor_pre_s
+            else:
+                spec = DisturbanceSpec(family=disturbance_family, at_t=self.cfg.monitor_pre_s) if disturbance_family else None  # type: ignore[arg-type]
+            self._event("disturbance_scheduled", scheduled=disturbance_family is not None,
+                        operator_applied=self.cfg.operator_disturbance)  # family deliberately omitted
             ctrl = self._make_controller(deployed)
             try:
+                prof = self.cfg.profile
+                det = DegradationDetector(self.plant.dt, window_s=prof.monitor_window_s, factor=prof.monitor_factor,
+                                          floor=prof.monitor_floor, hold_s=prof.monitor_hold_s)
+                mk: dict[str, Any] = {}
+                if self.cfg.operator_disturbance:
+                    mk["pause_for_operator"] = self._operator_pause
+                    mk["disturbance_at_s"] = self.cfg.monitor_pre_s
                 res = run_monitored_rollout(
                     self.plant, ctrl, self.sup, duration_s=self.cfg.monitor_duration_s, target=self.s.objective.target,
                     seed=self.cfg.plant_seed, disturbance=spec, calibrate_s=self.cfg.monitor_calibrate_s,
-                    detector=DegradationDetector(self.plant.dt), stop_after_detection_s=self.cfg.monitor_post_detection_s,
+                    detector=det, stop_after_detection_s=self.cfg.monitor_post_detection_s, profile=prof, **mk,
                 )
             finally:
                 ctrl.close()
@@ -390,8 +448,11 @@ class Orchestrator:
         return self.s
 
     def _evaluate_disturbance(self, cand: CandidateRecord, family: str) -> EvaluationReport:
+        kw: dict[str, Any] = {"profile": self.cfg.profile}
+        if self._eval_factory() is not None:
+            kw["plant_factory"] = self._eval_factory()
         report = evalsuite.evaluate_disturbance(lambda: self._make_controller(cand), family, candidate_id=cand.candidate_id,
-                                                plant_seed=self.cfg.plant_seed, limits=self.sup.limits)
+                                                plant_seed=self.cfg.plant_seed, limits=self.sup.limits, **kw)
         self.store.write_json(f"evaluation_disturbance_v{cand.version}.json", report.model_dump(mode="json"))
         self._event("evaluation", candidate_id=cand.candidate_id, suite="disturbance", gate=report.gate_name,
                     gate_passed=report.gate_passed, reasons=report.gate_reasons, aggregate=report.aggregate)
@@ -461,6 +522,15 @@ class Orchestrator:
             self._run_experiment(proposal, phase="after_change")
         self._event("reidentification_budget_exhausted")
 
+    def _operator_pause(self) -> None:
+        """Physical plants: wait for the operator to apply the disturbance. Logged, never described to the agent."""
+        self._event("operator_disturbance_prompt", note="operator asked to apply the physical change now")
+        try:
+            input("\n>>> Apply the physical disturbance now, then press Enter to continue monitoring... ")
+        except EOFError:
+            pass
+        self._event("operator_disturbance_applied")
+
     def _adaptation_feedback(self, parent: CandidateRecord) -> str:
         m = self.s.monitoring
         n_after = len([e for e in self.s.experiments if e.phase == "after_change" and e.status == "completed"])
@@ -478,11 +548,19 @@ class Orchestrator:
         return "\n".join(lines)
 
     # ================================================================ summary
+    def _profile_summary(self) -> dict[str, Any]:
+        p = self.cfg.profile
+        return {"name": p.name, "dt": p.dt, "target": p.target, "band": list(p.band), "y_unit": p.y_unit,
+                "y_scale": p.y_scale, "y_offset": p.y_offset, "episode_s": p.episode_s, "settle_s": p.settle_s,
+                "eval_plant": "twin" if self.cfg.eval_plant_factory == "twin" else ("custom" if callable(self.cfg.eval_plant_factory) else "simulator"),
+                "operator_disturbance": self.cfg.operator_disturbance}
+
     def _persist_summary(self) -> None:
         agent_totals = getattr(self.agent, "totals", None)
         summary = {
             "run_id": self.s.run_id, "stage": self.s.stage, "model_id": self.s.model_id, "agent_mode": self.s.agent_mode,
             "prompt_version": PROMPT_VERSION, "prompt_hash": PROMPT_HASH, "sandbox_mode": self.cfg.sandbox_mode,
+            "profile": self._profile_summary(),
             "experiments": [e.model_dump(exclude={"trace"}) for e in self.s.experiments],
             "ledger_history": self.s.ledger_history,
             "candidates": [c.model_dump(exclude={"evaluation", "disturbance_evaluation"}) for c in self.s.candidates],

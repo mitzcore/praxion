@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan-20261101-095643-376310-v1",
+  "run_id": "tclabsim-fan-20261101-095643-376310",
+  "version": 1,
+  "path": "artifacts/runs/tclabsim-fan-20261101-095643-376310/controller_v1.py",
+  "sha256": "c5b531c18e8781d9fd39db0934829c911b138b5ef57b86312d1e6b97d95fa45e",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "efaf4542800b0954",
+  "created_at": "2026-11-01T14:59:54.573967+00:00",
+  "byte_length": 2568,
+  "rationale": "First-order self-draining heater with K~1.0, ambient~0.05, tau~150-180s. Measured equilibrium (u=0.45,y~0.497 for 240s in E7-E8) sets feedforward. Brackets ss(0.5)>0.534, ss(0.4)<0.491 imply true u*~0.45-0.46. PI corrects residual: Kp=0.8 gives P~0.36 at 0.45 error for fast warm-up but capped, Ti=160s (Ki=0.005) matches plant tau for stable no-overshoot approach. Umax=0.70 guarantees steady state 0.75-0.80<0.85 soft limit even with +10% gain error, yet reaches band from cold in ~140-170s <300s window. Integral +-0.20 covers >0.10 feedforward error with margin, conditional freeze prevents windup during saturation. 12s low-pass suppresses 0.005 quantization / <0.01 noise without adding lag vs 150s tau.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Heater: positive gain, no dead zone. y in [0,1] (0=15C,1=75C), u in [0,1]. Self-draining stable: at u=0 decays from 0.497 to 0.19 in 179s toward ambient ~0.05. Steady model ss(u)~0.05+1.0*u, K~0.9-1.1 linear in 0.4-0.6. Measured equilibria: (0.45,0.497) holds 240s flat; ss(0.5)>0.534 rising; ss(0.4) decaying from 0.534 to 0.491. So u* for y=0.5 is ~0.45-0.46. Lag: tau~150-180s, settling ~600s, initial delay <15s (rise in 6-20s). Speed: ~0.0015-0.002/s mid-range, worst-case 0.006/unit/s. Noise <0.01, quantization step ~0.0054 causing flat 5s slopes. No overshoot tendency if u<=0.70.",
+    "predicted_behavior": "From cold 0.05: saturate at 0.70 for ~60-100s, rise to band in ~140-180s, converge to 0.475-0.525 by ~200-250s, well inside 300s settling window. From near target: settle in 60-120s. Overshoot <0.02 above target (<0.52) in nominal, never exceeds 0.70 power so steady <0.80. Steady duty ~0.45-0.47 with integral trim +-0.05. Ripple <0.01 due to filter. MAE after settling <0.01, time-in-band >95%, energy near minimum (u^2~0.20).",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

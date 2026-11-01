@@ -20,6 +20,8 @@ def main() -> int:
     ap.add_argument("--model", required=True)
     ap.add_argument("--seeds", type=int, nargs="+", required=True)
     ap.add_argument("--disturbance", default="actuator_lag")
+    ap.add_argument("--plant", choices=["tank", "tclab_sim", "tclab"], default="tank",
+                    help="plant profile passed to run_live_demo.py (default: tank)")
     ap.add_argument("--label", default=None)
     ap.add_argument("--parallel", type=int, default=1, help="concurrent runs (API + Docker load)")
     ap.add_argument("--reasoning-effort", default=None)
@@ -36,7 +38,7 @@ def main() -> int:
             seed = pending.pop(0)
             log = logs / f"{label}-seed{seed}-{int(time.time())}.log"
             cmd = [sys.executable, str(ROOT / "scripts" / "run_live_demo.py"), "--model", args.model, "--plant-seed",
-                   str(seed), "--disturbance", args.disturbance, "--label", f"{label}-s{seed}", "--quiet"]
+                   str(seed), "--disturbance", args.disturbance, "--plant", args.plant, "--label", f"{label}-s{seed}", "--quiet"]
             if args.reasoning_effort:
                 cmd += ["--reasoning-effort", args.reasoning_effort]
             print(f"[start] seed {seed} → {log.name}", flush=True)

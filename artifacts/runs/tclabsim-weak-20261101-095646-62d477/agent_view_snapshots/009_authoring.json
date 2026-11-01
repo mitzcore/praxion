@@ -1,0 +1,2217 @@
+{
+ "plant": {
+  "description": "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; the device loses heat to the room on its own. Output y in [0,1] is a normalized temperature reading (0 = 15 \u00b0C, 1 = 75 \u00b0C).",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "scored_after_settling_s": 300.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 180.0,
+  "after_change_max_single_experiment_s": 300.0,
+  "worst_case_rate_per_unit_u_per_s": 0.006,
+  "experiments_remaining": 0,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 1220.0,
+  "y": 0.502
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 180.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Static gain magnitude and dominant lag/settling time, which set the feedforward to hold 0.5 and safe feedback aggressiveness; currently completely unmeasured.",
+   "expected_observation": "y rises monotonically from ~0.05 after a short lag, reaching roughly 0.2-0.4 by 180 s with still-positive end slope, confirming positive gain and substantial lag without reaching equilibrium.",
+   "verdict": "approved; worst-case bound 0.591",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.0508
+    ],
+    [
+     3.0,
+     0.0508
+    ],
+    [
+     6.0,
+     0.0508
+    ],
+    [
+     9.0,
+     0.0562
+    ],
+    [
+     12.0,
+     0.0616
+    ],
+    [
+     15.0,
+     0.0669
+    ],
+    [
+     18.0,
+     0.0723
+    ],
+    [
+     21.0,
+     0.083
+    ],
+    [
+     24.0,
+     0.0884
+    ],
+    [
+     27.0,
+     0.0938
+    ],
+    [
+     30.0,
+     0.1045
+    ],
+    [
+     33.0,
+     0.1099
+    ],
+    [
+     36.0,
+     0.1153
+    ],
+    [
+     39.0,
+     0.126
+    ],
+    [
+     42.0,
+     0.1314
+    ],
+    [
+     45.0,
+     0.1421
+    ],
+    [
+     48.0,
+     0.1475
+    ],
+    [
+     51.0,
+     0.1582
+    ],
+    [
+     54.0,
+     0.1636
+    ],
+    [
+     57.0,
+     0.1744
+    ],
+    [
+     60.0,
+     0.1797
+    ],
+    [
+     63.0,
+     0.1905
+    ],
+    [
+     66.0,
+     0.1958
+    ],
+    [
+     69.0,
+     0.2012
+    ],
+    [
+     72.0,
+     0.212
+    ],
+    [
+     75.0,
+     0.2173
+    ],
+    [
+     78.0,
+     0.2227
+    ],
+    [
+     81.0,
+     0.2334
+    ],
+    [
+     84.0,
+     0.2388
+    ],
+    [
+     87.0,
+     0.2442
+    ],
+    [
+     90.0,
+     0.2496
+    ],
+    [
+     93.0,
+     0.2603
+    ],
+    [
+     96.0,
+     0.2603
+    ],
+    [
+     99.0,
+     0.2711
+    ],
+    [
+     102.0,
+     0.2764
+    ],
+    [
+     105.0,
+     0.2818
+    ],
+    [
+     108.0,
+     0.2872
+    ],
+    [
+     111.0,
+     0.2925
+    ],
+    [
+     114.0,
+     0.2979
+    ],
+    [
+     117.0,
+     0.3033
+    ],
+    [
+     120.0,
+     0.3087
+    ],
+    [
+     123.0,
+     0.314
+    ],
+    [
+     126.0,
+     0.3194
+    ],
+    [
+     129.0,
+     0.3248
+    ],
+    [
+     132.0,
+     0.3301
+    ],
+    [
+     135.0,
+     0.3355
+    ],
+    [
+     138.0,
+     0.3355
+    ],
+    [
+     141.0,
+     0.3409
+    ],
+    [
+     144.0,
+     0.3463
+    ],
+    [
+     147.0,
+     0.3516
+    ],
+    [
+     150.0,
+     0.357
+    ],
+    [
+     153.0,
+     0.357
+    ],
+    [
+     156.0,
+     0.3624
+    ],
+    [
+     159.0,
+     0.3677
+    ],
+    [
+     162.0,
+     0.3731
+    ],
+    [
+     165.0,
+     0.3731
+    ],
+    [
+     168.0,
+     0.3785
+    ],
+    [
+     171.0,
+     0.3839
+    ],
+    [
+     174.0,
+     0.3839
+    ],
+    [
+     177.0,
+     0.3892
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 179.0,
+    "y_start": 0.051,
+    "y_end": 0.395,
+    "y_min": 0.051,
+    "y_max": 0.395,
+    "y_mean_last_5s": 0.389,
+    "u_mean_last_5s": 0.5,
+    "y_slope_last_5s_per_s": 0.0015
+   },
+   "any_override": false
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 120.0,
+   "command_before": 0.5,
+   "seconds_since_command_last_changed_at_start": 180.0,
+   "uncertainty_targeted": "Settling time and equilibrium gain at u=0.5 and whether its steady state lies above target 0.5, which sets feedforward for 0.5 and safe feedback aggressiveness.",
+   "expected_observation": "y rises monotonically from ~0.395 to ~0.53-0.58 with still-positive but declining end slope ~0.0008-0.0013, confirming equilibrium for u=0.5 is above 0.5 and time constant is several hundred seconds, without approaching soft limit.",
+   "verdict": "approved; worst-case bound 0.755",
+   "t_start": 180.0,
+   "samples": [
+    [
+     180.0,
+     0.3946
+    ],
+    [
+     182.0,
+     0.3946
+    ],
+    [
+     184.0,
+     0.4
+    ],
+    [
+     186.0,
+     0.4
+    ],
+    [
+     188.0,
+     0.4053
+    ],
+    [
+     190.0,
+     0.4053
+    ],
+    [
+     192.0,
+     0.4053
+    ],
+    [
+     194.0,
+     0.4107
+    ],
+    [
+     196.0,
+     0.4107
+    ],
+    [
+     198.0,
+     0.4107
+    ],
+    [
+     200.0,
+     0.4161
+    ],
+    [
+     202.0,
+     0.4161
+    ],
+    [
+     204.0,
+     0.4161
+    ],
+    [
+     206.0,
+     0.4215
+    ],
+    [
+     208.0,
+     0.4215
+    ],
+    [
+     210.0,
+     0.4215
+    ],
+    [
+     212.0,
+     0.4268
+    ],
+    [
+     214.0,
+     0.4268
+    ],
+    [
+     216.0,
+     0.4322
+    ],
+    [
+     218.0,
+     0.4322
+    ],
+    [
+     220.0,
+     0.4322
+    ],
+    [
+     222.0,
+     0.4322
+    ],
+    [
+     224.0,
+     0.4376
+    ],
+    [
+     226.0,
+     0.4376
+    ],
+    [
+     228.0,
+     0.4429
+    ],
+    [
+     230.0,
+     0.4429
+    ],
+    [
+     232.0,
+     0.4429
+    ],
+    [
+     234.0,
+     0.4429
+    ],
+    [
+     236.0,
+     0.4483
+    ],
+    [
+     238.0,
+     0.4483
+    ],
+    [
+     240.0,
+     0.4483
+    ],
+    [
+     242.0,
+     0.4483
+    ],
+    [
+     244.0,
+     0.4537
+    ],
+    [
+     246.0,
+     0.4537
+    ],
+    [
+     248.0,
+     0.4537
+    ],
+    [
+     250.0,
+     0.4537
+    ],
+    [
+     252.0,
+     0.4591
+    ],
+    [
+     254.0,
+     0.4591
+    ],
+    [
+     256.0,
+     0.4591
+    ],
+    [
+     258.0,
+     0.4591
+    ],
+    [
+     260.0,
+     0.4644
+    ],
+    [
+     262.0,
+     0.4644
+    ],
+    [
+     264.0,
+     0.4644
+    ],
+    [
+     266.0,
+     0.4698
+    ],
+    [
+     268.0,
+     0.4644
+    ],
+    [
+     270.0,
+     0.4698
+    ],
+    [
+     272.0,
+     0.4698
+    ],
+    [
+     274.0,
+     0.4698
+    ],
+    [
+     276.0,
+     0.4752
+    ],
+    [
+     278.0,
+     0.4752
+    ],
+    [
+     280.0,
+     0.4752
+    ],
+    [
+     282.0,
+     0.4752
+    ],
+    [
+     284.0,
+     0.4752
+    ],
+    [
+     286.0,
+     0.4805
+    ],
+    [
+     288.0,
+     0.4752
+    ],
+    [
+     290.0,
+     0.4805
+    ],
+    [
+     292.0,
+     0.4805
+    ],
+    [
+     294.0,
+     0.4805
+    ],
+    [
+     296.0,
+     0.4805
+    ],
+    [
+     298.0,
+     0.4859
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 180.0,
+    "t_end": 299.0,
+    "y_start": 0.395,
+    "y_end": 0.486,
+    "y_min": 0.395,
+    "y_max": 0.486,
+    "y_mean_last_5s": 0.483,
+    "u_mean_last_5s": 0.5,
+    "y_slope_last_5s_per_s": 0.0014
+   },
+   "any_override": false
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.0,
+   "duration_s": 180.0,
+   "command_before": 0.5,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Self-cooling decay rate and falling time constant at u=0 (H4), currently inferred only, which sets heat-loss, settling time, and safe integral/feedback aggressiveness for control.",
+   "expected_observation": "y decays monotonically from ~0.486 toward ~0.20-0.25 over 180 s with negative slope that flattens in magnitude but remains negative at end, confirming self-cooling heat loss and falling time constant ~150-200 s symmetrical to heating.",
+   "verdict": "approved; worst-case bound 0.486",
+   "t_start": 300.0,
+   "samples": [
+    [
+     300.0,
+     0.4859
+    ],
+    [
+     303.0,
+     0.4859
+    ],
+    [
+     306.0,
+     0.4859
+    ],
+    [
+     309.0,
+     0.4805
+    ],
+    [
+     312.0,
+     0.4805
+    ],
+    [
+     315.0,
+     0.4752
+    ],
+    [
+     318.0,
+     0.4698
+    ],
+    [
+     321.0,
+     0.4644
+    ],
+    [
+     324.0,
+     0.4591
+    ],
+    [
+     327.0,
+     0.4537
+    ],
+    [
+     330.0,
+     0.4483
+    ],
+    [
+     333.0,
+     0.4376
+    ],
+    [
+     336.0,
+     0.4322
+    ],
+    [
+     339.0,
+     0.4268
+    ],
+    [
+     342.0,
+     0.4161
+    ],
+    [
+     345.0,
+     0.4107
+    ],
+    [
+     348.0,
+     0.4053
+    ],
+    [
+     351.0,
+     0.4
+    ],
+    [
+     354.0,
+     0.3892
+    ],
+    [
+     357.0,
+     0.3839
+    ],
+    [
+     360.0,
+     0.3785
+    ],
+    [
+     363.0,
+     0.3731
+    ],
+    [
+     366.0,
+     0.3624
+    ],
+    [
+     369.0,
+     0.357
+    ],
+    [
+     372.0,
+     0.3516
+    ],
+    [
+     375.0,
+     0.3463
+    ],
+    [
+     378.0,
+     0.3409
+    ],
+    [
+     381.0,
+     0.3355
+    ],
+    [
+     384.0,
+     0.3301
+    ],
+    [
+     387.0,
+     0.3248
+    ],
+    [
+     390.0,
+     0.314
+    ],
+    [
+     393.0,
+     0.3087
+    ],
+    [
+     396.0,
+     0.3033
+    ],
+    [
+     399.0,
+     0.2979
+    ],
+    [
+     402.0,
+     0.2925
+    ],
+    [
+     405.0,
+     0.2872
+    ],
+    [
+     408.0,
+     0.2818
+    ],
+    [
+     411.0,
+     0.2764
+    ],
+    [
+     414.0,
+     0.2764
+    ],
+    [
+     417.0,
+     0.2711
+    ],
+    [
+     420.0,
+     0.2657
+    ],
+    [
+     423.0,
+     0.2603
+    ],
+    [
+     426.0,
+     0.2549
+    ],
+    [
+     429.0,
+     0.2496
+    ],
+    [
+     432.0,
+     0.2442
+    ],
+    [
+     435.0,
+     0.2442
+    ],
+    [
+     438.0,
+     0.2388
+    ],
+    [
+     441.0,
+     0.2334
+    ],
+    [
+     444.0,
+     0.2334
+    ],
+    [
+     447.0,
+     0.2281
+    ],
+    [
+     450.0,
+     0.2227
+    ],
+    [
+     453.0,
+     0.2173
+    ],
+    [
+     456.0,
+     0.2173
+    ],
+    [
+     459.0,
+     0.212
+    ],
+    [
+     462.0,
+     0.2066
+    ],
+    [
+     465.0,
+     0.2066
+    ],
+    [
+     468.0,
+     0.2012
+    ],
+    [
+     471.0,
+     0.2012
+    ],
+    [
+     474.0,
+     0.1958
+    ],
+    [
+     477.0,
+     0.1958
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 300.0,
+    "t_end": 479.0,
+    "y_start": 0.486,
+    "y_end": 0.19,
+    "y_min": 0.19,
+    "y_max": 0.486,
+    "y_mean_last_5s": 0.194,
+    "u_mean_last_5s": 0.0,
+    "y_slope_last_5s_per_s": -0.0012
+   },
+   "any_override": false
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.45,
+   "duration_s": 180.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Steady-state gain linearity and u needed to hold y=0.5 (H5/H7), which sets feedforward and steady-state error; single level u=0.5 cannot separate linear gain from saturation.",
+   "expected_observation": "y rises monotonically from ~0.19 to ~0.39-0.42 over 180 s with still-positive but declining end slope ~0.0005-0.0009, confirming equilibrium near 0.51 for u=0.45 and linear gain ~1.0 without approaching soft limit.",
+   "verdict": "approved; worst-case bound 0.676",
+   "t_start": 480.0,
+   "samples": [
+    [
+     480.0,
+     0.1905
+    ],
+    [
+     483.0,
+     0.1905
+    ],
+    [
+     486.0,
+     0.1905
+    ],
+    [
+     489.0,
+     0.1851
+    ],
+    [
+     492.0,
+     0.1905
+    ],
+    [
+     495.0,
+     0.1905
+    ],
+    [
+     498.0,
+     0.1958
+    ],
+    [
+     501.0,
+     0.1958
+    ],
+    [
+     504.0,
+     0.2012
+    ],
+    [
+     507.0,
+     0.2066
+    ],
+    [
+     510.0,
+     0.2066
+    ],
+    [
+     513.0,
+     0.2173
+    ],
+    [
+     516.0,
+     0.2173
+    ],
+    [
+     519.0,
+     0.2227
+    ],
+    [
+     522.0,
+     0.2281
+    ],
+    [
+     525.0,
+     0.2334
+    ],
+    [
+     528.0,
+     0.2388
+    ],
+    [
+     531.0,
+     0.2442
+    ],
+    [
+     534.0,
+     0.2496
+    ],
+    [
+     537.0,
+     0.2549
+    ],
+    [
+     540.0,
+     0.2603
+    ],
+    [
+     543.0,
+     0.2657
+    ],
+    [
+     546.0,
+     0.2711
+    ],
+    [
+     549.0,
+     0.2711
+    ],
+    [
+     552.0,
+     0.2764
+    ],
+    [
+     555.0,
+     0.2818
+    ],
+    [
+     558.0,
+     0.2872
+    ],
+    [
+     561.0,
+     0.2925
+    ],
+    [
+     564.0,
+     0.2979
+    ],
+    [
+     567.0,
+     0.3033
+    ],
+    [
+     570.0,
+     0.3033
+    ],
+    [
+     573.0,
+     0.3087
+    ],
+    [
+     576.0,
+     0.314
+    ],
+    [
+     579.0,
+     0.314
+    ],
+    [
+     582.0,
+     0.3194
+    ],
+    [
+     585.0,
+     0.3248
+    ],
+    [
+     588.0,
+     0.3301
+    ],
+    [
+     591.0,
+     0.3301
+    ],
+    [
+     594.0,
+     0.3355
+    ],
+    [
+     597.0,
+     0.3355
+    ],
+    [
+     600.0,
+     0.3463
+    ],
+    [
+     603.0,
+     0.3463
+    ],
+    [
+     606.0,
+     0.3516
+    ],
+    [
+     609.0,
+     0.3516
+    ],
+    [
+     612.0,
+     0.357
+    ],
+    [
+     615.0,
+     0.357
+    ],
+    [
+     618.0,
+     0.3624
+    ],
+    [
+     621.0,
+     0.3624
+    ],
+    [
+     624.0,
+     0.3677
+    ],
+    [
+     627.0,
+     0.3731
+    ],
+    [
+     630.0,
+     0.3731
+    ],
+    [
+     633.0,
+     0.3731
+    ],
+    [
+     636.0,
+     0.3785
+    ],
+    [
+     639.0,
+     0.3785
+    ],
+    [
+     642.0,
+     0.3839
+    ],
+    [
+     645.0,
+     0.3839
+    ],
+    [
+     648.0,
+     0.3892
+    ],
+    [
+     651.0,
+     0.3892
+    ],
+    [
+     654.0,
+     0.3946
+    ],
+    [
+     657.0,
+     0.3946
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 480.0,
+    "t_end": 659.0,
+    "y_start": 0.19,
+    "y_end": 0.395,
+    "y_min": 0.185,
+    "y_max": 0.395,
+    "y_mean_last_5s": 0.395,
+    "u_mean_last_5s": 0.45,
+    "y_slope_last_5s_per_s": 0.0
+   },
+   "any_override": false
+  },
+  {
+   "id": "E5",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.41,
+   "duration_s": 180.0,
+   "command_before": 0.45,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Steady-state feedforward to hold y=0.5 and linearity near target, which sets tracking error and energy; inferred only from extrapolation of unsettled responses at 0.5 and 0.45.",
+   "expected_observation": "y rises slowly from ~0.40 to ~0.45-0.47 over 180 s with small declining but still-positive end slope ~0.0003-0.0006, confirming equilibrium near 0.50 for u~0.41 and linear gain ~1.1 without approaching soft limit.",
+   "verdict": "approved; worst-case bound 0.843",
+   "t_start": 660.0,
+   "samples": [
+    [
+     660.0,
+     0.4
+    ],
+    [
+     663.0,
+     0.4
+    ],
+    [
+     666.0,
+     0.4053
+    ],
+    [
+     669.0,
+     0.4053
+    ],
+    [
+     672.0,
+     0.4053
+    ],
+    [
+     675.0,
+     0.4053
+    ],
+    [
+     678.0,
+     0.4107
+    ],
+    [
+     681.0,
+     0.4107
+    ],
+    [
+     684.0,
+     0.4107
+    ],
+    [
+     687.0,
+     0.4107
+    ],
+    [
+     690.0,
+     0.4161
+    ],
+    [
+     693.0,
+     0.4161
+    ],
+    [
+     696.0,
+     0.4161
+    ],
+    [
+     699.0,
+     0.4161
+    ],
+    [
+     702.0,
+     0.4161
+    ],
+    [
+     705.0,
+     0.4215
+    ],
+    [
+     708.0,
+     0.4215
+    ],
+    [
+     711.0,
+     0.4215
+    ],
+    [
+     714.0,
+     0.4215
+    ],
+    [
+     717.0,
+     0.4215
+    ],
+    [
+     720.0,
+     0.4215
+    ],
+    [
+     723.0,
+     0.4268
+    ],
+    [
+     726.0,
+     0.4268
+    ],
+    [
+     729.0,
+     0.4268
+    ],
+    [
+     732.0,
+     0.4268
+    ],
+    [
+     735.0,
+     0.4268
+    ],
+    [
+     738.0,
+     0.4268
+    ],
+    [
+     741.0,
+     0.4268
+    ],
+    [
+     744.0,
+     0.4322
+    ],
+    [
+     747.0,
+     0.4322
+    ],
+    [
+     750.0,
+     0.4322
+    ],
+    [
+     753.0,
+     0.4322
+    ],
+    [
+     756.0,
+     0.4322
+    ],
+    [
+     759.0,
+     0.4322
+    ],
+    [
+     762.0,
+     0.4322
+    ],
+    [
+     765.0,
+     0.4322
+    ],
+    [
+     768.0,
+     0.4376
+    ],
+    [
+     771.0,
+     0.4322
+    ],
+    [
+     774.0,
+     0.4376
+    ],
+    [
+     777.0,
+     0.4376
+    ],
+    [
+     780.0,
+     0.4376
+    ],
+    [
+     783.0,
+     0.4376
+    ],
+    [
+     786.0,
+     0.4376
+    ],
+    [
+     789.0,
+     0.4376
+    ],
+    [
+     792.0,
+     0.4429
+    ],
+    [
+     795.0,
+     0.4376
+    ],
+    [
+     798.0,
+     0.4429
+    ],
+    [
+     801.0,
+     0.4429
+    ],
+    [
+     804.0,
+     0.4429
+    ],
+    [
+     807.0,
+     0.4429
+    ],
+    [
+     810.0,
+     0.4429
+    ],
+    [
+     813.0,
+     0.4429
+    ],
+    [
+     816.0,
+     0.4429
+    ],
+    [
+     819.0,
+     0.4429
+    ],
+    [
+     822.0,
+     0.4429
+    ],
+    [
+     825.0,
+     0.4429
+    ],
+    [
+     828.0,
+     0.4429
+    ],
+    [
+     831.0,
+     0.4429
+    ],
+    [
+     834.0,
+     0.4429
+    ],
+    [
+     837.0,
+     0.4483
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 660.0,
+    "t_end": 839.0,
+    "y_start": 0.4,
+    "y_end": 0.443,
+    "y_min": 0.4,
+    "y_max": 0.448,
+    "y_mean_last_5s": 0.445,
+    "u_mean_last_5s": 0.41,
+    "y_slope_last_5s_per_s": -0.0003
+   },
+   "any_override": false
+  },
+  {
+   "id": "E6",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.44,
+   "duration_s": 140.0,
+   "command_before": 0.41,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Steady-state feedforward to hold y=0.5 and linearity near target, which sets tracking error and energy; currently interpolated from unsettled 0.5 and 0.45 and E5 at 0.41, not directly observed at target.",
+   "expected_observation": "y rises slowly from ~0.448 to ~0.47-0.48 over 140 s with small declining but still-positive end slope ~0.0001-0.0003, confirming equilibrium near 0.49-0.51 for u=0.44 and that u~0.44 holds target.",
+   "verdict": "approved; worst-case bound 0.818",
+   "t_start": 840.0,
+   "samples": [
+    [
+     840.0,
+     0.4483
+    ],
+    [
+     843.0,
+     0.4483
+    ],
+    [
+     846.0,
+     0.4483
+    ],
+    [
+     849.0,
+     0.4483
+    ],
+    [
+     852.0,
+     0.4483
+    ],
+    [
+     855.0,
+     0.4483
+    ],
+    [
+     858.0,
+     0.4483
+    ],
+    [
+     861.0,
+     0.4483
+    ],
+    [
+     864.0,
+     0.4483
+    ],
+    [
+     867.0,
+     0.4537
+    ],
+    [
+     870.0,
+     0.4537
+    ],
+    [
+     873.0,
+     0.4537
+    ],
+    [
+     876.0,
+     0.4537
+    ],
+    [
+     879.0,
+     0.4537
+    ],
+    [
+     882.0,
+     0.4537
+    ],
+    [
+     885.0,
+     0.4537
+    ],
+    [
+     888.0,
+     0.4591
+    ],
+    [
+     891.0,
+     0.4591
+    ],
+    [
+     894.0,
+     0.4591
+    ],
+    [
+     897.0,
+     0.4591
+    ],
+    [
+     900.0,
+     0.4591
+    ],
+    [
+     903.0,
+     0.4591
+    ],
+    [
+     906.0,
+     0.4591
+    ],
+    [
+     909.0,
+     0.4591
+    ],
+    [
+     912.0,
+     0.4644
+    ],
+    [
+     915.0,
+     0.4644
+    ],
+    [
+     918.0,
+     0.4644
+    ],
+    [
+     921.0,
+     0.4644
+    ],
+    [
+     924.0,
+     0.4644
+    ],
+    [
+     927.0,
+     0.4644
+    ],
+    [
+     930.0,
+     0.4644
+    ],
+    [
+     933.0,
+     0.4644
+    ],
+    [
+     936.0,
+     0.4644
+    ],
+    [
+     939.0,
+     0.4644
+    ],
+    [
+     942.0,
+     0.4698
+    ],
+    [
+     945.0,
+     0.4644
+    ],
+    [
+     948.0,
+     0.4698
+    ],
+    [
+     951.0,
+     0.4698
+    ],
+    [
+     954.0,
+     0.4698
+    ],
+    [
+     957.0,
+     0.4698
+    ],
+    [
+     960.0,
+     0.4698
+    ],
+    [
+     963.0,
+     0.4698
+    ],
+    [
+     966.0,
+     0.4698
+    ],
+    [
+     969.0,
+     0.4698
+    ],
+    [
+     972.0,
+     0.4752
+    ],
+    [
+     975.0,
+     0.4752
+    ],
+    [
+     978.0,
+     0.4752
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 840.0,
+    "t_end": 979.0,
+    "y_start": 0.448,
+    "y_end": 0.47,
+    "y_min": 0.443,
+    "y_max": 0.475,
+    "y_mean_last_5s": 0.474,
+    "u_mean_last_5s": 0.44,
+    "y_slope_last_5s_per_s": -0.0008
+   },
+   "any_override": false
+  },
+  {
+   "id": "E7",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.47,
+   "duration_s": 120.0,
+   "command_before": 0.44,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Steady-state feedforward to hold y=0.5 and linearity near target, which sets tracking error and energy; E5-E6 suggest 0.44 is slightly low but have not observed convergence to 0.5 from inside the band.",
+   "expected_observation": "y rises slowly from ~0.475 to ~0.495-0.505 over 120 s with declining but still slightly positive end slope, confirming y_ss for 0.47 is ~0.52 and that u~0.45-0.46 holds y=0.5.",
+   "verdict": "approved; worst-case bound 0.814",
+   "t_start": 980.0,
+   "samples": [
+    [
+     980.0,
+     0.4752
+    ],
+    [
+     982.0,
+     0.4752
+    ],
+    [
+     984.0,
+     0.4752
+    ],
+    [
+     986.0,
+     0.4752
+    ],
+    [
+     988.0,
+     0.4752
+    ],
+    [
+     990.0,
+     0.4752
+    ],
+    [
+     992.0,
+     0.4752
+    ],
+    [
+     994.0,
+     0.4752
+    ],
+    [
+     996.0,
+     0.4752
+    ],
+    [
+     998.0,
+     0.4752
+    ],
+    [
+     1000.0,
+     0.4752
+    ],
+    [
+     1002.0,
+     0.4752
+    ],
+    [
+     1004.0,
+     0.4805
+    ],
+    [
+     1006.0,
+     0.4805
+    ],
+    [
+     1008.0,
+     0.4805
+    ],
+    [
+     1010.0,
+     0.4805
+    ],
+    [
+     1012.0,
+     0.4805
+    ],
+    [
+     1014.0,
+     0.4805
+    ],
+    [
+     1016.0,
+     0.4805
+    ],
+    [
+     1018.0,
+     0.4805
+    ],
+    [
+     1020.0,
+     0.4805
+    ],
+    [
+     1022.0,
+     0.4859
+    ],
+    [
+     1024.0,
+     0.4859
+    ],
+    [
+     1026.0,
+     0.4859
+    ],
+    [
+     1028.0,
+     0.4859
+    ],
+    [
+     1030.0,
+     0.4859
+    ],
+    [
+     1032.0,
+     0.4859
+    ],
+    [
+     1034.0,
+     0.4859
+    ],
+    [
+     1036.0,
+     0.4859
+    ],
+    [
+     1038.0,
+     0.4859
+    ],
+    [
+     1040.0,
+     0.4859
+    ],
+    [
+     1042.0,
+     0.4859
+    ],
+    [
+     1044.0,
+     0.4913
+    ],
+    [
+     1046.0,
+     0.4913
+    ],
+    [
+     1048.0,
+     0.4859
+    ],
+    [
+     1050.0,
+     0.4913
+    ],
+    [
+     1052.0,
+     0.4913
+    ],
+    [
+     1054.0,
+     0.4913
+    ],
+    [
+     1056.0,
+     0.4913
+    ],
+    [
+     1058.0,
+     0.4913
+    ],
+    [
+     1060.0,
+     0.4913
+    ],
+    [
+     1062.0,
+     0.4913
+    ],
+    [
+     1064.0,
+     0.4913
+    ],
+    [
+     1066.0,
+     0.4913
+    ],
+    [
+     1068.0,
+     0.4913
+    ],
+    [
+     1070.0,
+     0.4967
+    ],
+    [
+     1072.0,
+     0.4913
+    ],
+    [
+     1074.0,
+     0.4967
+    ],
+    [
+     1076.0,
+     0.4967
+    ],
+    [
+     1078.0,
+     0.4967
+    ],
+    [
+     1080.0,
+     0.4967
+    ],
+    [
+     1082.0,
+     0.4967
+    ],
+    [
+     1084.0,
+     0.4967
+    ],
+    [
+     1086.0,
+     0.4967
+    ],
+    [
+     1088.0,
+     0.4967
+    ],
+    [
+     1090.0,
+     0.4967
+    ],
+    [
+     1092.0,
+     0.4967
+    ],
+    [
+     1094.0,
+     0.4967
+    ],
+    [
+     1096.0,
+     0.4967
+    ],
+    [
+     1098.0,
+     0.502
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 980.0,
+    "t_end": 1099.0,
+    "y_start": 0.475,
+    "y_end": 0.502,
+    "y_min": 0.475,
+    "y_max": 0.502,
+    "y_mean_last_5s": 0.499,
+    "u_mean_last_5s": 0.47,
+    "y_slope_last_5s_per_s": 0.0014
+   },
+   "any_override": false
+  },
+  {
+   "id": "E8",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.45,
+   "duration_s": 120.0,
+   "command_before": 0.47,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Steady-state feedforward to hold y=0.5 and linearity near target, which sets tracking error and energy; extrapolated only from unsettled rises, not yet observed as a flat hold in the band.",
+   "expected_observation": "y holds near 0.50, drifting only slightly from 0.502 to ~0.498-0.508 over 120 s with near-zero end slope, confirming y_ss for u=0.45 is ~0.50 and u~0.45-0.46 holds target.",
+   "verdict": "approved; worst-case bound 0.826",
+   "t_start": 1100.0,
+   "samples": [
+    [
+     1100.0,
+     0.502
+    ],
+    [
+     1102.0,
+     0.4967
+    ],
+    [
+     1104.0,
+     0.502
+    ],
+    [
+     1106.0,
+     0.502
+    ],
+    [
+     1108.0,
+     0.502
+    ],
+    [
+     1110.0,
+     0.502
+    ],
+    [
+     1112.0,
+     0.502
+    ],
+    [
+     1114.0,
+     0.502
+    ],
+    [
+     1116.0,
+     0.502
+    ],
+    [
+     1118.0,
+     0.502
+    ],
+    [
+     1120.0,
+     0.502
+    ],
+    [
+     1122.0,
+     0.502
+    ],
+    [
+     1124.0,
+     0.502
+    ],
+    [
+     1126.0,
+     0.502
+    ],
+    [
+     1128.0,
+     0.502
+    ],
+    [
+     1130.0,
+     0.502
+    ],
+    [
+     1132.0,
+     0.502
+    ],
+    [
+     1134.0,
+     0.502
+    ],
+    [
+     1136.0,
+     0.502
+    ],
+    [
+     1138.0,
+     0.502
+    ],
+    [
+     1140.0,
+     0.502
+    ],
+    [
+     1142.0,
+     0.502
+    ],
+    [
+     1144.0,
+     0.502
+    ],
+    [
+     1146.0,
+     0.502
+    ],
+    [
+     1148.0,
+     0.502
+    ],
+    [
+     1150.0,
+     0.502
+    ],
+    [
+     1152.0,
+     0.502
+    ],
+    [
+     1154.0,
+     0.502
+    ],
+    [
+     1156.0,
+     0.502
+    ],
+    [
+     1158.0,
+     0.502
+    ],
+    [
+     1160.0,
+     0.502
+    ],
+    [
+     1162.0,
+     0.502
+    ],
+    [
+     1164.0,
+     0.502
+    ],
+    [
+     1166.0,
+     0.502
+    ],
+    [
+     1168.0,
+     0.502
+    ],
+    [
+     1170.0,
+     0.502
+    ],
+    [
+     1172.0,
+     0.502
+    ],
+    [
+     1174.0,
+     0.502
+    ],
+    [
+     1176.0,
+     0.502
+    ],
+    [
+     1178.0,
+     0.502
+    ],
+    [
+     1180.0,
+     0.502
+    ],
+    [
+     1182.0,
+     0.502
+    ],
+    [
+     1184.0,
+     0.502
+    ],
+    [
+     1186.0,
+     0.502
+    ],
+    [
+     1188.0,
+     0.502
+    ],
+    [
+     1190.0,
+     0.502
+    ],
+    [
+     1192.0,
+     0.502
+    ],
+    [
+     1194.0,
+     0.502
+    ],
+    [
+     1196.0,
+     0.502
+    ],
+    [
+     1198.0,
+     0.502
+    ],
+    [
+     1200.0,
+     0.502
+    ],
+    [
+     1202.0,
+     0.502
+    ],
+    [
+     1204.0,
+     0.502
+    ],
+    [
+     1206.0,
+     0.502
+    ],
+    [
+     1208.0,
+     0.502
+    ],
+    [
+     1210.0,
+     0.502
+    ],
+    [
+     1212.0,
+     0.502
+    ],
+    [
+     1214.0,
+     0.502
+    ],
+    [
+     1216.0,
+     0.502
+    ],
+    [
+     1218.0,
+     0.502
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 1100.0,
+    "t_end": 1219.0,
+    "y_start": 0.502,
+    "y_end": 0.502,
+    "y_min": 0.497,
+    "y_max": 0.502,
+    "y_mean_last_5s": 0.502,
+    "u_mean_last_5s": 0.45,
+    "y_slope_last_5s_per_s": 0.0
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+   "confidence": 0.99,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H2",
+   "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+   "confidence": 0.96,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H3",
+   "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+   "confidence": 0.65,
+   "evidence_refs": [
+    "E1",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H4",
+   "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+   "confidence": 0.92,
+   "evidence_refs": [
+    "E1",
+    "E3"
+   ]
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 is in mid-range 0.4-0.5.",
+   "confidence": 0.9,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+   "confidence": 0.96,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  },
+  {
+   "id": "H7",
+   "statement": "Equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 requires u ~0.45-0.46.",
+   "confidence": 0.85,
+   "evidence_refs": [
+    "E1",
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ]
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

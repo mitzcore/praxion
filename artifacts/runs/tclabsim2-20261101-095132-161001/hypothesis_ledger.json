@@ -1,0 +1,441 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793544704.230313,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.8,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.8,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u shows lag/time-constant of order tens of seconds, not instant.",
+    "confidence": 0.6,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u in 0.2-0.5 produces measurable rise versus no response until high u.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u around 0.4-0.7 holds y near 0.5.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is small (<0.01) compared to control band width 0.05.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793544723.932021,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.6,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u shows lag/time-constant of order tens of seconds, not instant.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u in 0.2-0.5 produces measurable rise versus no response until high u.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately linear and u around 0.4-0.7 holds y near 0.5.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is small (<0.01) compared to control band width 0.05.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793544749.346852,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.65,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u is lagged/slow with dominant time-constant order 100s+ (still rising after 300s), not instant.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u=0.5 produces measurable rise versus no response until high u.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately monotonic and u around 0.4-0.5 holds y near 0.5 (u=0.5 drives y to 0.486 and still rising, so equilibrium >0.5).",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is small (<0.01) compared to control band width 0.05.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793544771.4296892,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u is lagged/slow with dominant time-constant order 150-200s (still rising after 300s at u=0.5, still falling after 180s at u=0), not instant.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u=0.5 produces measurable rise versus no response until high u.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately monotonic and u around 0.40-0.45 holds y near 0.5 (u=0.5 drove y to 0.486 and still rising, so equilibrium ~0.57).",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is small (<0.01) compared to control band width 0.05.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793544799.706632,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u is lagged/slow with dominant time-constant ~150-180s and short delay <10s, not instant.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u=0.4 produces clear heating, so any dead-zone is below 0.4.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state is approximately linear y_ss~0.05+~1.0*u, so u~0.43-0.45 holds y near 0.5 and u=0.5 equilibrium is ~0.57.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise/quantization is small (<0.01) compared to control band width 0.05.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793544829.298025,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u is lagged/slow with dominant time-constant ~150-250s and short delay <10s, not instant.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u=0.4-0.44 produces clear heating, so any dead-zone is below 0.4.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state is approximately linear y_ss~0.05+~1.0*u, so u~0.45-0.49 holds y near 0.5; E5 at u=0.44 reached 0.454 with flat 5s slope but still likely below true equilibrium ~0.48-0.51.",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise/quantization is small (~0.005 steps, <0.01) compared to control band width 0.05.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793544861.957587,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "At u=0, y decays on its own toward ambient near 0.05 rather than holding.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Response to a step in u is lagged/slow with dominant time-constant ~150-180s and short delay <10s, not instant.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead-zone: u=0.4-0.48 produces clear heating, so any dead-zone is below 0.4.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state is approximately linear y_ss~0.05+~1.0*u, so u~0.44-0.45 holds y near 0.5; E5 u=0.44 trending to ~0.50 and E6 u=0.48 trending to ~0.53 bracket the target.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise/quantization is small (~0.005 steps, <0.01) compared to control band width 0.05.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   }
+  ]
+ }
+]

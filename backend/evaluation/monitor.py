@@ -6,12 +6,16 @@ Runs ONLINE, so it only ever looks at the measured (noisy) ``y`` and the target,
 
 Rule: rolling ``window_s`` MAE of |y - target| exceeds ``max(factor * baseline, floor)`` for
 ``hold_s`` continuous seconds, or any supervisor override occurs after calibration.
+
+Plant-agnostic: window / hold / factor / floor and the target come from a ``PlantProfile``
+(TANK, i.e. the frozen config values, when none is given).
 """
 from __future__ import annotations
 
 import math
+import sys
 from collections import deque
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 
 from pydantic import BaseModel
 
@@ -23,6 +27,7 @@ from backend.evaluation.config import (
     DEGRADATION_WINDOW_S,
 )
 from backend.plant.base import PlantAdapter
+from backend.profiles import TANK, PlantProfile
 from backend.safety.supervisor import Supervisor
 from backend.schemas import DisturbanceSpec, Trace, TraceStep
 
@@ -43,11 +48,24 @@ class DegradationDetector:
     def __init__(
         self,
         dt: float,
-        window_s: float = DEGRADATION_WINDOW_S,
-        factor: float = DEGRADATION_FACTOR,
-        floor: float = DEGRADATION_FLOOR,
-        hold_s: float = DEGRADATION_HOLD_S,
+        window_s: float | None = None,
+        factor: float | None = None,
+        floor: float | None = None,
+        hold_s: float | None = None,
+        *,
+        profile: PlantProfile | None = None,
     ) -> None:
+        """Explicit keyword values win; otherwise the profile's monitor_* values; otherwise the frozen
+        config (tank) values DEGRADATION_WINDOW_S / _FACTOR / _FLOOR / _HOLD_S."""
+        if profile is not None:
+            window_s = profile.monitor_window_s if window_s is None else window_s
+            factor = profile.monitor_factor if factor is None else factor
+            floor = profile.monitor_floor if floor is None else floor
+            hold_s = profile.monitor_hold_s if hold_s is None else hold_s
+        window_s = DEGRADATION_WINDOW_S if window_s is None else window_s
+        factor = DEGRADATION_FACTOR if factor is None else factor
+        floor = DEGRADATION_FLOOR if floor is None else floor
+        hold_s = DEGRADATION_HOLD_S if hold_s is None else hold_s
         if dt <= 0:
             raise ValueError("dt must be > 0")
         self.dt = float(dt)
@@ -65,6 +83,10 @@ class DegradationDetector:
         self.degraded_reason: str | None = None
         self._above_since: float | None = None
         self.calibrated_at_t: float | None = None
+
+    @classmethod
+    def from_profile(cls, profile: PlantProfile, dt: float | None = None) -> DegradationDetector:
+        return cls(profile.dt if dt is None else dt, profile=profile)
 
     # ------------------------------------------------------------------ calibration
     def calibrate(self, samples: Trace | Iterable[float] | Iterable[Sequence[float]]) -> float:
@@ -175,6 +197,25 @@ class MonitoredResult(BaseModel):
     post_trace: Trace | None
 
 
+OperatorPause = Callable[[], None]
+
+
+def terminal_operator_pause(prompt: str = "Apply the physical disturbance now, then press Enter to resume... ") -> None:
+    """Default operator hook: print a prompt and wait for Enter when stdin is a terminal; no-op otherwise
+    (CI, batch runs, piped stdin)."""
+    try:
+        interactive = sys.stdin is not None and sys.stdin.isatty()
+    except (AttributeError, ValueError):
+        interactive = False
+    if not interactive:
+        return
+    print(prompt, end="", flush=True)
+    try:
+        input()
+    except EOFError:
+        pass
+
+
 def _sub_trace(trace: Trace, steps: list[TraceStep]) -> Trace:
     return Trace(steps=steps, dt=trace.dt, target=trace.target, disturbance_at=trace.disturbance_at,
                  meta=dict(trace.meta))
@@ -186,13 +227,16 @@ def run_monitored_rollout(
     supervisor: Supervisor,
     *,
     duration_s: float,
-    target: float,
+    target: float | None = None,
     seed: int,
     scenario: int | None = None,
     disturbance: DisturbanceSpec | None,
-    calibrate_s: float,
+    calibrate_s: float | None = None,
     detector: DegradationDetector | None = None,
     stop_after_detection_s: float | None = None,
+    profile: PlantProfile | None = None,
+    pause_for_operator: OperatorPause | None = None,
+    disturbance_at_s: float | None = None,
 ) -> MonitoredResult:
     """Deployed-controller rollout with online degradation detection.
 
@@ -201,19 +245,45 @@ def run_monitored_rollout(
     calibrated on the window ending at ``calibrate_s``, which must precede any disturbance.
     ``seed`` picks the machine, ``scenario`` (default: ``seed``) the episode, as in run_episode.
     The caller owns the controller lifecycle (it is not closed here).
+
+    ``profile`` (TANK when None) supplies the default ``target``, ``calibrate_s`` and detector settings.
+    ``schedule_disturbance`` is only called when ``disturbance`` is given, so a physical plant whose
+    ``schedule_disturbance`` raises NotImplementedError works with ``disturbance=None``.
+    ``pause_for_operator`` (optional) is called exactly once, when the rollout time first reaches
+    ``disturbance_at_s`` (default: ``profile.disturbance_at_s``), so a human can apply a physical
+    disturbance. It may block; the rollout clock is the plant's own time, so wall time spent in the hook
+    is not counted: the next tick simply resumes from a fresh observation.
     """
+    prof = profile or TANK
+    if target is None:
+        target = prof.target
+    if calibrate_s is None:
+        calibrate_s = prof.monitor_calibrate_s
+    pause_at: float | None = None
+    if pause_for_operator is not None:
+        pause_at = prof.disturbance_at_s if disturbance_at_s is None else float(disturbance_at_s)
     if disturbance is not None and calibrate_s > disturbance.at_t + _EPS:
         raise ValueError(f"calibrate_s={calibrate_s} must not be after the disturbance at {disturbance.at_t}")
+    if pause_at is not None and calibrate_s > pause_at + _EPS:
+        raise ValueError(f"calibrate_s={calibrate_s} must not be after the operator disturbance at {pause_at}")
     plant.reset(seed, scenario)
     if disturbance is not None:
         plant.schedule_disturbance(disturbance)
     controller.reset()
     dt = plant.dt
-    det = detector or DegradationDetector(dt)
+    det = detector or DegradationDetector(dt, profile=prof)
     steps: list[TraceStep] = []
     stop_t: float | None = None
+    paused = False
+    operator_t: float | None = None
     for _ in range(_n_ticks(duration_s, dt)):
         obs = plant.observe()
+        if pause_at is not None and not paused and obs.t >= pause_at - dt / 2:
+            paused = True
+            operator_t = obs.t
+            assert pause_for_operator is not None
+            pause_for_operator()
+            obs = plant.observe()  # fresh reading after the (possibly long) pause
         exc_reason: str | None = None
         try:
             u_req = float(controller.step({"y": obs.y, "target": target, "dt": dt, "elapsed_s": obs.t}))
@@ -246,7 +316,7 @@ def run_monitored_rollout(
         steps=steps,
         dt=dt,
         target=target,
-        disturbance_at=disturbance.at_t if disturbance is not None else None,
+        disturbance_at=disturbance.at_t if disturbance is not None else operator_t,
         meta={
             "seed": seed,
             "scenario": seed if scenario is None else scenario,
@@ -258,6 +328,11 @@ def run_monitored_rollout(
             "detector": det.thresholds(),
         },
     )
+    # Extra meta only off the tank path, so recorded tank traces stay byte-identical.
+    if prof.name != "tank":
+        trace.meta["profile"] = prof.name
+    if operator_t is not None:
+        trace.meta["operator_disturbance_at_s"] = operator_t
     t_deg = det.degraded_at_t
     if t_deg is None:
         pre, post = _sub_trace(trace, list(steps)), None

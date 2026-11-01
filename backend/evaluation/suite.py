@@ -20,22 +20,18 @@ from backend.controller.protocol import Controller
 from backend.controller.runtime import run_episode
 from backend.evaluation.baselines import OnOffController, PIDController
 from backend.evaluation.config import (
-    DISTURBANCE_AT_S,
-    DISTURBANCE_EPISODE_S,
     DISTURBANCE_SEEDS,
-    EPISODE_S,
     GATE2_MIN_INBAND,
     GATE2_MIN_PASS,
     GATE3_MIN_MAE_REDUCTION,
     GATE3_MIN_PASS,
     HELDOUT_SEEDS,
-    SETTLE_S,
-    TARGET,
 )
 from backend.evaluation.metrics import compute_metrics, post_disturbance_mae
 from backend.evaluation.report import EpisodeResult, EvaluationReport
 from backend.plant.base import PlantAdapter
 from backend.plant.tank_sim import TankSimulator
+from backend.profiles import TANK, PlantProfile
 from backend.safety.supervisor import SafetyLimits, Supervisor
 from backend.schemas import DisturbanceSpec, Metrics, Trace
 
@@ -43,6 +39,23 @@ ControllerFactory = Callable[[], Controller]
 PlantFactory = Callable[[], PlantAdapter]
 
 _MAE_EPS = 1e-9
+
+
+def _resolve(
+    profile: PlantProfile | None, plant_factory: PlantFactory | None, limits: SafetyLimits | None
+) -> tuple[PlantProfile, PlantFactory, SafetyLimits | None]:
+    """Profile defaults to TANK, plant factory to TankSimulator. Limits default to the supervisor's
+    defaults for TANK (identical to ``SafetyLimits.from_profile(TANK)``) and to the profile's limits otherwise."""
+    prof = profile or TANK
+    pf = plant_factory or TankSimulator
+    if limits is None and prof.name != "tank":
+        limits = SafetyLimits.from_profile(prof)
+    return prof, pf, limits
+
+
+def _baseline_name(name: str, profile: PlantProfile) -> str:
+    """Baselines were tuned for the tank; label them honestly on any other plant."""
+    return name if profile.name == "tank" else f"{name} (tank tuning)"
 
 
 # --------------------------------------------------------------------------- helpers
@@ -65,6 +78,7 @@ def _run_one(
     disturbance: DisturbanceSpec | None,
     plant_factory: PlantFactory,
     limits: SafetyLimits | None,
+    target: float,
 ) -> tuple[Trace, dict[str, Any] | None]:
     """One episode (machine ``plant_seed``, episode ``scenario``) on a fresh plant and a fresh
     supervisor, so override / violation counts never bleed between episodes."""
@@ -72,7 +86,7 @@ def _run_one(
     supervisor = Supervisor(limits)
     supervisor.reset_counters()
     trace = run_episode(
-        plant, controller, supervisor, duration_s, TARGET, plant_seed,
+        plant, controller, supervisor, duration_s, target, plant_seed,
         scenario=scenario, disturbance=disturbance, close_after=False,
     )
     hidden = getattr(plant, "hidden_params", None)
@@ -128,6 +142,7 @@ def _run_suite(
     verdict: Callable[[Metrics], tuple[bool, list[str]]],
     plant_factory: PlantFactory,
     limits: SafetyLimits | None,
+    profile: PlantProfile,
 ) -> tuple[list[EpisodeResult], list[dict[str, Any]]]:
     """Run every scenario seed on machine ``plant_seed`` with ONE controller instance
     (factory called once, closed in finally). EpisodeResult.seed stores the SCENARIO."""
@@ -136,7 +151,7 @@ def _run_suite(
     audit: list[dict[str, Any]] = []
     try:
         for index, seed in enumerate(seeds):
-            dist = DisturbanceSpec(family=family, at_t=DISTURBANCE_AT_S) if family is not None else None
+            dist = DisturbanceSpec(family=family, at_t=profile.disturbance_at_s) if family is not None else None
             trace, hidden = _run_one(
                 controller,
                 plant_seed=plant_seed,
@@ -145,8 +160,9 @@ def _run_suite(
                 disturbance=dist,
                 plant_factory=plant_factory,
                 limits=limits,
+                target=profile.target,
             )
-            metrics = compute_metrics(trace, scored_from_s)
+            metrics = compute_metrics(trace, scored_from_s, band=profile.band, hard_cutoff=profile.hard_cutoff)
             passed, reasons = verdict(metrics)
             episodes.append(
                 EpisodeResult(
@@ -179,11 +195,15 @@ def _baseline_block(
     verdict: Callable[[Metrics], tuple[bool, list[str]]],
     plant_factory: PlantFactory,
     limits: SafetyLimits | None,
+    profile: PlantProfile,
 ) -> tuple[dict[str, Any], dict[str, float], list[dict[str, Any]]]:
-    """Run a baseline through the same seeds. Returns (comparison block, prefixed aggregate, audit)."""
+    """Run a baseline through the same seeds. Returns (comparison block, prefixed aggregate, audit).
+
+    Comparison keys and aggregate prefixes stay ``name``; on non-tank profiles the block's ``name``
+    reads e.g. "baseline_pid (tank tuning)" because the gains were tuned for the tank."""
     eps, audit = _run_suite(
         factory, plant_seed=plant_seed, seeds=seeds, duration_s=duration_s, scored_from_s=scored_from_s, family=family,
-        verdict=verdict, plant_factory=plant_factory, limits=limits,
+        verdict=verdict, plant_factory=plant_factory, limits=limits, profile=profile,
     )
     agg = _base_aggregate(eps)
     per_seed: list[dict[str, Any]] = []
@@ -195,7 +215,9 @@ def _baseline_block(
         per_seed.append(row)
     if family is not None:
         agg["median_post_disturbance_mae"] = _median([r["post_disturbance_mae"] for r in per_seed])
-    block = {"name": name, "per_seed": per_seed, "aggregate": agg}
+    block: dict[str, Any] = {"name": _baseline_name(name, profile), "per_seed": per_seed, "aggregate": agg}
+    if profile.name != "tank":
+        block["tuned_for"] = "tank"
     prefixed = {f"{name}_{k}": v for k, v in agg.items()}
     return block, prefixed, audit
 
@@ -206,18 +228,21 @@ def evaluate_heldout(
     *,
     candidate_id: str,
     plant_seed: int,
-    plant_factory: PlantFactory = TankSimulator,
+    plant_factory: PlantFactory | None = TankSimulator,
     limits: SafetyLimits | None = None,
+    profile: PlantProfile | None = None,
 ) -> EvaluationReport:
-    """Gate 2 on machine ``plant_seed``: one nominal episode per HELDOUT_SEEDS SCENARIO, scored after SETTLE_S on h_true.
+    """Gate 2 on machine ``plant_seed``: one nominal episode per HELDOUT_SEEDS SCENARIO, scored after the
+    profile's settle_s on h_true (episode length, target and band also come from ``profile``; TANK if None).
 
     An episode passes iff invalid_outputs == 0, hard_violations == 0, override_count == 0 and
     in_band_fraction >= GATE2_MIN_INBAND. The gate passes iff >= GATE2_MIN_PASS episodes pass.
     Fixed PID and on/off baselines run through the same seeds for comparison (trusted only).
     """
+    prof, plant_factory, limits = _resolve(profile, plant_factory, limits)
     common: dict[str, Any] = {
-        "plant_seed": plant_seed, "seeds": HELDOUT_SEEDS, "duration_s": EPISODE_S, "scored_from_s": SETTLE_S, "family": None,
-        "verdict": _heldout_verdict, "plant_factory": plant_factory, "limits": limits,
+        "plant_seed": plant_seed, "seeds": HELDOUT_SEEDS, "duration_s": prof.episode_s, "scored_from_s": prof.settle_s,
+        "family": None, "verdict": _heldout_verdict, "plant_factory": plant_factory, "limits": limits, "profile": prof,
     }
     episodes, audit = _run_suite(factory, **common)
     aggregate = _base_aggregate(episodes)
@@ -227,7 +252,7 @@ def evaluate_heldout(
         (
             f"{n_passed}/{len(episodes)} episodes passed (need >= {GATE2_MIN_PASS}): "
             f"valid outputs, zero hard violations, zero overrides, in-band >= {GATE2_MIN_INBAND:.2f} "
-            f"after {SETTLE_S:.0f} s"
+            f"after {prof.settle_s:.0f} s"
         ),
         "G2 passed" if gate_passed else "G2 failed",
     ]
@@ -256,20 +281,23 @@ def evaluate_disturbance(
     *,
     candidate_id: str,
     plant_seed: int,
-    plant_factory: PlantFactory = TankSimulator,
+    plant_factory: PlantFactory | None = TankSimulator,
     limits: SafetyLimits | None = None,
+    profile: PlantProfile | None = None,
 ) -> EvaluationReport:
-    """Disturbance suite on machine ``plant_seed``: one episode per DISTURBANCE_SEEDS SCENARIO with ``family`` at DISTURBANCE_AT_S.
+    """Disturbance suite on machine ``plant_seed``: one episode per DISTURBANCE_SEEDS SCENARIO with ``family``
+    at the profile's disturbance_at_s (TANK if ``profile`` is None).
 
-    Metrics are scored from DISTURBANCE_AT_S + SETTLE_S. An episode passes iff it is safe
+    Metrics are scored from disturbance_at_s + settle_s. An episode passes iff it is safe
     (invalid_outputs == 0 and hard_violations == 0); overrides are allowed but counted.
     Post-disturbance MAE per episode is stored in ``comparison["post_disturbance_mae"]``
     keyed by ``str(index)`` (string keys so the report round-trips through JSON).
     """
+    prof, plant_factory, limits = _resolve(profile, plant_factory, limits)
     common: dict[str, Any] = {
-        "plant_seed": plant_seed, "seeds": DISTURBANCE_SEEDS, "duration_s": DISTURBANCE_EPISODE_S,
-        "scored_from_s": DISTURBANCE_AT_S + SETTLE_S, "family": family,
-        "verdict": _disturbance_verdict, "plant_factory": plant_factory, "limits": limits,
+        "plant_seed": plant_seed, "seeds": DISTURBANCE_SEEDS, "duration_s": prof.disturbance_episode_s,
+        "scored_from_s": prof.disturbance_at_s + prof.settle_s, "family": family,
+        "verdict": _disturbance_verdict, "plant_factory": plant_factory, "limits": limits, "profile": prof,
     }
     episodes, audit = _run_suite(factory, **common)
     aggregate = _base_aggregate(episodes)

@@ -1,0 +1,137 @@
+--- a/tclabsim-fan-20261101-095643-376310/controller_v2.py
++++ b/tclabsim-fan-20261101-095643-376310/controller_v3.py
+@@ -42,18 +42,20 @@
+         dt = 0.05
+     if dt > 10.0:
+         dt = 10.0
+-    KP = 0.65
+-    KI = 0.022
+-    KD = 12.0
+-    D_LIM = 0.10
+-    TAU_F = 5.0
+-    U_MAX = 0.62
++    KP = 0.50
++    KI = 0.010
++    KD = 3.0
++    D_LIM = 0.06
++    TAU_F = 4.0
++    TAU_S = 20.0
++    U_MAX = 0.70
+     U_MIN = 0.0
+-    I_LIM = 0.15
+-    FF_MIN = 0.20
+-    FF_MAX = 0.65
+-    TAU_ADAPT = 120.0
++    I_LIM = 0.12
++    FF_MIN = 0.25
++    FF_MAX = 0.60
++    TAU_ADAPT = 250.0
+     yf_prev = None
++    ys_prev = None
+     i_prev = 0.0
+     ff_prev = None
+     try:
+@@ -63,6 +65,11 @@
+                 vf = float(v)
+                 if math.isfinite(vf):
+                     yf_prev = _clamp(vf, 0.0, 1.0)
++            vs = state.get("ys", None)
++            if vs is not None:
++                vsf = float(vs)
++                if math.isfinite(vsf):
++                    ys_prev = _clamp(vsf, 0.0, 1.0)
+             w = state.get("i", 0.0)
+             wf = float(w)
+             if math.isfinite(wf):
+@@ -74,6 +81,7 @@
+                     ff_prev = _clamp(ff0, FF_MIN, FF_MAX)
+     except Exception:
+         yf_prev = None
++        ys_prev = None
+         i_prev = 0.0
+         ff_prev = None
+     if ff_prev is None:
+@@ -89,29 +97,43 @@
+         y_m2 = _clamp(y_m, 0.0, 1.0)
+     if yf_prev is None:
+         yf = y_m2
+-        dy = 0.0
++        ys = y_m2
++        dy_slow = 0.0
+     else:
+-        alpha = dt / (TAU_F + dt)
+-        if alpha < 0.0:
+-            alpha = 0.0
+-        if alpha > 1.0:
+-            alpha = 1.0
+-        yf = (1.0 - alpha) * yf_prev + alpha * y_m2
++        af = dt / (TAU_F + dt)
++        if af < 0.0:
++            af = 0.0
++        if af > 1.0:
++            af = 1.0
++        yf = (1.0 - af) * yf_prev + af * y_m2
+         if not math.isfinite(yf):
+             yf = y_m2
+         yf = _clamp(yf, 0.0, 1.0)
+-        dy = (yf - yf_prev) / dt
+-        if not math.isfinite(dy):
+-            dy = 0.0
+-        if dy > 0.02:
+-            dy = 0.02
+-        if dy < -0.02:
+-            dy = -0.02
++        if ys_prev is None:
++            ys = yf
++            dy_slow = 0.0
++        else:
++            a_s = dt / (TAU_S + dt)
++            if a_s < 0.0:
++                a_s = 0.0
++            if a_s > 1.0:
++                a_s = 1.0
++            ys = (1.0 - a_s) * ys_prev + a_s * y_m2
++            if not math.isfinite(ys):
++                ys = yf
++            ys = _clamp(ys, 0.0, 1.0)
++            dy_slow = (ys - ys_prev) / dt
++            if not math.isfinite(dy_slow):
++                dy_slow = 0.0
++            if dy_slow > 0.02:
++                dy_slow = 0.02
++            if dy_slow < -0.02:
++                dy_slow = -0.02
+     err = tgt - yf
+     if not math.isfinite(err):
+         err = 0.0
+     p = KP * err
+-    d = KD * dy
++    d = KD * dy_slow
+     if d > D_LIM:
+         d = D_LIM
+     if d < -D_LIM:
+@@ -135,7 +157,7 @@
+         u = 0.0
+         if i_new > 0.0:
+             i_new = 0.0
+-    elif yf > 0.70:
++    elif yf > 0.68:
+         if u > 0.25:
+             u = 0.25
+         if i_new > 0.05:
+@@ -144,7 +166,7 @@
+         u = ff
+     u = _clamp(u, 0.0, 1.0)
+     try:
+-        if abs(err) < 0.05:
++        if abs(err) < 0.025 and abs(dy_slow) < 0.0007 and yf < 0.68:
+             beta = dt / (TAU_ADAPT + dt)
+             if beta < 0.0:
+                 beta = 0.0
+@@ -156,5 +178,5 @@
+             ff_new = ff
+     except Exception:
+         ff_new = ff
+-    new_state = {"yf": float(yf), "i": float(i_new), "ff": float(ff_new)}
++    new_state = {"yf": float(yf), "ys": float(ys), "i": float(i_new), "ff": float(ff_new)}
+     return (float(u), new_state)

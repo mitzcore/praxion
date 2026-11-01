@@ -1,0 +1,1 @@
+Heater y in [0,1] (0=15C 1=75C) u in [0,1]. Nominal: first-order tau~150-160s, delay <15s, ss(u)~0.05+1.0*u, u*(0.5)~0.45, noise/quant ~0.005. Changed: gain ~0.95-1.05 unchanged, ambient ~0.05 unchanged, delay <15s unchanged, effective tau ~280-300s (~1.8-2.0x slower). Evidence: same u* but 2x settling tail and persistent 0.03 overshoot.

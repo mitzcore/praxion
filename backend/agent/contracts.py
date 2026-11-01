@@ -32,7 +32,7 @@ class ExperimentProposal(BaseModel):
 
     hypotheses: list[Hypothesis] = Field(description="The complete current ledger, revised.")
     uncertainty_targeted: str = Field(description="Which uncertainty this experiment reduces and why it matters for control.")
-    command_u: float = Field(description="Constant pump duty to apply, within the allowed range.")
+    command_u: float = Field(description="Constant input to apply, within the allowed range.")
     duration_s: float = Field(description="Seconds to hold the command; must respect the maximum experiment duration.")
     safety_argument: str = Field(description="Why the worst-case level stays below the soft limit.")
     expected_observation: str = Field(description="What you expect to see if your leading hypothesis is right.")

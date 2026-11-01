@@ -1,0 +1,1 @@
+First-order heater tau~150-170s, delay 6-12s, amb~0.05, quantization 0.005. Old: y_ss=0.05+1.0*u, u_hold(0.5)=0.45. New: y_ss=0.05+0.65*u (range 0.60-0.68), u_hold(0.5)=0.69-0.73, tau/delay/cooling/noise unchanged. Allow u to 0.85, need +0.24 adaptive bias.

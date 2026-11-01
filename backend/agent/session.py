@@ -156,6 +156,21 @@ class Session(BaseModel):
         )
 
 
+def session_from_profile(run_id: str, plant_description: str, profile: Any, agent_mode: str = "live",
+                         max_candidates: int = 5) -> Session:
+    """Build a Session whose objective, public constraints and budgets come from a PlantProfile."""
+    return Session(
+        run_id=run_id, plant_description=plant_description, agent_mode=agent_mode,  # type: ignore[arg-type]
+        objective=Objective(target=profile.target, band=tuple(profile.band), settle_s=profile.settle_s),
+        constraints=PublicConstraints(soft_high_limit=profile.soft_high_limit, hard_cutoff=profile.hard_cutoff,
+                                      max_single_experiment_s=profile.max_single_experiment_s,
+                                      after_change_max_single_experiment_s=profile.after_change_max_single_experiment_s,
+                                      worst_case_rate_per_unit_u=profile.worst_case_rate_per_unit_u),
+        budget=Budget(max_experiments=profile.max_experiments, max_candidates=max_candidates,
+                      min_experiments_before_generate=profile.min_experiments_before_generate),
+    )
+
+
 def submission_source(sub: ControllerSubmission | RevisionSubmission | dict[str, Any]) -> str:
     if isinstance(sub, dict):
         return str(sub["source_code"])

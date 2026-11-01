@@ -1,0 +1,1101 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793545017.5013251,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.8,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: visible rise takes seconds to start and settling takes more than 60 s.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.75,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.02 peak-to-peak, relative to the 0.05 target band.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793545039.8041441,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: visible rise takes seconds to start and settling takes more than 60 s.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.02 peak-to-peak, relative to the 0.05 target band.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793545062.525739,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: visible rise takes seconds to start and settling takes more than 300 s total at u=0.5.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.02 peak-to-peak, relative to the 0.05 target band.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is above target 0.5 (approx 0.55-0.65), so holding y=0.5 requires u below 0.5.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793545085.629837,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: initial delay only seconds but first-order settling takes >300 s total, time constant ~150-160 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.02 peak-to-peak, relative to the 0.05 target band.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is above target 0.5 (approx 0.55-0.65), so holding y=0.5 requires u below 0.5.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793545112.384175,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~10-18 s but first-order settling takes >500 s total, time constant ~180 s.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.78,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.02 peak-to-peak, relative to the 0.05 target band.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is above target 0.5 (approx 0.55-0.65, best fit ~0.60), so holding y=0.5 requires u below 0.5, near 0.40-0.42.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793545138.67199,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.2 produces a clear positive slope, i.e. dead zone is below 0.2 if any exists.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u with gain ~1.0, so the u needed to hold y=0.5 is in mid-range 0.3-0.7.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is above target 0.5 (approx 0.55-0.60), equilibrium for u=0.41 is below target ~0.46-0.47, so holding y=0.5 requires u ~0.43-0.45 best ~0.44.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793545160.992565,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.4 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 is in mid-range 0.4-0.5.",
+    "confidence": 0.89,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is ~0.55-0.56, for u=0.45 is ~0.49, for u=0.44 is ~0.485 and for u=0.41 is ~0.46, so holding y=0.5 requires u ~0.45-0.46.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793545181.3728142,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 is in mid-range 0.4-0.5.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 requires u ~0.45-0.46.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E8",
+  "ts": 1793545339.432812,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 is in mid-range 0.4-0.5.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 requires u ~0.45-0.46.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u gives smaller steady rise and smaller initial rise slope, but u=0 cooling rate and pure delay are unchanged from H2/H4.",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow/heat loss: u=0 fall is faster than E3 and same u holds lower steady y, requiring higher u to hold 0.5.",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: pure delay from COMMAND LAST CHANGED to first visible move is much longer than 6-12 s and/or approach is slower, with steady gain similar.",
+    "confidence": 0.45,
+    "evidence_refs": []
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor change: measurement offset, gain, quantization or noise changed while true thermal response is unchanged.",
+    "confidence": 0.15,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E9",
+  "ts": 1793545375.323699,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E9"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 is in mid-range 0.4-0.5.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E5",
+     "E6",
+     "E7",
+     "E9"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 requires u ~0.45-0.46.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u gives smaller steady rise and smaller initial rise slope, but u=0 cooling rate and pure delay are unchanged from H2/H4.",
+    "confidence": 0.62,
+    "evidence_refs": [
+     "E9"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow/heat loss: u=0 fall is faster than E3 and same u holds lower steady y, requiring higher u to hold 0.5.",
+    "confidence": 0.12,
+    "evidence_refs": [
+     "E9"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: pure delay from COMMAND LAST CHANGED to first visible move is much longer than 6-12 s and/or approach is slower, with steady gain similar.",
+    "confidence": 0.18,
+    "evidence_refs": [
+     "E9"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor change: measurement offset, gain, quantization or noise changed while true thermal response is unchanged.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E9"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E10",
+  "ts": 1793545405.8636858,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E10"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E10"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E9"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Pre-change steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 was in mid-range 0.4-0.5.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Pre-change equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 required u ~0.45-0.46.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u gives smaller steady rise and ~45-50% smaller initial rise slope, but u=0 cooling rate and pure delay are unchanged from H2/H4.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow/heat loss: u=0 fall is faster than E3 and same u holds lower steady y, requiring higher u to hold 0.5.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: pure delay from COMMAND LAST CHANGED to first visible move is much longer than 6-12 s and/or approach is slower, with steady gain similar.",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor change: measurement offset, gain, quantization or noise changed while true thermal response is unchanged.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E11",
+  "ts": 1793545436.555294,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing steady heater power u increases steady temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Step response is lagged, not instantaneous: pure delay only ~6-12 s but first-order settling takes >500 s total, time constant ~150-170 s.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead zone: u at or above 0.41 produces a clear positive slope, i.e. dead zone if any is below 0.4.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E10"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "With u=0, y decays on its own toward ambient near 0.05 (self-cooling heat loss).",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E9"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Pre-change steady-state y is approximately linear in u with gain ~1.0 above ambient ~0.05, so the u needed to hold y=0.5 was in mid-range 0.4-0.5.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise and fluctuations are small, less than 0.01 peak-to-peak with ~0.005 quantization, relative to the 0.05 target band.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4",
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Pre-change equilibrium y for u=0.5 is ~0.55, for u=0.47 is ~0.52, for u=0.45 is ~0.50, for u=0.44 is ~0.49 and for u=0.41 is ~0.46, so holding y=0.5 required u ~0.45-0.46.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker actuator: same u gives ~30-35% smaller steady rise (factor ~0.65-0.70), ~50% smaller initial rise slope, but u=0 cooling rate and pure delay are unchanged from H2/H4.",
+    "confidence": 0.91,
+    "evidence_refs": [
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster outflow/heat loss: u=0 fall is faster than E3 and same u holds lower steady y, requiring higher u to hold 0.5.",
+    "confidence": 0.04,
+    "evidence_refs": [
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: pure delay from COMMAND LAST CHANGED to first visible move is much longer than 6-12 s and/or approach is slower, with steady gain similar.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E9",
+     "E10",
+     "E11"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor change: measurement offset, gain, quantization or noise changed while true thermal response is unchanged.",
+    "confidence": 0.03,
+    "evidence_refs": [
+     "E9",
+     "E10",
+     "E11"
+    ]
+   }
+  ]
+ }
+]

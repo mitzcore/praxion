@@ -14,9 +14,7 @@ import hashlib
 import json
 from typing import Any
 
-from backend.safety.envelope import MAX_RATE_AT_FULL_DUTY
-
-PROMPT_VERSION = "v1.3"  # v1.3: budget is in experiments not seconds; measured summaries; integral authority
+PROMPT_VERSION = "v1.4"  # v1.4: plant-agnostic wording; envelope rate and durations read from the view
 
 CONTROL_INTERFACE_DOC = '''
 def control(obs: dict, state: dict) -> tuple[float, dict]:
@@ -67,8 +65,9 @@ Method:
 Safety policy enforced by trusted code (you cannot change it):
 - Allowed command range and maximum single-experiment duration are in the view.
 - A soft high limit exists. The supervisor rejects any proposal whose worst-case rise could
-  reach it, computed conservatively as: current y + RATE * u * duration_s with RATE = {rate}
-  (no drainage, no lag). Plan your experiments to pass this bound.
+  reach it, computed conservatively as: current y + RATE * u * duration_s, where RATE is
+  constraints.worst_case_rate_per_unit_u_per_s in the view (no self-decay, no lag). Plan your
+  experiments to pass this bound.
 - A hard cutoff exists above the soft limit; if y ever reaches it the supervisor forces u = 0
   and the experiment is marked invalid. This counts against you.
 - Requests to relax limits are refused and logged.
@@ -80,7 +79,7 @@ costs you candidates from a fixed budget.
 
 Respond only in the required JSON shape.
 """.strip()
-DISCOVERY_SYSTEM = DISCOVERY_SYSTEM_TEMPLATE.replace("{rate}", f"{MAX_RATE_AT_FULL_DUTY:.2f}")
+DISCOVERY_SYSTEM = DISCOVERY_SYSTEM_TEMPLATE
 
 AUTHORING_SYSTEM = f"""
 You are an experimental control engineer. Using only the evidence in the provided session view
@@ -177,15 +176,15 @@ is both safe and informative.
 Record what you learn in the hypothesis ledger (keep earlier ids; add new ones prefixed C for
 "change"). The same safety policy applies and is enforced by trusted code:
 - A soft high limit exists. The supervisor rejects any proposal whose worst-case rise could
-  reach it, computed conservatively as: current y + RATE * u * duration_s with RATE = {rate}
-  (no drainage, no lag). Commands already in transit are not bounded by this check, so leave
-  margin after a high command.
+  reach it, computed conservatively as: current y + RATE * u * duration_s, where RATE is
+  constraints.worst_case_rate_per_unit_u_per_s in the view (no self-decay, no lag). Commands already
+  in transit are not bounded by this check, so leave margin after a high command.
 - A hard cutoff exists above the soft limit; reaching it forces u = 0 and counts against you.
 
 Set ready_to_generate to true when you can state what changed with justified confidence, or
 when the remaining after-change experiment budget is zero. Respond only in the required JSON shape.
 """.strip()
-REIDENTIFY_SYSTEM = REIDENTIFY_SYSTEM_TEMPLATE.replace("{rate}", f"{MAX_RATE_AT_FULL_DUTY:.2f}")
+REIDENTIFY_SYSTEM = REIDENTIFY_SYSTEM_TEMPLATE
 
 
 def reidentify_messages(view: dict[str, Any]) -> list[dict[str, str]]:
