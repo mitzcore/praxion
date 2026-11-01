@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Praxion Market Evidence</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column (68ch) with full-width evidence tables; numbers in Plex Mono, headings in Fraunces. */
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --fg: #1b1f2a; --muted: #5d6475; --rule: #d9d4c7;
+  --accent: #0f6e56; --accent-ink: #0b5241; --amber: #9a6a00; --amber-bg: #fbf1d6;
+  --green-bg: #e3f1ea; --grey-bg: #ebe8e0; --red: #a23b2a;
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111520; --surface: #181d2a; --fg: #e9ecf3; --muted: #9aa3b8; --rule: #2a3142;
+    --accent: #5fd0ae; --accent-ink: #8fe3c8; --amber: #e3b65a; --amber-bg: #2b2411;
+    --green-bg: #15302a; --grey-bg: #222838; --red: #ef8a78; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111520; --surface: #181d2a; --fg: #e9ecf3; --muted: #9aa3b8; --rule: #2a3142;
+  --accent: #5fd0ae; --accent-ink: #8fe3c8; --amber: #e3b65a; --amber-bg: #2b2411;
+  --green-bg: #15302a; --grey-bg: #222838; --red: #ef8a78; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.55;
+  padding-block: 48px 96px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+.prose { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 5vw, 52px); line-height: 1.08; }
+h2 { font-size: clamp(24px, 3vw, 32px); line-height: 1.15; }
+h3 { font-size: 20px; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+.lede { font-size: 20px; color: var(--muted); max-width: 60ch; }
+header { display: grid; gap: 14px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+section { display: grid; gap: 18px; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.stat { background: var(--surface); border: 1px solid var(--rule); padding: 18px 20px; display: grid; gap: 6px; }
+.stat .n { font-family: var(--mono); font-size: 34px; font-weight: 500; line-height: 1; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 14px; color: var(--muted); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--grey-bg); }
+tr:last-child td { border-bottom: 0; }
+td.fig { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.q { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.q.primary { background: var(--green-bg); color: var(--accent-ink); }
+.q.secondary { background: var(--grey-bg); color: var(--fg); }
+.q.vendor { background: var(--amber-bg); color: var(--amber); }
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.line { border-left: 3px solid var(--accent); padding: 12px 18px; background: var(--surface); font-family: var(--display); font-size: 19px; line-height: 1.4; max-width: 72ch; }
+.line small { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+ol, ul { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.caveat { font-size: 15px; color: var(--muted); max-width: 68ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 14px; color: var(--muted); align-items: center; }
+.dont { border: 1px solid var(--rule); background: var(--surface); padding: 18px 20px; display: grid; gap: 10px; max-width: 72ch; }
+.dont h3 { color: var(--red); }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 18px; }
+@media (max-width: 640px) { body { font-size: 16px; } .stat .n { font-size: 28px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Praxion · evidence for the demo · collected 1 Nov 2026</div>
+  <h1>What badly maintained control loops cost today</h1>
+  <p class="lede">Every number below is from a named source and labeled by how much to trust it. Put primary and secondary figures on slides; mention vendor figures only with that label.</p>
+  <div class="legend">
+    <span><span class="q primary">primary</span> the study or company's own report</span>
+    <span><span class="q secondary">secondary</span> a reputable outlet quoting a study</span>
+    <span><span class="q vendor">vendor</span> a company with a product to sell</span>
+  </div>
+</header>
+
+<section>
+  <div class="eyebrow">Three numbers for the room</div>
+  <div class="stat-row">
+    <div class="stat"><div class="n">97%</div><div class="l">of 11,000+ surveyed industrial regulators are PID loops, the kind Praxion learns and repairs</div></div>
+    <div class="stat"><div class="n">≈30%</div><div class="l">of plant loops run in manual: the automation went wrong and an operator switched it off</div></div>
+    <div class="stat"><div class="n">$14B</div><div class="l">of energy wasted per year by faulty HVAC in US commercial buildings alone (US DOE)</div></div>
+    <div class="stat"><div class="n">5–15%</div><div class="l">energy reduction from regular PID re-tuning, the work Praxion automates</div></div>
+  </div>
+  <div class="line"><small>Spoken line</small>97% of industrial regulators are the loop you just watched. About 30% are switched off because they went wrong and nobody fixed them. In US buildings alone, faulty loops of this kind waste about $14 billion of energy a year. The AI on this table noticed its own fault, diagnosed it, and repaired itself, with the audit to prove it.</div>
+</section>
+
+<section>
+  <h2>1. The size of the problem: most industrial loops are not working well</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Claim</th><th>Figure</th><th>Quality</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Share of PID loops in a plant running in manual</td><td class="fig">≈30%</td><td><span class="q secondary">secondary</span></td><td><a href="https://www.controleng.com/is-automated-pid-tuning-dependable/">Control Engineering</a> (Van Overschee &amp; De Moor review)</td></tr>
+      <tr><td>Of loops left in automatic, share with less variance in manual</td><td class="fig">65%</td><td><span class="q secondary">secondary</span></td><td><a href="https://www.controleng.com/is-automated-pid-tuning-dependable/">Control Engineering</a></td></tr>
+      <tr><td>Loops in automatic still on factory-default tuning</td><td class="fig">25%</td><td><span class="q secondary">secondary</span></td><td>same</td></tr>
+      <tr><td>Loops oscillating because an actuator changed and the controller did not (valve stiction)</td><td class="fig">20–30%</td><td><span class="q secondary">secondary</span></td><td><a href="https://aiche.org/conferences/aiche-spring-meeting-and-global-congress-on-process-safety/2009/proceeding/paper/37b-oscillatory-control-loops-lost-economic-benefits-can-anything-be-done">AIChE 2009</a>; Yang &amp; Clarke 1999 (Canadian paper mills, 30%)</td></tr>
+      <tr><td>Overall share of loops with a performance problem</td><td class="fig">≈60%</td><td><span class="q secondary">secondary</span></td><td><a href="https://open-exam-prep.com/study-guides/isa-cap/operation-maintenance-optimization-moc-decommissioning/loop-auditing-control-optimization">ISA CAP study guide</a></td></tr>
+      <tr><td>Share of regulatory controllers that are PID</td><td class="fig">97% of 11,000+</td><td><span class="q primary">primary</span></td><td><a href="https://skoge.folk.ntnu.no/prost/proceedings/cpc6-jan2002/desborough.pdf">Desborough &amp; Miller, Honeywell, CPC VI 2001</a></td></tr>
+    </tbody>
+  </table></div>
+  <div class="line"><small>Spoken line</small>Around 97% of the regulators in industry are the same kind of loop you just watched. Surveys for twenty years have found that roughly 30% are switched off by operators, and most of the rest are tuned once and never again.</div>
+</section>
+
+<section>
+  <h2>2. What the drift costs: downtime</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Claim</th><th>Figure</th><th>Quality</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Unplanned downtime, world's 500 largest companies</td><td class="fig">≈$1.4T / yr (≈11% of revenue)</td><td><span class="q primary">primary</span></td><td><a href="https://assets.new.siemens.com/siemens/assets/api/uuid:1b43afb5-2d07-47f7-9eb7-893fe7d0bc59/TCOD-2024_original.pdf">Siemens, True Cost of Downtime 2024</a></td></tr>
+      <tr><td>Per large facility (2021–22 edition, 72 companies)</td><td class="fig">$129M / yr</td><td><span class="q primary">primary</span></td><td><a href="https://www.senseye.io/blog/the-true-cost-of-downtime-2022">Senseye / Siemens 2022</a></td></tr>
+      <tr><td>Hourly cost, fast-moving consumer goods</td><td class="fig">≈$23,600 / hr</td><td><span class="q primary">primary</span></td><td><a href="https://assets.new.siemens.com/siemens/assets/api/uuid:3d606495-dbe0-43e4-80b1-d04e27ada920/dics-b10153-00-7600truecostofdowntime2022-144.pdf">Siemens 2022 PDF</a></td></tr>
+    </tbody>
+  </table></div>
+  <p class="caveat">These figures cover every cause of downtime. Praxion addresses the slice where equipment behavior changed and nobody re-tuned. No source isolates that slice, so do not claim a share of the $1.4T.</p>
+</section>
+
+<section>
+  <h2>3. What the drift costs: energy</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Claim</th><th>Figure</th><th>Quality</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Regular PID re-tuning: average energy reduction, plus throughput gain</td><td class="fig">5–15% energy · 2–5% throughput</td><td><span class="q secondary">secondary</span></td><td><a href="https://www.controleng.com/pid-loop-control-tuning-advice/">Control Engineering</a> quoting the UK Energy Efficiency Best Practice Programme</td></tr>
+      <tr><td>HVAC faults in US commercial buildings: energy wasted per year</td><td class="fig">0.7 quads · ≈$14B</td><td><span class="q primary">primary</span></td><td><a href="https://www.energy.gov/sites/default/files/2021-09/bto-peer-2021-afdd-evaluation-fault-prevalence-comm.pdf">US DOE Building Technologies Office, 2021</a></td></tr>
+      <tr><td>Share of commercial HVAC and lighting energy wasted by faults</td><td class="fig">up to 20%</td><td><span class="q primary">primary</span></td><td><a href="https://www.fmlink.com/tiax-report-analyzes-energy-savings-potential-in-us-commercial-buildings/">TIAX for DOE, 2006</a> (dated)</td></tr>
+      <tr><td>Savings from fixing faults: existing-building commissioning, 1,500+ buildings</td><td class="fig">median 6%</td><td><span class="q primary">primary</span></td><td><a href="https://eta-publications.lbl.gov/sites/default/files/empirical_analysis_of_the_prevalence_.pdf">Lawrence Berkeley National Laboratory</a></td></tr>
+      <tr><td>Savings reported by buildings using fault detection</td><td class="fig">median 9%</td><td><span class="q primary">primary</span></td><td><a href="https://www.energy.gov/sites/default/files/2021-09/bto-peer-2021-afdd-evaluation-fault-prevalence-comm.pdf">DOE Smart Energy Analytics Campaign</a></td></tr>
+      <tr><td>Fault prevalence dataset</td><td class="fig">60,000+ units · 90+ fault types</td><td><span class="q primary">primary</span></td><td><a href="https://eta-publications.lbl.gov/sites/default/files/empirical_analysis_of_the_prevalence_.pdf">LBNL, Crowe et al. 2023</a></td></tr>
+    </tbody>
+  </table></div>
+  <div class="line"><small>Spoken line</small>The US Department of Energy estimates faulty building HVAC alone wastes about $14 billion of energy a year, and the buildings that detect and fix faults save a median 9%. The oven on this table is that loop in miniature.</div>
+</section>
+
+<section>
+  <h2>4. The home side</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Claim</th><th>Figure</th><th>Quality</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>US appliance repair industry revenue, 2025</td><td class="fig">$7.0B</td><td><span class="q primary">primary</span></td><td><a href="https://www.ibisworld.com/united-states/market-size/appliance-repair/1710">IBISWorld</a></td></tr>
+      <tr><td>US HVAC services market (install, service, repair)</td><td class="fig">≈$152B · 125,000 firms · 570,000 technicians</td><td><span class="q secondary">secondary</span></td><td><a href="https://www.withorbital.com/data/hvac-industry-statistics/">Orbital</a> citing IBISWorld 2024</td></tr>
+      <tr><td>HVAC repair cost range; compressor repair</td><td class="fig">$100–$6,200 · $750–$2,000</td><td><span class="q vendor">vendor</span></td><td><a href="https://webfx.com/industries/home-repair/hvac/marketing-statistics">WebFX</a></td></tr>
+      <tr><td>Smart thermostat savings, conservative</td><td class="fig">≈8% of heating+cooling · ≈$50 / yr</td><td><span class="q primary">primary</span></td><td><a href="https://www.energystar.gov/products/heating_cooling/smart_thermostats/smart_thermostat_faq">EPA ENERGY STAR</a></td></tr>
+      <tr><td>Smart thermostat savings, manufacturer testing</td><td class="fig">10–12% heating · 10–15% cooling · $131–$145 / yr</td><td><span class="q vendor">vendor</span></td><td><a href="https://www.builderonline.com/?p=76763">Nest via Builder</a>, <a href="https://store.google.com/magazine/nest-thermostat-savings/?hl=en-US">Google</a></td></tr>
+    </tbody>
+  </table></div>
+  <p class="prose">Why this matters for Praxion: a thermostat with better <em>scheduling</em> saves 8 to 15%. Praxion is about better <em>control of the device itself</em> after it drifts, a layer below the thermostat that no consumer product addresses today.</p>
+</section>
+
+<section class="prose">
+  <h2>5. Where people overpay now, and what changes</h2>
+  <ol>
+    <li><strong>Tuning is a human service call.</strong> A loop is tuned at commissioning by an integrator and re-tuned only after complaints. Loop-tuning audits are sold as consulting engagements. Praxion makes re-tuning an automatic, audited event triggered by the machine's own drift.</li>
+    <li><strong>Operators switch automation off.</strong> About 30% of loops in manual means a person is doing the controller's job by hand, every shift. A controller that notices it is wrong and repairs itself is the alternative to switching it off.</li>
+    <li><strong>Energy burns silently.</strong> Oscillating and sluggish loops waste 5 to 15% of energy in process plants and up to 20% in building HVAC. Nobody is paid to notice.</li>
+    <li><strong>Appliance vendors ship one tuning for every home.</strong> Every heat pump, EV charger and oven is tuned for a nominal unit, then installed into a different duct, wiring and climate, and ages differently. Field adaptation is a support cost the vendor eats today.</li>
+    <li><strong>Old equipment has no vendor.</strong> Kilns, lab ovens and process units whose maker is gone cannot be re-tuned because nobody has the model. Praxion builds the model from experiments.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="dont">
+    <h3>What not to claim</h3>
+    <ul>
+      <li>Do not attribute a share of the $1.4T downtime figure to control drift; no source isolates it.</li>
+      <li>Do not present the 5 to 15% energy figure as measured by Praxion. It is the literature's figure for human re-tuning. Praxion's own measured results are in <code>docs/BENCHMARKS.md</code>.</li>
+      <li>Do not use the "30% of HVAC energy is wasted" line. It comes from vendor blogs and sits above what the primary studies support.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Praxion · Meta Global AI Developer Hackathon 2026 · Markdown source: <code>docs/MARKET_EVIDENCE.md</code> · Repository: github.com/mitzcore/praxion</footer>
+
+</div>
+</body>
+</html>
