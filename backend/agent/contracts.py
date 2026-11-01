@@ -12,10 +12,10 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 DiagnosisCategory = Literal[
-    "actuator_weaker",  # same command now produces a smaller rise
-    "outflow_increased",  # level falls faster at a given command
-    "response_slower",  # longer lag or delay between command and response
-    "sensor_changed",  # measurement noise or behaviour changed
+    "actuator_weaker",  # same input now produces a smaller steady effect; decay at zero input unchanged
+    "outflow_increased",  # output decays faster toward rest at zero input (more loss or leak)
+    "response_slower",  # longer lag or delay between input change and response
+    "sensor_changed",  # the measurement itself changed (noise, offset, lag)
     "unknown",
 ]
 

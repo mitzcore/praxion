@@ -1,0 +1,1 @@
+Heater y in [0,1], yamb~0.05, tau~150s, no significant delay. Pre K~0.88 needs u~0.51 for y=0.5. Post K~0.58-0.60 needs u~0.75-0.78 for y=0.5. Cooling dynamics and sensor unchanged.

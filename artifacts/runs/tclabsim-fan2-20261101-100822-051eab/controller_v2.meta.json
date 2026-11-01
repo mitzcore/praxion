@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan2-20261101-100822-051eab-v2",
+  "run_id": "tclabsim-fan2-20261101-100822-051eab",
+  "version": 2,
+  "path": "artifacts/runs/tclabsim-fan2-20261101-100822-051eab/controller_v2.py",
+  "sha256": "7e9f90ae7f388ea4e6a9f89bff2045f0582ce21f527909839ae61ec82e6df990",
+  "parent_id": "tclabsim-fan2-20261101-100822-051eab-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "efaf4542800b0954",
+  "created_at": "2026-11-01T15:15:11.928177+00:00",
+  "byte_length": 6183,
+  "rationale": "Fixed feedforward (K=0.885, uff~0.51) under-drives the weakened heater by ~0.25. Added online DC-gain estimator Kest with bumpless transfer to feedforward plus stronger conditional integral (Ki 0.014->0.032, limits -0.40/+0.55). Kest starts at nominal 0.885 and only adapts near steady state (|dy|<0.0012, |u-u_avg|<0.07, |y-y_avg|<0.03, elapsed>90s), learning K_raw=(y_avg-0.05)/u_avg with Tc~90s. Nominal plant stays at K~0.88-1.0, degraded converges to ~0.58, raising uff from 0.51 to ~0.77 so integral does not have to wind up for 400s.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Heater y in [0,1], yamb~0.05, tau~150s, no significant delay. Pre K~0.88 needs u~0.51 for y=0.5. Post K~0.58-0.60 needs u~0.75-0.78 for y=0.5. Cooling dynamics and sensor unchanged.",
+    "predicted_behavior": "Nominal: cold-start u=1, reach 0.5 in ~110s with overshoot <0.56, in-band >0.99 after 300s, MAE ~0.006, energy ~250-260, zero overrides. Degraded (K~0.59): cold-start u=1, slower rise, Kest converges 0.885->~0.60 within ~200-300s, u settles ~0.75, y re-enters 0.475-0.525 and stays, post-disturbance MAE <0.02, energy ~460-520, zero hard violations/overrides.",
+    "diagnosis": "Actuator weaker by ~1/3, cooling/delay/sensor unchanged. Pre-change K=(0.491-0.05)/0.5=0.88, tau~130-155s, delay <12s. Post-change: E5 u=0 fall 0.475->0.105 in 300s overlays E3 shape with tau~151s and immediate fall, so a and ambient unchanged. E6 u=0.5 rise 0.1045->0.33 in 240s still +0.0012/s extrapolates to y_ss~0.34 vs old 0.49; E7+E8 u=0.75 rise 0.33->0.443 in 110s (+0.0010/s) ->0.491 after 195s settled, so y_ss(0.75)~0.49-0.50. K_post=(0.491-0.05)/0.75=0.588, ratio 0.588/0.882=0.67. Initial heating slope ~0.0014 vs ~0.0025-0.0027 pre-change also ~0.5x. No extra delay (12s rise E6, 8s E7) and same 0.005 quantization rule out slower/sensor.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

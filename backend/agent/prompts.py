@@ -14,7 +14,7 @@ import hashlib
 import json
 from typing import Any
 
-PROMPT_VERSION = "v1.4"  # v1.4: plant-agnostic wording; envelope rate and durations read from the view
+PROMPT_VERSION = "v1.5"  # v1.5: diagnosis categories defined generically (actuator vs loss vs lag vs sensor)
 
 CONTROL_INTERFACE_DOC = '''
 def control(obs: dict, state: dict) -> tuple[float, dict]:
@@ -126,10 +126,19 @@ do NOT see what changed in the machine; infer it from evidence. Quantify the cha
 the new delay in seconds, or the new gain relative to the old) and design for that number.
 
 Tasks:
-1. Diagnose. Give at least one plausible causal explanation grounded in the traces (for
-   example: the same command now produces a smaller rise; the level now falls faster at a given
-   command; the response now lags the command by longer, producing overshoot or oscillation; the
-   measurement behaves differently). Classify it with diagnosis_category.
+1. Diagnose. Give at least one plausible causal explanation grounded in the traces and classify
+   it with diagnosis_category, using these definitions:
+   - actuator_weaker: the same input now produces a smaller effect, but the output still decays
+     toward its resting value at the same speed when the input is zero.
+   - outflow_increased: the output now decays faster toward its resting value at zero input (a
+     bigger loss or leak), so holding the target needs more input even though the actuator is
+     unchanged.
+   - response_slower: a longer delay or lag between an input change and the response, producing
+     overshoot or oscillation.
+   - sensor_changed: the measurement itself behaves differently (noise, offset, lag) while the
+     physical response does not.
+   The test that separates actuator_weaker from outflow_increased is the decay at zero input
+   compared with your earlier experiments; use it if you ran one.
 2. Change the code meaningfully and in a way that targets your diagnosis. A renamed copy or a
    constant tweak with no reasoning is not a repair. Consider: adapting an estimated gain or
    steady-state duty online from recent data, strengthening integral action with safe limits,
