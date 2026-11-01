@@ -85,7 +85,7 @@ _TCLAB_COMMON = {
     "worst_case_rate_per_unit_u": 0.006,
     "soft_high_limit": 0.85, "hard_cutoff": 0.90,
     "monitor_window_s": 60.0, "monitor_hold_s": 30.0, "monitor_factor": 2.0, "monitor_floor": 0.02,
-    "monitor_calibrate_s": 380.0, "monitor_pre_s": 400.0, "monitor_duration_s": 1500.0, "monitor_post_detection_s": 200.0,
+    "monitor_calibrate_s": 580.0, "monitor_pre_s": 600.0, "monitor_duration_s": 1800.0, "monitor_post_detection_s": 200.0,
     "y_unit": "°C", "y_scale": 60.0, "y_offset": 15.0,
 }
 TCLAB_SIM = PlantProfile(name="tclab_sim", description_for_operator="APMonitor TCLab simulator (TCLabModel), accelerated.", **_TCLAB_COMMON)
