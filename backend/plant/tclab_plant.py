@@ -70,6 +70,7 @@ DEFAULT_PUMP_DERATE = (0.25, 0.40)  # heater power * (1 - m)
 DEFAULT_EXTRA_LEAK = (0.40, 0.60)  # heat-loss coefficient * (1 + m) (a fan)
 DEFAULT_DRAIN_SHIFT = (0.20, 0.35)  # same mechanism as extra_leak, smaller default
 BASE_LOSS_PER_S = 1.0 / 20.0  # TCLabModel's heater-to-ambient coefficient
+SENSOR_TAU_S = 140.0  # TCLabModel's sensor-body time constant; a fan also cools the sensor body
 
 
 def normalize(temp_c: float) -> float:
@@ -105,8 +106,9 @@ class TCLabSim(PlantAdapter):
         physical demo disturbance (foam over the sensor) is really a sensor lag; the operator
         declares it as `actuator_lag` because both make the closed-loop response slower and later.
       * pump_derate  : heater power * (1 - magnitude) (a weaker heater).
-      * extra_leak   : extra heater-block heat loss magnitude * (H1 - Ta) / 20 °C/s (a fan), i.e.
-        the convective loss coefficient grows by a factor (1 + magnitude).
+      * extra_leak   : a fan. Heater-block loss coefficient grows by (1 + magnitude) AND the sensor
+        body loses heat directly to ambient at magnitude * (T1 - Ta) / 140 °C/s, so cooling at u = 0 is
+        visibly faster (the observable signature that separates a fan from a weaker heater).
       * drain_shift  : identical mechanism to extra_leak with a smaller default (kept so the four
         frozen family names stay valid on every plant).
     """
@@ -181,7 +183,11 @@ class TCLabSim(PlantAdapter):
             ts = t0 + DT * j / nsub
             m.update(ts)
             if extra_loss > 0.0:
+                # A fan cools the whole assembly: the heater block (its TCLabModel loss coefficient grows by
+                # (1 + extra_loss)) AND the sensor body directly, so the observable cooling at u = 0 is faster.
+                # Without the second term a fan is indistinguishable from a weaker heater in the readings.
                 m._H1 -= (DT / nsub) * extra_loss * BASE_LOSS_PER_S * (m._H1 - m.Ta)
+                m._T1 -= (DT / nsub) * extra_loss * (m._T1 - m.Ta) / SENSOR_TAU_S
         self._k += 1
         self._y = self._measure()
         return self.observe()

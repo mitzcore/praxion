@@ -1,0 +1,1 @@
+First-order heater y in [0,1] (0=15C,1=75C), y_ss=Ya+K*u, Ya~0.075, K_nom~1.0-1.08, tau~140-160s, delay ~5-10s, noise <0.01 quant 0.005. After change: Ya,tau,delay,noise unchanged, K~0.68-0.70 (~0.70x). Hold for y=0.5 moved 0.39->0.61. U_MAX 0.75 still sufficient, soft limit 0.85 hard 0.9.

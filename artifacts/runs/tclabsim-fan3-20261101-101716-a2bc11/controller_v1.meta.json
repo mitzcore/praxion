@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan3-20261101-101716-a2bc11-v1",
+  "run_id": "tclabsim-fan3-20261101-101716-a2bc11",
+  "version": 1,
+  "path": "artifacts/runs/tclabsim-fan3-20261101-101716-a2bc11/controller_v1.py",
+  "sha256": "1f7a323891fa8df678788f60d6a6993261d1404314437d9e9b1805b7c3c2a2a9",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-01T15:20:03.042018+00:00",
+  "byte_length": 2758,
+  "rationale": "First-order self-draining heater: y_ss(u)=y_amb+K*u with y_amb~0.08, K~1.1, tau~150-175s from E1-E5 fits. Hold for 0.5 is (0.5-0.08)/1.1~0.38. Open-loop tau alone needs >350s to settle from cold, so need boosted heating then back-off. P-only with feedforward gives fast first-order approach with time constant tau/(1+K*Kp)~60-70s and no overshoot; integral is only needed to trim feedforward error. Therefore feedforward 0.38 + Kp*e + conditional integral, filtered y, output clamped to [0,0.70] so even stuck-high steady is 0.83<0.85 soft limit, integral limited to +-0.30 to cover >0.2 feedforward error without windup, integration frozen when |e|>0.12 or when saturated in direction of error to prevent heat-up windup and overshoot that evaluator scores on true state.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Heater, positive gain. u in [0,1] heats, y in [0,1] temp. y_amb~0.07-0.08 (E1 start 0.078 at u=0). Gain K~1.08-1.11: y_ss(0.45)~0.57-0.58 (E4+E5 joint fit), y_ss(0.5)~0.61-0.63 (E1+E2 fit), so hold for y=0.5 is u*~0.38-0.40. Lag/time constant tau~150-180s (E3 cooling 0.54->0.23 in 179s gives 165s; E1 rise fit 150s; E4+E5 two-point fit 175s). No dead zone: 0.45 and 0.5 clearly rise. No dead time beyond ~6-9s sampling. Self-draining: u=0 decays with still -0.0012/s after 180s (E3). Noise small: quantization steps ~0.0054, variation <0.01 (all exps). Max rate <0.006/unit/s. Soft 0.85 hard 0.9 far from target.",
+    "predicted_behavior": "From cold 0.08: saturate 0.70 for ~60s to 0.33, then linear P+FF approach with 60-70s closed-loop time constant, enter 0.475-0.525 band by ~150-180s, settle with <0.015 overshoot, MAE after 300s <0.01, time in band >95%, steady u~0.38-0.42 (ff 0.382 plus small integral trim). From near target: monotonic, tau ~100s, no overshoot. Energy ~0.15 per sec steady (u^2~0.15).",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

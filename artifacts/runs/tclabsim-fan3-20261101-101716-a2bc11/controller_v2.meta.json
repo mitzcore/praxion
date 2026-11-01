@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan3-20261101-101716-a2bc11-v2",
+  "run_id": "tclabsim-fan3-20261101-101716-a2bc11",
+  "version": 2,
+  "path": "artifacts/runs/tclabsim-fan3-20261101-101716-a2bc11/controller_v2.py",
+  "sha256": "22e7f2c35e7be26ba672daaf419a3ed26cd6bd66d8725de76d622d5e040c3144",
+  "parent_id": "tclabsim-fan3-20261101-101716-a2bc11-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-01T15:24:05.632714+00:00",
+  "byte_length": 3104,
+  "rationale": "Kept safe PI structure but replaced fixed K=1.10 feedforward and frozen tiny integral (Ki=0.008, update only if |e|<0.12) with online gain-adaptive feedforward plus stronger normally-integrating integral. Added filtered input uf, stability detector (|dyf/dt|<0.0006, uf>0.15, |u-uf|<0.05 for 60s) that updates Khat=(yf-Ya)/uf with beta 0.07 clamped [0.45,1.25], ff=(target-Ya)/Khat. Increased Ki to 0.022, Kp 1.3, INT_LIM 0.25, U_MAX 0.75 with standard saturation anti-windup and yf>0.82 safety cut. This directly compensates ~28% gain loss while converging back to nominal Khat~1.08 on unchanged plant.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y in [0,1] (0=15C,1=75C), y_ss=Ya+K*u, Ya~0.075, K_nom~1.0-1.08, tau~140-160s, delay ~5-10s, noise <0.01 quant 0.005. After change: Ya,tau,delay,noise unchanged, K~0.68-0.70 (~0.70x). Hold for y=0.5 moved 0.39->0.61. U_MAX 0.75 still sufficient, soft limit 0.85 hard 0.9.",
+    "predicted_behavior": "Nominal: warm-up similar to before, settle u~0.38-0.40, Khat drifts to ~1.05-1.10, MAE ~0.004, in-band ~1.0, no overrides. Degraded (K~0.7x): after ~60-120s settled detection Khat falls to ~0.65-0.72, ff rises to ~0.60-0.64, integral trims remainder, y returns to 0.475-0.525 band within ~200-300s and stays, MAE <0.01, in-band >0.90 vs old 0.83/0.015, energy ~320-360. Confirms actuator_weaker; if plant were unchanged Khat would stay ~1.08 and behavior identical to old.",
+    "diagnosis": "Actuator weaker by ~28-30% with unchanged loss, lag and sensor. E6 u=0 cooling matches E3: initial 60s fall 0.108 vs 0.113, trajectory 0.459->0.13 in 300s vs 0.54->0.23 in 179s implying same tau ~150s and same ambient ~0.075, ruling out outflow_increased. Delay flat ~5-10s in both E1/E4 and E6/E7, ruling out response_slower. Noise/quantization ~0.005 and low asymptote same, ruling out sensor_changed. Heated tests prove lower gain: 400s at u=0.6 (E7+E8+E9) settles at 0.49 slope ~0 vs 0.65 expected from original K~0.95-1.08, Kobs=(0.49-0.075)/0.6=0.69, 0.72x old. Hence old ff 0.38 leaves ~0.05 steady error seen in after_change_trace (y stuck 0.448-0.459 while u crawls 0.42->0.55, MAE 0.043 vs 0.002 baseline).",
+    "diagnosis_category": "actuator_weaker"
+  }
+}
