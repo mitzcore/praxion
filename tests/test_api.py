@@ -333,3 +333,62 @@ def test_experiment_phase_and_trusted_facts(tmp_path: Path, client: TestClient) 
     assert all(e["command_before"] is None for e in old)
     ev_old = client.get(f"/api/runs/{RUN_ID}/evaluations", params={"traces": "none"}).json()
     assert ev_old["repair_verdicts"] == [] and ev_old["protocol"]["prompt_version"] == "v1.0"
+
+
+# ---------------------------------------------------------------------------------------------
+# Plant profiles (TCLab, °C display) and the trusted digital twin.
+TCLAB_PROFILE = {"name": "tclab_sim", "dt": 1.0, "target": 0.5, "band": [0.475, 0.525], "y_unit": "°C",
+                 "y_scale": 60.0, "y_offset": 15.0, "episode_s": 900.0, "settle_s": 300.0, "eval_plant": "twin",
+                 "operator_disturbance": False}
+
+
+def _mini_run(root: Path, run_id: str, *, result_profile: dict | None, trace_profile: str | None,
+              twin: dict | None) -> TestClient:
+    d = root / run_id
+    (d / "agent_view_snapshots").mkdir(parents=True)
+    (d / "agent_view_snapshots" / "001_exploring.json").write_text(json.dumps(
+        {"constraints": {"soft_high_limit": 0.85, "hard_cutoff_forces_u_to_zero_at": 0.9}}))
+    events = [{"seq": 1, "ts": 1.0, "run_id": run_id, "kind": "run_started", "stage": "NEW", "model": "m",
+               "prompt_version": "v1.4", "agent_mode": "live", "sandbox_mode": "docker"},
+              {"seq": 2, "ts": 2.0, "run_id": run_id, "kind": "twin_fitted", "stage": "EXPLORING", "n_traces": 8,
+               "report": {"rmse": 0.003}},
+              {"seq": 3, "ts": 3.0, "run_id": run_id, "kind": "operator_disturbance_prompt", "stage": "MONITORING",
+               "note": "operator asked to apply the physical change now"},
+              {"seq": 4, "ts": 4.0, "run_id": run_id, "kind": "operator_disturbance_applied", "stage": "MONITORING"}]
+    (d / "event_log.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+    res: dict = {"run_id": run_id, "stage": "COMPLETE", "prompt_version": "v1.4", "candidates": [], "stage_history": []}
+    if result_profile is not None:
+        res["profile"] = result_profile
+    (d / "result.json").write_text(json.dumps(res))
+    if trace_profile:
+        (d / "monitoring.json").write_text(json.dumps({"trace": {"steps": [], "meta": {"profile": trace_profile}}}))
+    if twin is not None:
+        (d / "twin_fit.json").write_text(json.dumps(twin))
+    return TestClient(create_app(root=root, manager=RunManager(root, builder=_never_build), dist=None))
+
+
+def test_profile_from_result_and_twin_fit_exposed(tmp_path: Path) -> None:
+    twin = {"K_c": 60.7, "tau_s": 146.5, "L_s": 15.8, "Ta_c": 17.9, "noise_std_c": 0.18, "report": {"rmse": 0.003}}
+    app = _mini_run(tmp_path, "tc-20261101-000000-aaaaaa", result_profile=TCLAB_PROFILE, trace_profile=None, twin=twin)
+    prof = app.get("/api/runs/tc-20261101-000000-aaaaaa").json()["display_profile"]
+    assert prof["source"] == "result.json" and prof["y_unit"] == "°C" and prof["eval_plant"] == "twin"
+    assert prof["target"] * prof["y_scale"] + prof["y_offset"] == 45.0
+    assert (prof["soft_high_limit"], prof["hard_cutoff"]) == (0.85, 0.9)
+    ev = app.get("/api/runs/tc-20261101-000000-aaaaaa/evaluations").json()
+    assert ev["twin_fit"] == twin
+    kinds = [e["kind"] for e in app.get("/api/runs/tc-20261101-000000-aaaaaa/events").json()]
+    assert {"twin_fitted", "operator_disturbance_prompt", "operator_disturbance_applied"} <= set(kinds)
+
+
+def test_profile_inferred_from_trace_meta_for_runs_without_profile(tmp_path: Path) -> None:
+    app = _mini_run(tmp_path, "tc-20261101-000000-bbbbbb", result_profile=None, trace_profile="tclab_sim", twin={"K_c": 1})
+    prof = app.get("/api/runs/tc-20261101-000000-bbbbbb").json()["display_profile"]
+    assert prof["source"] == "trace_meta+profiles.py"
+    assert prof["name"] == "tclab_sim" and prof["y_unit"] == "°C" and prof["eval_plant"] == "twin"
+
+
+def test_old_tank_run_defaults_to_tank_display(client: TestClient) -> None:
+    prof = client.get(f"/api/runs/{RUN_ID}").json()["display_profile"]
+    assert prof["source"] == "default_tank" and prof["name"] == "tank"
+    assert prof["band"] == [0.55, 0.65] and prof["y_scale"] == 1.0 and prof["y_offset"] == 0.0
+    assert client.get(f"/api/runs/{RUN_ID}/evaluations", params={"traces": "none"}).json()["twin_fit"] is None

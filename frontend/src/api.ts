@@ -59,6 +59,7 @@ export interface RunDetail extends Json {
   started_at: number | null;
   last_event_at: number | null;
   process: ProcessStatus | null;
+  display_profile?: DisplayProfile;
 }
 
 export interface ControllerInfo {
@@ -130,6 +131,38 @@ export interface ExperimentFacts {
   seconds_since_command_last_changed_at_start: number | null;
 }
 
+export interface DisplayProfile {
+  name: string;
+  dt: number;
+  target: number;
+  band: [number, number];
+  y_unit: string;
+  y_scale: number;
+  y_offset: number;
+  eval_plant: "simulator" | "twin" | "custom";
+  operator_disturbance: boolean | null;
+  soft_high_limit: number;
+  hard_cutoff: number;
+  source: string;
+}
+
+export const TANK_DISPLAY: DisplayProfile = {
+  name: "tank", dt: 0.1, target: 0.6, band: [0.55, 0.65], y_unit: "level fraction", y_scale: 1, y_offset: 0,
+  eval_plant: "simulator", operator_disturbance: false, soft_high_limit: 0.85, hard_cutoff: 0.9, source: "default_tank",
+};
+
+export const isCelsius = (p: DisplayProfile) => p.y_unit === "°C";
+/** display value = y * y_scale + y_offset */
+export const toDisplay = (p: DisplayProfile, y: number | null | undefined): number | null =>
+  y == null || !Number.isFinite(Number(y)) ? null : Number(y) * p.y_scale + p.y_offset;
+export const fmtY = (p: DisplayProfile, y: number | null | undefined, digits?: number): string => {
+  const v = toDisplay(p, y);
+  if (v == null) return "—";
+  return isCelsius(p) ? `${v.toFixed(digits ?? 1)} °C` : v.toFixed(digits ?? 2);
+};
+export const profileLabel = (p: DisplayProfile): string =>
+  ({ tank: "Tank", tclab_sim: "TCLab (sim)", tclab: "TCLab" } as Record<string, string>)[p.name] ?? p.name;
+
 export interface Evaluations {
   heldout: EvalFile[];
   disturbance: EvalFile[];
@@ -137,6 +170,7 @@ export interface Evaluations {
   monitoring: Json | null;
   repair_verdicts: RepairVerdict[];
   protocol: { prompt_version: string | null; prompt_hash: string | null };
+  twin_fit: Json | null;
 }
 
 async function j<T>(url: string, init?: RequestInit): Promise<T> {

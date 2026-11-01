@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { EvalFile, Evaluations, Json, RepairVerdict, RunDetail, RunEvent } from "../api";
+import { isCelsius, toDisplay, TANK_DISPLAY, type DisplayProfile, type EvalFile, type Evaluations, type Json, type RepairVerdict, type RunDetail, type RunEvent } from "../api";
 import { downsample, fmtNum, fmtPct } from "../format";
 
 const SERIES_COLORS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
@@ -199,7 +199,9 @@ function Adaptation({ files, verdicts, stage, protocol }: { files: EvalFile[]; v
   );
 }
 
-function TraceCompare({ files }: { files: EvalFile[] }) {
+function TraceCompare({ files, profile }: { files: EvalFile[]; profile: DisplayProfile }) {
+  const C = isCelsius(profile);
+  const D = (v: number) => toDisplay(profile, v) as number;
   const indices = useMemo(() => {
     const s = new Set<number>();
     files.forEach((f) => (f.data.episodes ?? []).forEach((e: Json) => e.trace?.steps?.length && s.add(e.index)));
@@ -227,19 +229,19 @@ function TraceCompare({ files }: { files: EvalFile[] }) {
       for (const s of steps) {
         const t = Math.round(s.t * 1000) / 1000;
         const row = byT.get(t) ?? { t };
-        row[k] = s.h_true;
+        row[k] = toDisplay(profile, s.h_true);
         byT.set(t, row);
       }
     }
     const data = downsample([...byT.values()].sort((a, b) => a.t - b.t), 2000);
     return { data, keys, disturbAt, seed };
-  }, [files, idx]);
+  }, [files, idx, profile]);
 
   if (!indices.length) return null;
   return (
     <div className="metric-block">
       <div className="sub-head">
-        <h3>Same-seed disturbance episode · h_true (evaluator truth)</h3>
+        <h3>Same-seed disturbance episode · h_true (evaluator truth){C ? ", °C" : ""}</h3>
         <select value={idx ?? ""} onChange={(e) => setIdx(Number(e.target.value))} aria-label="Disturbance episode">
           {indices.map((i) => (
             <option key={i} value={i}>
@@ -258,9 +260,10 @@ function TraceCompare({ files }: { files: EvalFile[] }) {
             <CartesianGrid stroke="var(--grid)" vertical={false} />
             <XAxis dataKey="t" type="number" domain={["dataMin", "dataMax"]} tick={{ fill: "var(--muted)", fontSize: 11 }}
               tickFormatter={(v) => `${Math.round(v)}s`} stroke="var(--line)" />
-            <YAxis domain={[0, 1]} tick={{ fill: "var(--muted)", fontSize: 11 }} stroke="var(--line)" />
-            <ReferenceArea y1={0.55} y2={0.65} fill="var(--band)" fillOpacity={1} stroke="none" />
-            <ReferenceLine y={0.9} stroke="var(--bad)" />
+            <YAxis domain={[D(0), D(1)]} tick={{ fill: "var(--muted)", fontSize: 11 }} stroke="var(--line)"
+              tickFormatter={(v) => (C ? v.toFixed(0) : String(v))} />
+            <ReferenceArea y1={D(profile.band[0])} y2={D(profile.band[1])} fill="var(--band)" fillOpacity={1} stroke="none" />
+            <ReferenceLine y={D(profile.hard_cutoff)} stroke="var(--bad)" />
             {chart?.disturbAt != null && (
               <ReferenceLine x={chart.disturbAt} stroke="var(--bad)" strokeWidth={2}
                 label={{ value: "disturbance", fill: "var(--bad)", fontSize: 10, position: "insideTopRight" }} />
@@ -270,7 +273,7 @@ function TraceCompare({ files }: { files: EvalFile[] }) {
                 isAnimationActive={false} />
             ))}
             <Tooltip contentStyle={{ background: "var(--panel-2)", border: "1px solid var(--line)", fontSize: 12 }}
-              formatter={(v: any) => fmtNum(v, 3)} labelFormatter={(v) => `t=${fmtNum(v, 1)}s`} />
+              formatter={(v: any) => (C ? `${fmtNum(v, 2)} °C` : fmtNum(v, 3))} labelFormatter={(v) => `t=${fmtNum(v, 1)}s`} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
           </LineChart>
         </ResponsiveContainer>
@@ -279,7 +282,8 @@ function TraceCompare({ files }: { files: EvalFile[] }) {
   );
 }
 
-export default function EvidencePanel({ evals, run, stage, events }: { evals: Evaluations | null; run: RunDetail | null; stage: string; events: RunEvent[] }) {
+export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stage, events }: { profile?: DisplayProfile; evals: Evaluations | null; run: RunDetail | null; stage: string; events: RunEvent[] }) {
+  const tf: Json | null = evals?.twin_fit ?? null;
   const mon = evals?.monitoring;
   const lastStage = [...events].reverse().find((e) => e.kind === "stage");
   const any = evals && (evals.heldout.length || evals.disturbance.length || evals.adaptation.length || mon);
@@ -295,6 +299,22 @@ export default function EvidencePanel({ evals, run, stage, events }: { evals: Ev
         <div className="empty">No evaluation recorded yet.</div>
       ) : (
         <div className="evidence-body">
+          {profile.eval_plant === "twin" && (
+            <div className="rule-note">
+              Gates scored on a trusted digital twin fitted from the discovery experiments (twin_fit.json); physical traces are shown unscored
+              {tf && (
+                <div className="small muted mono">
+                  twin: K {fmtNum(tf.K_c, 2)} °C · τ {fmtNum(tf.tau_s, 1)} s · dead time {fmtNum(tf.L_s, 1)} s · ambient {fmtNum(tf.Ta_c, 1)} °C ·
+                  noise σ {fmtNum(tf.noise_std_c, 3)} °C · fit RMSE {fmtNum(tf.report?.rmse, 4)} (normalized y)
+                </div>
+              )}
+            </div>
+          )}
+          {isCelsius(profile) && (
+            <div className="small muted">
+              MAE values are in normalized y; multiply by {profile.y_scale} for °C.
+            </div>
+          )}
           <MetricTable title="Held-out suite (nominal, hidden seeds)" files={evals!.heldout} protocol={proto} />
           {mon && (
             <div className="metric-block">
@@ -323,7 +343,7 @@ export default function EvidencePanel({ evals, run, stage, events }: { evals: Ev
               </div>
             </div>
           ) : null}
-          <TraceCompare files={evals!.disturbance} />
+          <TraceCompare files={evals!.disturbance} profile={profile} />
           {usage && ["DEPLOYABLE", "COMPLETE", "FAILED", "STOPPED"].includes(stage) && (
             <div className="muted small">
               result.json model usage: {usage.calls} attempts ({usage.failed_calls} failed) · reasoning tokens{" "}

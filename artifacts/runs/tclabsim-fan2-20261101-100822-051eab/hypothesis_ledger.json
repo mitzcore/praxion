@@ -1,0 +1,287 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793545711.386827,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+    "confidence": 0.85,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+    "confidence": 0.75,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has lag / time constant of order tens of seconds and needs >60s to settle.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead zone: u=0.5 produces a clearly measurable rise >0.1 within 180 s.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately monotonic/linear in u, so a constant u in 0.4-0.6 can hold y near target 0.5.",
+    "confidence": 0.35,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793545724.613009,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Step response is slow: time constant order 100s and needs >180s to settle; E1 still rising at 0.0015/s after 180s.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately monotonic in u, so a constant u in 0.4-0.6 may hold y near target 0.5; E1 at 0.395 and still rising is consistent but linearity untested.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; E1 trace is monotonic with ~0.005 quantization steps.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793545738.714165,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Step response is slow: time constant order 100-130s and needs ~300s to settle; E1 still rising at 0.0015/s after 180s but E2 slope ~0 after 320s total at u=0.5.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s and continued rise to 0.491.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is approximately monotonic in u, and u=0.5 yields y_ss~0.49 inside target band 0.475-0.525, so u~0.50-0.52 should hold target 0.5; linearity across levels untested.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps and at most ~0.005 dips.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793545751.092714,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response is slow: dominant time constant order 130-155s and needs ~300-350s to settle; E1 still rising at 0.0015/s after 180s, E2 settled to ~0 after 320s total at u=0.5, E3 still falling at -0.0015/s after 180s cooling.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead zone or long pure delay: u=0.5 produced rise from 0.051 within ~9s, and step 0.5 to 0 decayed immediately.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state response is monotonic in u, and u=0.5 yields y_ss~0.491 inside target band 0.475-0.525 so u~0.50-0.52 should hold target 0.5; linearity at other levels untested.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps with no large spikes.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793545782.110334,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats sensor.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss; E3 fell 0.497 to 0.19 in 180s still falling.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response is slow: dominant time constant ~120-155s, needs ~300-350s to settle; E1 slope 0.0015 after 180s, E2 settled ~0 after 320s total at u=0.5, E3 slope -0.0015 after 180s cooling, E4 slope 0.0012 after 180s at u=0.6.",
+    "confidence": 0.87,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "No large dead zone or long pure delay: u=0.5 rose from 0.051 within ~9s, u=0.6 rose from 0.19 within ~9-12s, and 0.5-to-0 decayed immediately.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state is monotonic and approx linear with K~0.88-0.95: y_ss(0.5)~0.491 inside band 0.475-0.525 so u~0.51 holds 0.5; u=0.6 rose 0.19 to 0.502 in 180s still rising toward ~0.58, showing no saturation/sublinearity.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise/disturbances are small (<0.02) vs band width 0.05; traces show ~0.005 quantization steps with no large spikes.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E4"
+    ]
+   }
+  ]
+ }
+]

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ExperimentFacts, Json, RunEvent } from "../api";
+import { fmtY, TANK_DISPLAY, type DisplayProfile, type ExperimentFacts, type Json, type RunEvent } from "../api";
 import { fmtNum, fmtPct, fmtRel, fmtUsd, short } from "../format";
 
 const ICON: Record<string, string> = {
@@ -12,6 +12,9 @@ const ICON: Record<string, string> = {
   readiness_refused: "⊘",
   ready_to_generate: "✓",
   ready_to_revise: "✓",
+  twin_fitted: "≈",
+  operator_disturbance_prompt: "☞",
+  operator_disturbance_applied: "⚡",
   reidentification_budget_exhausted: "⌛",
   exploration_budget_exhausted: "⌛",
   candidate_registered: "⌗",
@@ -48,7 +51,11 @@ function tone(e: RunEvent): string {
     case "monitoring_result":
       return e.degraded ? "warn" : "good";
     case "disturbance_scheduled":
+    case "operator_disturbance_prompt":
+    case "operator_disturbance_applied":
       return "warn";
+    case "twin_fitted":
+      return "info";
     case "stage":
       return e.to === "FAILED" ? "bad" : e.to === "STOPPED" ? "warn" : "neutral";
     case "model_call":
@@ -60,7 +67,7 @@ function tone(e: RunEvent): string {
 
 const PF = (ok: unknown) => (ok ? "PASS" : "FAIL");
 
-function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>): { title: string; lines: string[] } {
+function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>, prof: DisplayProfile = TANK_DISPLAY): { title: string; lines: string[] } {
   const L: string[] = [];
   switch (e.kind) {
     case "run_started":
@@ -86,7 +93,9 @@ function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>): { title: st
       L.push(`supervisor: ${e.verdict_ok ? "approved" : "REJECTED"} · ${e.verdict}`);
       return { title: `${e.experiment_id} proposed · u=${fmtNum(e.command_u, 2)} for ${fmtNum(e.duration_s, 1)} s`, lines: L };
     case "experiment_result": {
-      L.push(`y ${fmtNum(e.y_start, 3)} → ${fmtNum(e.y_end, 3)} · ${e.n_samples} steps · overrides ${e.overrides}`);
+      L.push(prof.y_unit === "°C"
+        ? `${fmtY(prof, e.y_start, 2)} → ${fmtY(prof, e.y_end, 2)} (y ${fmtNum(e.y_start, 3)} → ${fmtNum(e.y_end, 3)}) · ${e.n_samples} steps · overrides ${e.overrides}`
+        : `y ${fmtNum(e.y_start, 3)} → ${fmtNum(e.y_end, 3)} · ${e.n_samples} steps · overrides ${e.overrides}`);
       const f = facts?.get(String(e.experiment_id));
       if (f && (f.command_before != null || f.seconds_since_command_last_changed_at_start != null))
         L.push(`trusted: command before ${fmtNum(f.command_before, 2)} · ${fmtNum(f.seconds_since_command_last_changed_at_start, 1)} s since last command change`);
@@ -122,7 +131,20 @@ function summary(e: RunEvent, facts?: Map<string, ExperimentFacts>): { title: st
     case "candidate_failed_gate":
       return { title: `failed gate · ${e.candidate_id}`, lines: (e.reasons ?? []).map(String) };
     case "disturbance_scheduled":
-      return { title: e.scheduled ? "hidden disturbance scheduled" : "monitoring without disturbance", lines: ["family is not recorded in events"] };
+      return {
+        title: !e.scheduled ? "monitoring without disturbance" : e.operator_applied ? "operator-applied physical change expected" : "hidden disturbance scheduled",
+        lines: ["family is not recorded in events"],
+      };
+    case "twin_fitted": {
+      const r: Json = e.report ?? {};
+      L.push(`fitted by trusted code from ${e.n_traces} discovery traces · RMSE ${fmtNum(r.rmse, 4)} (normalized y) over ${r.n_points ?? "—"} points`);
+      L.push("used only to score gates; never shown to Muse");
+      return { title: "digital twin fitted", lines: L };
+    }
+    case "operator_disturbance_prompt":
+      return { title: "operator prompted to apply the physical change", lines: e.note ? [String(e.note)] : [] };
+    case "operator_disturbance_applied":
+      return { title: "operator confirmed the physical change", lines: ["family is not recorded in events"] };
     case "monitoring_result":
       return {
         title: e.degraded ? `degradation detected at t=${fmtNum(e.degraded_at_t, 1)} s` : "no degradation detected",
@@ -200,7 +222,7 @@ function LedgerTable({ events }: { events: RunEvent[] }) {
   );
 }
 
-export default function TimelinePanel({ events, facts }: { events: RunEvent[]; facts: ExperimentFacts[] }) {
+export default function TimelinePanel({ events, facts, profile }: { events: RunEvent[]; facts: ExperimentFacts[]; profile: DisplayProfile }) {
   const factMap = useMemo(() => new Map(facts.map((f) => [f.id, f])), [facts]);
   const listRef = useRef<HTMLOListElement>(null);
   const [follow, setFollow] = useState(true);
@@ -222,7 +244,7 @@ export default function TimelinePanel({ events, facts }: { events: RunEvent[]; f
       </div>
       <ol className="events" ref={listRef}>
         {events.map((e) => {
-          const s = summary(e, factMap);
+          const s = summary(e, factMap, profile);
           return (
             <li key={e.seq} className={`ev ${tone(e)}`}>
               <span className="ev-time mono">{fmtRel(e.ts - t0)}</span>

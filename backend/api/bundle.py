@@ -193,6 +193,7 @@ def get_run(d: Path) -> dict[str, Any]:
     live = live_summary(d)
     res = read_result(d)
     if res is None:
+        live["display_profile"] = display_profile(d)
         return live
     out = dict(res)
     out["source"] = "result.json"
@@ -203,6 +204,7 @@ def get_run(d: Path) -> dict[str, Any]:
     out["n_events"] = live["n_events"]
     out["budgets"] = live["budgets"]
     out["recorded_outcome"] = recorded_outcome(d)
+    out["display_profile"] = display_profile(d)
     return out
 
 
@@ -301,6 +303,7 @@ def evaluations(d: Path, traces: str = "all") -> dict[str, Any]:
         "monitoring": mon,
         "repair_verdicts": repair_verdicts(d),
         "protocol": protocol(d),
+        "twin_fit": _read_json(d / "twin_fit.json"),
     }
 
 
@@ -378,6 +381,57 @@ def experiments(d: Path) -> list[dict[str, Any]]:
                     "command_before": e.get("command_before"),
                     "seconds_since_command_last_changed_at_start": e.get("seconds_since_command_last_changed_at_start"),
                     "n_samples": len(e.get("samples") or [])})
+    return out
+
+
+_TANK_DISPLAY = {"name": "tank", "dt": 0.1, "target": 0.6, "band": [0.55, 0.65], "y_unit": "level fraction",
+                 "y_scale": 1.0, "y_offset": 0.0, "eval_plant": "simulator", "operator_disturbance": False}
+
+
+def _trace_profile_name(d: Path) -> str | None:
+    mon = _read_json(d / "monitoring.json")
+    name = ((mon or {}).get("trace") or {}).get("meta", {}).get("profile") if mon else None
+    if name:
+        return name
+    for p in sorted(d.glob("evaluation_v*.json")):
+        ev = _read_json(p) or {}
+        for ep in ev.get("episodes") or []:
+            name = ((ep.get("trace") or {}).get("meta") or {}).get("profile")
+            if name:
+                return name
+    return None
+
+
+def display_profile(d: Path) -> dict[str, Any]:
+    """How to display this run's y. Order: result.json.profile -> run_started.profile -> profile name in
+    stored trace meta resolved against the frozen definitions in backend/profiles.py -> tank (runs that
+    predate profiles). Soft/hard limits come from the constraints the agent was actually shown."""
+    res = read_result(d) or {}
+    started = next((e for e in read_events(d) if e.get("kind") == "run_started"), {})
+    prof, source = res.get("profile"), "result.json"
+    if not prof:
+        prof, source = started.get("profile"), "run_started"
+    if not prof:
+        name = _trace_profile_name(d)
+        if name:
+            try:
+                from backend.profiles import get_profile
+                p = get_profile(name)
+                prof = {"name": p.name, "dt": p.dt, "target": p.target, "band": list(p.band), "y_unit": p.y_unit,
+                        "y_scale": p.y_scale, "y_offset": p.y_offset, "episode_s": p.episode_s, "settle_s": p.settle_s,
+                        "eval_plant": "twin" if (d / "twin_fit.json").exists() else "simulator",
+                        "operator_disturbance": None}
+                source = "trace_meta+profiles.py"
+            except (ImportError, ValueError):
+                prof = None
+    if not prof:
+        prof, source = dict(_TANK_DISPLAY), "default_tank"
+    out = dict(prof)
+    out["source"] = source
+    snaps = sorted((d / "agent_view_snapshots").glob("*.json")) if (d / "agent_view_snapshots").is_dir() else []
+    cons = ((_read_json(snaps[0]) or {}).get("constraints") or {}) if snaps else {}
+    out["soft_high_limit"] = cons.get("soft_high_limit", 0.85)
+    out["hard_cutoff"] = cons.get("hard_cutoff_forces_u_to_zero_at", cons.get("hard_cutoff", 0.90))
     return out
 
 

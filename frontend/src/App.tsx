@@ -8,6 +8,7 @@ import {
   type RunDetail,
   type RunEvent,
   type RunListing,
+  TANK_DISPLAY,
 } from "./api";
 import Header from "./components/Header";
 import Controls from "./components/Controls";
@@ -206,6 +207,7 @@ export default function App() {
           monitoring: monSeen ? evals.monitoring : null,
           repair_verdicts: evals.repair_verdicts.filter((v) => adaptSeen.has(v.candidate_id)),
           protocol: evals.protocol,
+          twin_fit: events.some((e) => e.kind === "twin_fitted") ? evals.twin_fit : null,
         }
       : null;
     return { ctrls, ev };
@@ -223,6 +225,7 @@ export default function App() {
   const nCalls = events.filter((e) => e.kind === "model_call").length;
   const runStarted = events.find((e) => e.kind === "run_started");
 
+  const profile = run?.display_profile ?? TANK_DISPLAY;
   const startReplay = (speed: number) => setMode({ kind: "replay", speed, nonce: Date.now(), done: false });
   const exitReplay = () => setMode({ kind: "normal" });
   const changeReplaySpeed = (speed: number) => {
@@ -249,6 +252,7 @@ export default function App() {
         cost={cost}
         nCalls={nCalls}
         recordedAt={t0}
+        profile={run?.display_profile ?? null}
       />
       <Controls
         health={health}
@@ -280,10 +284,10 @@ export default function App() {
         <div className="empty-state">No runs under the artifact root yet. Start Discovery to record one.</div>
       ) : (
         <main className="grid">
-          <PlantPanel events={events} monitoring={gated.ev?.monitoring ?? null} replay={mode.kind === "replay"} />
-          <TimelinePanel events={events} facts={expFacts} />
+          <PlantPanel profile={profile} events={events} monitoring={gated.ev?.monitoring ?? null} replay={mode.kind === "replay"} />
+          <TimelinePanel events={events} facts={expFacts} profile={profile} />
           <CodePanel controllers={gated.ctrls} />
-          <EvidencePanel evals={gated.ev} run={run} stage={stage} events={events} />
+          <EvidencePanel profile={profile} evals={gated.ev} run={run} stage={stage} events={events} />
         </main>
       )}
       <footer className="foot">

@@ -1,0 +1,703 @@
+{
+ "run_id": "tclabsim-fan2-20261101-100822-051eab",
+ "stage": "DEPLOYABLE",
+ "model_id": "muse-spark-1.3",
+ "agent_mode": "live",
+ "prompt_version": "v1.4",
+ "prompt_hash": "efaf4542800b0954",
+ "sandbox_mode": "docker",
+ "profile": {
+  "name": "tclab_sim",
+  "dt": 1.0,
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "y_unit": "\u00b0C",
+  "y_scale": 60.0,
+  "y_offset": 15.0,
+  "episode_s": 900.0,
+  "settle_s": 300.0,
+  "eval_plant": "twin",
+  "operator_disturbance": false
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+      "confidence": 0.85,
+      "evidence_refs": []
+     },
+     {
+      "id": "H2",
+      "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+      "confidence": 0.75,
+      "evidence_refs": []
+     },
+     {
+      "id": "H3",
+      "statement": "Step response has lag / time constant of order tens of seconds and needs >60s to settle.",
+      "confidence": 0.4,
+      "evidence_refs": []
+     },
+     {
+      "id": "H4",
+      "statement": "No large dead zone: u=0.5 produces a clearly measurable rise >0.1 within 180 s.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state response is approximately monotonic/linear in u, so a constant u in 0.4-0.6 can hold y near target 0.5.",
+      "confidence": 0.35,
+      "evidence_refs": []
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05.",
+      "confidence": 0.4,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "Reduces gain-magnitude and lag uncertainty in one step; needed to estimate steady-state input for target and how long to hold for settling.",
+    "command_u": 0.5,
+    "duration_s": 180.0,
+    "safety_argument": "Worst-case bound 0.0508 + 0.006*0.5*180 = 0.5908 stays below soft limit 0.85 with margin; actual rise will be lower due to heat loss and lag.",
+    "expected_observation": "If positive-gain with self-cooling is right, y rises monotonically from ~0.05 toward 0.3-0.6 with slowing slope; last-seconds slope still slightly positive if not fully settled.",
+    "ready_to_generate": false,
+    "readiness_justification": "No experiments completed yet; gain magnitude, lag, u=0 decay rate, linearity, hold-input for 0.5, and noise are all unresolved, so a controller cannot be justified yet.",
+    "operator_note": "First probe: hold half power for 3 min to measure rise rate, lag and approximate gain."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.591",
+    "u": 0.5,
+    "duration_s": 180.0
+   },
+   "status": "completed",
+   "t_start": 0.0
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 180.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+      "confidence": 0.7,
+      "evidence_refs": []
+     },
+     {
+      "id": "H3",
+      "statement": "Step response is slow: time constant order 100s and needs >180s to settle; E1 still rising at 0.0015/s after 180s.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state response is approximately monotonic in u, so a constant u in 0.4-0.6 may hold y near target 0.5; E1 at 0.395 and still rising is consistent but linearity untested.",
+      "confidence": 0.5,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; E1 trace is monotonic with ~0.005 quantization steps.",
+      "confidence": 0.7,
+      "evidence_refs": [
+       "E1"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Settling steady-state gain at u=0.5 and dominant time constant; needed to estimate equilibrium input for target 0.5 and how long controller must hold to settle.",
+    "command_u": 0.5,
+    "duration_s": 140.0,
+    "safety_argument": "Worst-case bound with no cooling or lag is 0.3946 + 0.006*0.5*140 = 0.8146, which stays below soft limit 0.85 and hard cutoff 0.9.",
+    "expected_observation": "If positive-gain first-order with slow cooling is right, y continues rising from ~0.395 toward 0.5-0.6 with gradually decreasing slope; last-5s slope should fall below 0.0015 toward near-zero if approaching y_ss(0.5), allowing tau and gain estimate.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 1 experiment completed so readiness requires at least 3; H1/H4/H6 partly resolved by E1, but steady-state gain at 0.5 and tau (H3/H5) not settled because slope still 0.0015/s, u=0 decay (H2) untested, and linearity across levels untested, so no controller can be justified yet.",
+    "operator_note": "Continuing 0.5 power hold to watch temperature settle toward its equilibrium before testing cooling."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.815",
+    "u": 0.5,
+    "duration_s": 140.0
+   },
+   "status": "completed",
+   "t_start": 180.0
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+      "confidence": 0.7,
+      "evidence_refs": []
+     },
+     {
+      "id": "H3",
+      "statement": "Step response is slow: time constant order 100-130s and needs ~300s to settle; E1 still rising at 0.0015/s after 180s but E2 slope ~0 after 320s total at u=0.5.",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s and continued rise to 0.491.",
+      "confidence": 0.87,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state response is approximately monotonic in u, and u=0.5 yields y_ss~0.49 inside target band 0.475-0.525, so u~0.50-0.52 should hold target 0.5; linearity across levels untested.",
+      "confidence": 0.75,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps and at most ~0.005 dips.",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Targets u=0 self-cooling behavior, ambient equilibrium, and cooling time constant symmetry, which determines how fast y falls and what steady u holds target.",
+    "command_u": 0.0,
+    "duration_s": 180.0,
+    "safety_argument": "Worst-case bound is current y 0.4967 + 0.006*0.0*180 = 0.4967, well below soft limit 0.85 with no heating, so cannot approach soft limit or hard cutoff.",
+    "expected_observation": "If self-cooling first-order hypothesis is right, y will decay monotonically from ~0.497 toward ~0.05 with slowing negative slope, reaching ~0.12-0.20 after 180s with last-5s slope still negative around -0.001/s, confirming decay rate and ambient level.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 2 experiments completed so readiness requires a third; gain at u=0.5 and settling time are now well constrained but u=0 decay rate, ambient level, and linearity across inputs remain untested and are needed to design safe hold and recovery actions.",
+    "operator_note": "Holding heat at 0.5 reached target band at 0.49, next testing cooling with heater off to measure heat loss rate."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.497",
+    "u": 0.0,
+    "duration_s": 180.0
+   },
+   "status": "completed",
+   "t_start": 320.0
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E3"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "Step response is slow: dominant time constant order 130-155s and needs ~300-350s to settle; E1 still rising at 0.0015/s after 180s, E2 settled to ~0 after 320s total at u=0.5, E3 still falling at -0.0015/s after 180s cooling.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "No large dead zone or long pure delay: u=0.5 produced rise from 0.051 within ~9s, and step 0.5 to 0 decayed immediately.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state response is monotonic in u, and u=0.5 yields y_ss~0.491 inside target band 0.475-0.525 so u~0.50-0.52 should hold target 0.5; linearity at other levels untested.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps with no large spikes.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Tests linearity and steady-state gain at a second amplitude above 0.5, which determines the precise feedforward u for target 0.5 and safe proportional gain without overshoot to 0.85.",
+    "command_u": 0.6,
+    "duration_s": 180.0,
+    "safety_argument": "Worst-case conservative bound current y 0.1905 + 0.006*0.6*180 = 0.8385 stays below soft limit 0.85 and hard cutoff 0.9; actual rise will be lower due to self-cooling and lag.",
+    "expected_observation": "If linear first-order with ambient ~0.05, K~0.88 and tau ~130-155s is right, y rises monotonically from ~0.19 toward ~0.58, reaching ~0.44-0.49 after 180s with last-5s slope still positive ~0.0007-0.0012/s; a substantially lower end value would indicate saturation/sublinear gain.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, self-cooling, slow tau order, and y_ss(0.5)~0.491 are resolved from three experiments, but linearity/gain at a second amplitude is still untested so controller gain and anti-overshoot cannot be safely sized yet; one bounded mid-high hold is needed before generating.",
+    "operator_note": "Holding 0.6 power for 3 minutes from warm 0.19 to test gain linearity above the target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.838",
+    "u": 0.6,
+    "duration_s": 180.0
+   },
+   "status": "completed",
+   "t_start": 500.0
+  }
+ ],
+ "ledger_history": [
+  {
+   "after_experiment": null,
+   "ts": 1793545711.386827,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+     "confidence": 0.85,
+     "evidence_refs": []
+    },
+    {
+     "id": "H2",
+     "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+     "confidence": 0.75,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "Step response has lag / time constant of order tens of seconds and needs >60s to settle.",
+     "confidence": 0.4,
+     "evidence_refs": []
+    },
+    {
+     "id": "H4",
+     "statement": "No large dead zone: u=0.5 produces a clearly measurable rise >0.1 within 180 s.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state response is approximately monotonic/linear in u, so a constant u in 0.4-0.6 can hold y near target 0.5.",
+     "confidence": 0.35,
+     "evidence_refs": []
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05.",
+     "confidence": 0.4,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E1",
+   "ts": 1793545724.613009,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+     "confidence": 0.7,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "Step response is slow: time constant order 100s and needs >180s to settle; E1 still rising at 0.0015/s after 180s.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state response is approximately monotonic in u, so a constant u in 0.4-0.6 may hold y near target 0.5; E1 at 0.395 and still rising is consistent but linearity untested.",
+     "confidence": 0.5,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; E1 trace is monotonic with ~0.005 quantization steps.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E2",
+   "ts": 1793545738.714165,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+     "confidence": 0.7,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "Step response is slow: time constant order 100-130s and needs ~300s to settle; E1 still rising at 0.0015/s after 180s but E2 slope ~0 after 320s total at u=0.5.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "No large dead zone: u=0.5 produced rise from 0.051 to 0.395 within 180s with response starting within ~9s and continued rise to 0.491.",
+     "confidence": 0.87,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state response is approximately monotonic in u, and u=0.5 yields y_ss~0.49 inside target band 0.475-0.525, so u~0.50-0.52 should hold target 0.5; linearity across levels untested.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps and at most ~0.005 dips.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E3",
+   "ts": 1793545751.092714,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats the sensor.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E3"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Step response is slow: dominant time constant order 130-155s and needs ~300-350s to settle; E1 still rising at 0.0015/s after 180s, E2 settled to ~0 after 320s total at u=0.5, E3 still falling at -0.0015/s after 180s cooling.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "No large dead zone or long pure delay: u=0.5 produced rise from 0.051 within ~9s, and step 0.5 to 0 decayed immediately.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state response is monotonic in u, and u=0.5 yields y_ss~0.491 inside target band 0.475-0.525 so u~0.50-0.52 should hold target 0.5; linearity at other levels untested.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise/disturbances are small (<0.02) compared to control band width 0.05; traces show ~0.005 quantization steps with no large spikes.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E4",
+   "ts": 1793545782.110334,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Increasing u increases steady-state y (positive DC gain); heater power heats sensor.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "With u=0, y decays on its own toward ambient near y~0.05 due to heat loss; E3 fell 0.497 to 0.19 in 180s still falling.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "Step response is slow: dominant time constant ~120-155s, needs ~300-350s to settle; E1 slope 0.0015 after 180s, E2 settled ~0 after 320s total at u=0.5, E3 slope -0.0015 after 180s cooling, E4 slope 0.0012 after 180s at u=0.6.",
+     "confidence": 0.87,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "No large dead zone or long pure delay: u=0.5 rose from 0.051 within ~9s, u=0.6 rose from 0.19 within ~9-12s, and 0.5-to-0 decayed immediately.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E4"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state is monotonic and approx linear with K~0.88-0.95: y_ss(0.5)~0.491 inside band 0.475-0.525 so u~0.51 holds 0.5; u=0.6 rose 0.19 to 0.502 in 180s still rising toward ~0.58, showing no saturation/sublinearity.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E4"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Sensor noise/disturbances are small (<0.02) vs band width 0.05; traces show ~0.005 quantization steps with no large spikes.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+     ]
+    }
+   ]
+  }
+ ],
+ "candidates": [
+  {
+   "candidate_id": "tclabsim-fan2-20261101-100822-051eab-v1",
+   "version": 1,
+   "parent_id": null,
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "efaf4542800b0954",
+   "submission_kind": "controller",
+   "submission": {
+    "machine_card": "Electric heater, positive gain: more power = hotter. Gain K~0.88-0.89: yss(0.5)~0.491, yss(0.6)~0.58, ambient y0~0.05. So target 0.5 needs u~0.51. Slow: tau ~123s heating (E1), ~161s cooling (E3), ~135s average; needs ~300s to settle. No dead zone or pure delay: response starts in 9-12s for both heat and cool. Self-draining: u=0 falls 0.497 to 0.19 in 180s still falling -0.0015/s. Noise small: ~0.005 quantization steps, <0.02 total vs 0.05 band. Rate limit ~0.006 per unit u per s. Stay below 0.85 soft, 0.90 forces u=0.",
+    "design_rationale": "First-order self-draining heater with K~0.885, ambient~0.05, tau~135s needs feedforward for steady duty plus overdamped PI for residual. Kp=2.2, Ki=0.014 gives characteristic 135s^2+(1+K*Kp)s+K*Ki with discriminant >0, two real poles (~78s and ~130s), no oscillation and no overshoot in linear regime. Feedforward uff=(target-0.05)/0.885 gives ~0.51 at 0.5. Integral +-0.35 can correct K/ambient error up to ~0.31 in y, far larger than observed 0.01 residual, but prevents windup to rails. Conditional freeze when saturated stops windup during cold warm-up at u=1. 8s low-pass on y suppresses 0.005 quantization without adding lag vs 135s plant. Safety cap above 0.80 keeps hard 0.90 unreachable.",
+    "source_code": "import math\ndef _clamp(v, lo, hi):\n    if v < lo:\n        return lo\n    if v > hi:\n        return hi\n    return v\ndef control(obs, state):\n    y_m = 0.5\n    tgt = 0.5\n    dt = 1.0\n    try:\n        y_m = float(obs[\"y\"])\n    except Exception:\n        y_m = 0.5\n    try:\n        tgt = float(obs[\"target\"])\n    except Exception:\n        tgt = 0.5\n    try:\n        dt = float(obs[\"dt\"])\n    except Exception:\n        dt = 1.0\n    if not math.isfinite(y_m):\n        y_m = 0.5\n    if not math.isfinite(tgt):\n        tgt = 0.5\n    if not math.isfinite(dt) or dt <= 0.0:\n        dt = 1.0\n    if dt < 0.05:\n        dt = 0.05\n    if dt > 5.0:\n        dt = 5.0\n    if y_m < 0.0:\n        y_m = 0.0\n    if y_m > 1.0:\n        y_m = 1.0\n    if tgt < 0.0:\n        tgt = 0.0\n    if tgt > 1.0:\n        tgt = 1.0\n    if state is None:\n        state = {}\n    yf = state.get(\"yf\", None)\n    integ = state.get(\"integ\", 0.0)\n    try:\n        yf = float(yf)\n    except Exception:\n        yf = y_m\n    try:\n        integ = float(integ)\n    except Exception:\n        integ = 0.0\n    if not math.isfinite(yf):\n        yf = y_m\n    if not math.isfinite(integ):\n        integ = 0.0\n    yf = _clamp(yf, 0.0, 1.0)\n    integ = _clamp(integ, -0.35, 0.35)\n    Tf = 8.0\n    Kp = 2.2\n    Ki = 0.014\n    Kest = 0.885\n    yamb = 0.05\n    alpha = dt / (Tf + dt)\n    yf = yf + alpha * (y_m - yf)\n    e = tgt - yf\n    uff = (tgt - yamb) / Kest\n    uff = _clamp(uff, 0.0, 1.0)\n    prop = Kp * e\n    u_test = uff + prop + integ\n    blocked_high = (u_test >= 1.0) and (e > 0.0)\n    blocked_low = (u_test <= 0.0) and (e < 0.0)\n    if not (blocked_high or blocked_low):\n        integ = integ + Ki * e * dt\n        integ = _clamp(integ, -0.35, 0.35)\n    u = uff + prop + integ\n    u = _clamp(u, 0.0, 1.0)\n    if yf > 0.85:\n        u = 0.0\n    elif yf > 0.80:\n        if u > 0.20:\n            u = 0.20\n    if not math.isfinite(u):\n        u = _clamp(uff, 0.0, 1.0)\n    state[\"yf\"] = float(yf)\n    state[\"integ\"] = float(integ)\n    return float(u), state\n",
+    "predicted_behavior": "From cold 0.05: u=1 for ~40s until y~0.28, then ramps down, reaches 0.475-0.525 in ~150-220s and settles without overshoot. From near target: overdamped approach with <0.015 overshoot, stays in band. Steady duty ~0.50-0.53 for target 0.5 depending on true K/ambient, integral trims residual in ~100-150s. Actuation smooth, steady u^2~0.26. No chatter, no 0.85/0.90 approach in normal operation.",
+    "self_test_expectations": [
+     "control returns finite u in [0,1] for y in [0,1], target 0.5, dt 0.05-5.0, empty and populated state, no exception",
+     "cold start y=0.05 target 0.5 gives u=1.0 saturated then decreases as filtered y rises, never negative",
+     "near equilibrium y=0.49 target 0.5 gives u~0.5-0.6, y=0.51 gives u~0.4-0.55, monotonic in error",
+     "high reading yfilt>0.85 forces u=0.0, yfilt>0.80 caps u<=0.20",
+     "state stays JSON-serializable with only yf and integ floats, integ stays in [-0.35,0.35]"
+    ],
+    "operator_note": "Slow heater: allow 4-5 minutes to settle. Controller boosts to full power when cold then eases to ~0.51 to hold 0.5. Do not expect instant response. Normal steady power ~0.5, small moves around it are normal noise filtering. It will cut power if reading exceeds 0.80 for safety."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=1",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.508475; process alive, next valid step u=0.51391",
+    "inf_y: ok y=+inf: returned finite u=0.508475; process alive, next valid step u=0.51391",
+    "zero_dt: ok dt=0: returned finite u=0.951275; process alive, next valid step u=0.951555",
+    "negative_dt: ok dt=-0.1: returned finite u=0.951275; process alive, next valid step u=0.951555",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.959s (budget 10s)"
+   ],
+   "status": "approved"
+  }
+ ],
+ "monitoring": {
+  "deployed_candidate_id": null,
+  "baseline_window_mae": null,
+  "recent_window_mae": null,
+  "degraded": false,
+  "degraded_at_t": null,
+  "disturbance_family": null,
+  "disturbance_at_t": null
+ },
+ "stage_history": [
+  {
+   "from": "NEW",
+   "to": "EXPLORING",
+   "ts": 1793545702.667496
+  },
+  {
+   "from": "EXPLORING",
+   "to": "GENERATING",
+   "ts": 1793545782.34168
+  },
+  {
+   "from": "GENERATING",
+   "to": "STATIC_CHECK",
+   "ts": 1793545826.349289,
+   "candidate_id": "tclabsim-fan2-20261101-100822-051eab-v1"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793545826.354368,
+   "candidate_id": "tclabsim-fan2-20261101-100822-051eab-v1"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793545839.509655,
+   "candidate_id": "tclabsim-fan2-20261101-100822-051eab-v1"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "DEPLOYABLE",
+   "ts": 1793545881.6533709,
+   "candidate_id": "tclabsim-fan2-20261101-100822-051eab-v1"
+  }
+ ],
+ "model_usage": {
+  "calls": 6,
+  "failed_calls": 0,
+  "prompt_tokens": 29554,
+  "completion_tokens": 28281,
+  "reasoning_tokens": 22639,
+  "cost_usd": 0.14808375000000001
+ },
+ "elapsed_s": 179.0,
+ "finished_at": 1793545881.653559
+}

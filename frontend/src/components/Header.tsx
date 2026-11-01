@@ -1,4 +1,4 @@
-import type { Health, RunDetail, RunEvent, RunListing } from "../api";
+import { fmtY, isCelsius, profileLabel, type DisplayProfile, type Health, type RunDetail, type RunEvent, type RunListing } from "../api";
 import type { Mode } from "../App";
 import { fmtDate, fmtDuration, fmtUsd } from "../format";
 
@@ -15,6 +15,7 @@ interface Props {
   cost: number;
   nCalls: number;
   recordedAt: number | null;
+  profile: DisplayProfile | null;
 }
 
 const stageTone = (s: string) =>
@@ -63,6 +64,11 @@ export default function Header(p: Props) {
           </span>
         )}
         <span className={`chip ${stageTone(p.stage)}`}>{p.stage}</span>
+        {p.profile && p.profile.source !== "default_tank" && (
+          <span className="badge plant-chip" title={`plant profile ${p.profile.name} (from ${p.profile.source}); y_unit ${p.profile.y_unit}`}>
+            {profileLabel(p.profile)} · {isCelsius(p.profile) ? fmtY(p.profile, p.profile.target, 1) : p.profile.target.toFixed(2)} target
+          </span>
+        )}
         <span className="badge neutral mono" title={`prompt hash ${ph ?? "—"}`}>
           protocol {pv}
         </span>

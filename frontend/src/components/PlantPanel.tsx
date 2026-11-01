@@ -11,12 +11,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { Json, RunEvent } from "../api";
+import { isCelsius, toDisplay, type DisplayProfile, type Json, type RunEvent } from "../api";
 import { downsample, fmtNum } from "../format";
 
 interface Pt {
   t: number;
   y: number | null;
+  yn?: number | null;
   u: number | null;
   override?: boolean;
   phase: "experiment" | "monitoring" | "after_change" | "gap";
@@ -26,7 +27,16 @@ interface Pt {
 const MAX_POINTS = 2000;
 const GAP_S = 6;
 
-export default function PlantPanel({ events, monitoring, replay }: { events: RunEvent[]; monitoring: Json | null; replay: boolean }) {
+export default function PlantPanel({ profile, events, monitoring, replay }: { profile: DisplayProfile; events: RunEvent[]; monitoring: Json | null; replay: boolean }) {
+  const C = isCelsius(profile);
+  const D = (v: number) => toDisplay(profile, v) as number;
+  const yLo = D(0);
+  const yHi = D(1);
+  const yTicks = C
+    ? Array.from({ length: Math.floor((yHi - yLo) / 10) + 1 }, (_, i) => yLo + i * 10)
+    : [0, 0.2, 0.4, 0.6, 0.8, 1].map(D);
+  const yFmt = (v: number) => (C ? v.toFixed(0) : v.toFixed(1));
+  const lim = (v: number) => (C ? `${D(v).toFixed(1)} °C` : v.toFixed(2));
   const d = useMemo(() => {
     const exps = events.filter((e) => e.kind === "experiment_result" && Array.isArray(e.samples) && e.samples.length);
     const isAfter = (e: RunEvent) => e.phase === "after_change";
@@ -35,7 +45,7 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
     const push = (e: RunEvent, off: number, into: Pt[], phase: Pt["phase"]) => {
       const s = e.samples as Json[];
       bounds.push({ t: s[0].t + off, label: `${e.experiment_id} u=${fmtNum(s[0].u_requested, 2)}`, after: phase === "after_change" });
-      for (const x of s) into.push({ t: x.t + off, src_t: x.t, y: x.y, u: x.u_applied, override: !!x.override, phase });
+      for (const x of s) into.push({ t: x.t + off, src_t: x.t, y: toDisplay(profile, x.y), yn: x.y, u: x.u_applied, override: !!x.override, phase });
     };
     for (const e of exps.filter((x) => !isAfter(x))) push(e, 0, expPts, "experiment");
     expPts.sort((a, b) => a.t - b.t);
@@ -52,7 +62,7 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
       monStart = steps[0].t + monOff;
       if (monitoring?.trace?.disturbance_at != null) disturbAt = monitoring.trace.disturbance_at + monOff;
       if (monitoring?.degraded_at_t != null) detectAt = monitoring.degraded_at_t + monOff;
-      monPts = steps.map((x) => ({ t: x.t + monOff, src_t: x.t, y: x.y, u: x.u_applied, override: !!x.override, phase: "monitoring" as const }));
+      monPts = steps.map((x) => ({ t: x.t + monOff, src_t: x.t, y: toDisplay(profile, x.y), yn: x.y, u: x.u_applied, override: !!x.override, phase: "monitoring" as const }));
     }
 
     // Re-identification experiments run on the changed machine after the monitored rollout, on the
@@ -84,7 +94,7 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
     const all = [...expPts, ...monPts, ...afterPts];
     const overrides = all.filter((p) => p.override).length;
     return { data, bounds, monStart, disturbAt, detectAt, afterStart, overrides, nRaw: all.length };
-  }, [events, monitoring]);
+  }, [events, monitoring, profile]);
 
   return (
     <section className="panel plant">
@@ -105,15 +115,19 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
               <CartesianGrid stroke="var(--grid)" vertical={false} />
               <XAxis dataKey="t" type="number" domain={["dataMin", "dataMax"]} tick={{ fill: "var(--muted)", fontSize: 11 }}
                 tickFormatter={(v) => `${Math.round(v)}s`} stroke="var(--line)" />
-              <YAxis yAxisId="y" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} tick={{ fill: "var(--muted)", fontSize: 11 }} stroke="var(--line)"
-                tickFormatter={(v) => v.toFixed(1)} />
+              <YAxis yAxisId="y" domain={[yLo, yHi]} ticks={yTicks} tick={{ fill: "var(--muted)", fontSize: 11 }} stroke="var(--line)"
+                tickFormatter={yFmt} label={C ? { value: "°C", angle: 0, position: "insideTopLeft", offset: 12, fill: "var(--muted)", fontSize: 10 } : undefined} />
               <YAxis yAxisId="u" orientation="right" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} tick={{ fill: "var(--muted)", fontSize: 11 }}
                 stroke="var(--line)" tickFormatter={(v) => v.toFixed(1)} />
-              <ReferenceArea yAxisId="y" y1={0.55} y2={0.65} fill="var(--band)" fillOpacity={1} stroke="none" />
-              <ReferenceLine yAxisId="y" y={0.85} stroke="var(--warn)" strokeDasharray="4 4"
-                label={{ value: "soft 0.85", fill: "var(--warn)", fontSize: 10, position: "insideTopLeft" }} />
-              <ReferenceLine yAxisId="y" y={0.9} stroke="var(--bad)"
-                label={{ value: "hard cutoff 0.90", fill: "var(--bad)", fontSize: 10, position: "insideTopRight" }} />
+              <ReferenceArea yAxisId="y" y1={D(profile.band[0])} y2={D(profile.band[1])} fill="var(--band)" fillOpacity={1} stroke="none" />
+              {C && (
+                <ReferenceLine yAxisId="y" y={D(profile.target)} stroke="var(--good)" strokeOpacity={0.5} strokeDasharray="2 4"
+                  label={{ value: `target ${lim(profile.target)}`, fill: "var(--good)", fontSize: 10, position: "insideBottomLeft" }} />
+              )}
+              <ReferenceLine yAxisId="y" y={D(profile.soft_high_limit)} stroke="var(--warn)" strokeDasharray="4 4"
+                label={{ value: `soft ${lim(profile.soft_high_limit)}`, fill: "var(--warn)", fontSize: 10, position: "insideTopLeft" }} />
+              <ReferenceLine yAxisId="y" y={D(profile.hard_cutoff)} stroke="var(--bad)"
+                label={{ value: `hard cutoff ${lim(profile.hard_cutoff)}`, fill: "var(--bad)", fontSize: 10, position: "insideTopRight" }} />
               {d.bounds.map((b, i) => (
                 <ReferenceLine key={b.label} yAxisId="y" x={b.t} stroke="var(--line-strong)" strokeDasharray="2 3"
                   label={(props: any) => {
@@ -146,9 +160,9 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
                 <ReferenceLine yAxisId="y" x={d.detectAt} stroke="var(--warn)" strokeWidth={2}
                   label={{ value: "degradation detected", fill: "var(--warn)", fontSize: 10, position: "insideBottomRight" }} />
               )}
-              <Line yAxisId="u" dataKey="u" name="pump duty u_applied" type="stepAfter" stroke="var(--u)" strokeWidth={1}
+              <Line yAxisId="u" dataKey="u" name={C ? "heater u_applied" : "pump duty u_applied"} type="stepAfter" stroke="var(--u)" strokeWidth={1}
                 dot={false} isAnimationActive={false} connectNulls={false} />
-              <Line yAxisId="y" dataKey="y" name="level y (measured)" stroke="var(--y)" strokeWidth={1.6} dot={false}
+              <Line yAxisId="y" dataKey="y" name={C ? "temperature (measured, °C)" : "level y (measured)"} stroke="var(--y)" strokeWidth={1.6} dot={false}
                 isAnimationActive={false} connectNulls={false} />
               <Tooltip contentStyle={{ background: "var(--panel-2)", border: "1px solid var(--line)", fontSize: 12 }}
                 labelFormatter={(v, p) => {
@@ -157,7 +171,10 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
                   if (pt?.phase === "after_change") return `re-identification (changed machine) t=${fmtNum(pt.src_t, 1)}s`;
                   return `t=${fmtNum(v, 1)}s`;
                 }}
-                formatter={(v: any) => fmtNum(v, 3)} />
+                formatter={(v: any, name: any, item: any) => {
+                  if (item?.dataKey === "y" && C) return [`${fmtNum(v, 2)} °C (y=${fmtNum(item.payload?.yn, 4)})`, name];
+                  return [fmtNum(v, 3), name];
+                }} />
               <Legend wrapperStyle={{ fontSize: 11, color: "var(--muted)" }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -174,7 +191,7 @@ export default function PlantPanel({ events, monitoring, replay }: { events: Run
         </div>
       )}
       <div className="caption">
-        Band 0.55–0.65 shaded. Experiments use the agent-safe samples recorded in each <code>experiment_result</code>{" "}
+        Band {lim(profile.band[0])}–{lim(profile.band[1])} shaded{C ? ` (display = y × ${profile.y_scale} + ${profile.y_offset})` : ""}. Experiments use the agent-safe samples recorded in each <code>experiment_result</code>{" "}
         event; the monitored rollout is <code>monitoring.json</code> (a fresh rollout from reset, placed after the
         experiments on this axis). After-change re-identification experiments continue on the changed machine's
         clock after the rollout.
