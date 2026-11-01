@@ -250,7 +250,8 @@ def run_monitored_rollout(
     ``schedule_disturbance`` is only called when ``disturbance`` is given, so a physical plant whose
     ``schedule_disturbance`` raises NotImplementedError works with ``disturbance=None``.
     ``pause_for_operator`` (optional) is called exactly once, when the rollout time first reaches
-    ``disturbance_at_s`` (default: ``profile.disturbance_at_s``), so a human can apply a physical
+    ``disturbance_at_s`` (default: ``profile.monitor_pre_s``, the live rollout's change time, which
+    follows ``monitor_calibrate_s``; the evaluator suites use ``profile.disturbance_at_s`` instead), so a human can apply a physical
     disturbance. It may block; the rollout clock is the plant's own time, so wall time spent in the hook
     is not counted: the next tick simply resumes from a fresh observation.
     """
@@ -261,7 +262,7 @@ def run_monitored_rollout(
         calibrate_s = prof.monitor_calibrate_s
     pause_at: float | None = None
     if pause_for_operator is not None:
-        pause_at = prof.disturbance_at_s if disturbance_at_s is None else float(disturbance_at_s)
+        pause_at = prof.monitor_pre_s if disturbance_at_s is None else float(disturbance_at_s)
     if disturbance is not None and calibrate_s > disturbance.at_t + _EPS:
         raise ValueError(f"calibrate_s={calibrate_s} must not be after the disturbance at {disturbance.at_t}")
     if pause_at is not None and calibrate_s > pause_at + _EPS:

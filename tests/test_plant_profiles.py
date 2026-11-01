@@ -168,20 +168,21 @@ def test_detector_profile_defaults():
     assert DegradationDetector(1.0, window_s=10.0, profile=TCLAB).window_s == 10.0  # explicit wins
 
 
-def test_tclab_detector_calibrates_at_380_and_fires_on_step():
+def test_tclab_detector_calibrates_at_profile_time_and_fires_on_step():
     rng = np.random.default_rng(0)
     d = DegradationDetector(1.0, profile=TCLAB)
     target, fired_at = TCLAB.target, None
-    for k in range(900):
+    for k in range(int(TCLAB.monitor_pre_s) + 300):
         t = float(k)
-        y = target + rng.normal(0, 0.003) + (0.08 if t >= 400.0 else 0.0)
+        y = target + rng.normal(0, 0.003) + (0.08 if t >= TCLAB.monitor_pre_s else 0.0)
         d.update(t, y, target)
         if not d.calibrated and t >= TCLAB.monitor_calibrate_s - 0.5:
             d.calibrate_from_window(t)
         if d.degraded and fired_at is None:
             fired_at = t
-    assert d.calibrated_at_t == 380.0
-    assert fired_at is not None and 400.0 < fired_at <= 400.0 + 60.0 + 30.0
+    assert d.calibrated_at_t == TCLAB.monitor_calibrate_s
+    pre = TCLAB.monitor_pre_s
+    assert fired_at is not None and pre < fired_at <= pre + TCLAB.monitor_window_s + TCLAB.monitor_hold_s
 
 
 def test_monitored_rollout_physical_plant_operator_pause():
@@ -195,32 +196,34 @@ def test_monitored_rollout_physical_plant_operator_pause():
     res = run_monitored_rollout(plant, ConstantController(TCLAB.target), Supervisor(SafetyLimits.from_profile(TCLAB)),
                                 duration_s=TCLAB.monitor_duration_s, seed=1, disturbance=None, profile=TCLAB,
                                 pause_for_operator=pause, stop_after_detection_s=TCLAB.monitor_post_detection_s)
-    assert calls == [400.0]  # exactly once, at profile.disturbance_at_s
-    assert res.detector_state["calibrated_at_t"] == 380.0
+    pre = TCLAB.monitor_pre_s
+    assert calls == [pre]  # exactly once, at profile.monitor_pre_s (default)
+    assert res.detector_state["calibrated_at_t"] == TCLAB.monitor_calibrate_s
     assert res.trace.target == pytest.approx(TCLAB.target)
-    assert res.trace.disturbance_at == 400.0 and res.trace.meta["operator_disturbance_at_s"] == 400.0
-    assert res.degraded_at_t is not None and res.degraded_at_t > 400.0
+    assert res.trace.disturbance_at == pre and res.trace.meta["operator_disturbance_at_s"] == pre
+    assert res.degraded_at_t is not None and res.degraded_at_t > pre
     assert res.trace.steps[-1].t <= res.degraded_at_t + TCLAB.monitor_post_detection_s + 1e-9
 
 
 def test_monitored_rollout_physical_plant_without_disturbance_or_hook():
     plant = FirstOrderPlant()
     res = run_monitored_rollout(plant, ConstantController(TCLAB.target), Supervisor(SafetyLimits.from_profile(TCLAB)),
-                                duration_s=500.0, seed=1, disturbance=None, profile=TCLAB)
-    assert len(res.trace.steps) == 500 and res.trace.disturbance_at is None
+                                duration_s=800.0, seed=1, disturbance=None, profile=TCLAB)
+    assert len(res.trace.steps) == 800 and res.trace.disturbance_at is None
     assert res.degraded_at_t is None
     with pytest.raises(NotImplementedError):  # a disturbance on the physical plant must fail loudly
         run_monitored_rollout(plant, ConstantController(0.4), Supervisor(), duration_s=10.0, seed=1,
-                              disturbance=DisturbanceSpec(family="pump_derate", at_t=400.0), profile=TCLAB)
+                              disturbance=DisturbanceSpec(family="pump_derate", at_t=TCLAB.monitor_pre_s), profile=TCLAB)
 
 
 def test_pause_hook_explicit_time_and_calibration_order():
     plant = FirstOrderPlant()
     calls: list[float] = []
-    run_monitored_rollout(plant, ConstantController(0.4), Supervisor(), duration_s=450.0, seed=1, disturbance=None,
+    at = TCLAB.monitor_calibrate_s + 40.0
+    run_monitored_rollout(plant, ConstantController(0.4), Supervisor(), duration_s=at + 30.0, seed=1, disturbance=None,
                           profile=TCLAB, pause_for_operator=lambda: calls.append(plant.true_state()["t"]),
-                          disturbance_at_s=420.0)
-    assert calls == [420.0]
+                          disturbance_at_s=at)
+    assert calls == [at]
     with pytest.raises(ValueError):
         run_monitored_rollout(plant, ConstantController(0.4), Supervisor(), duration_s=10.0, seed=1, disturbance=None,
                               profile=TCLAB, pause_for_operator=lambda: None, disturbance_at_s=100.0)

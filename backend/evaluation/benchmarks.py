@@ -37,6 +37,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Files whose content determines every score. A change to any of them invalidates the cache.
 _FINGERPRINT_FILES = (
     "backend/evaluation/config.py",
+    "backend/profiles.py",
     "backend/evaluation/suite.py",
     "backend/evaluation/metrics.py",
     "backend/evaluation/baselines.py",
