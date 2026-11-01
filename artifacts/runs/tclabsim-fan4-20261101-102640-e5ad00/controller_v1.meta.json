@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan4-20261101-102640-e5ad00-v1",
+  "run_id": "tclabsim-fan4-20261101-102640-e5ad00",
+  "version": 1,
+  "path": "artifacts/runs/tclabsim-fan4-20261101-102640-e5ad00/controller_v1.py",
+  "sha256": "acb47cc106b0f512375aa24d1062ba3bf44d16032d461d10cf911a73db748d85",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-01T15:29:30.476006+00:00",
+  "byte_length": 2213,
+  "rationale": "First-order self-draining heater with positive gain: tau ~150-170s, delay 6-15s, gain ~1.04-1.12, ambient ~0.08, u* for 0.5 is 0.39-0.40 measured as 0.4 holds 0.497 with zero slope for 510s. Noise/quantization ~0.005 << band 0.05. No dead zone. Therefore PI + low feedforward is sufficient; D would amplify quantization. FF=(target-0.08)/1.08 gives 0.389 at 0.5, intentionally ~0.014 low to bias to undershoot not overshoot. Kp=0.9 gives P~0.38 for full cold start, total ~0.77 below 0.85 soft limit for fast warmup without saturation. Ki=0.01 near target (Ti~90s < tau) removes offset, Ki_far=0.002 when |err|>0.15 prevents windup during ramp, deadband 0.002 avoids quantization limit cycle. I_lim +-0.25 leaves 10x authority over FF uncertainty range 0.366-0.409. Filter Tf=12s smooths 0.005 steps without adding lag vs 155s plant. Conditional anti-windup freezes I on saturation. Output clamped to [0,0.85] to never approach 0.9 cutoff.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Heater: higher u = higher y. Self-draining to room ~0.07-0.09 at u=0. Gain ~1.05-1.12, y_ss ~0.08+1.04*u; u=0.4 settles at 0.497. u* for 0.5 is 0.39-0.40. Slow: tau ~150-170s, small delay 6-15s, needs several hundred seconds to settle (510s hold needed for zero slope). No dead zone: 0.3, 0.4, 0.5 all heat clearly. Noise small <0.01, quantization steps ~0.005 vs band width 0.05. Max heating ~0.005/s at high u. Cooling at u=0 from 0.42 to 0.19 in 180s with slope still -0.0012.",
+    "predicted_behavior": "From near target (0.48-0.50) settles inside 0.475-0.525 within ~60-120s with no overshoot, steady u ~0.39-0.41. From cold (~0.08) heats at ~0.005/s with u ~0.77 initially, reaches band in ~150-220s, no overshoot >0.53, true-state overshoot <0.01. Steady-state u ~0.40, u^2 ~0.16 for low energy. Filtered y stays centered, quantization dither <0.005.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

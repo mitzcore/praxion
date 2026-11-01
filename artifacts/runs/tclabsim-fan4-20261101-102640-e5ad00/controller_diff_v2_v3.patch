@@ -1,0 +1,83 @@
+--- a/tclabsim-fan4-20261101-102640-e5ad00/controller_v2.py
++++ b/tclabsim-fan4-20261101-102640-e5ad00/controller_v3.py
+@@ -8,20 +8,20 @@
+ def _ok(x):
+     return isinstance(x, (int, float)) and math.isfinite(float(x))
+ def control(obs, state):
+-    Y_AMB = 0.08
+-    K_INIT = 1.08
+-    K_LO = 0.35
+-    K_HI = 1.30
+-    KP = 1.0
+-    KI = 0.02
+-    KI_FAR = 0.008
+-    TF = 10.0
+-    TS = 70.0
+-    I_LIM = 0.65
+-    P_LIM = 0.60
++    Y_AMB = 0.085
++    K_INIT = 1.05
++    K_LO = 0.30
++    K_HI = 1.35
++    KP = 0.9
++    KI_NEAR = 0.018
++    KI_FAR = 0.045
++    TF = 6.0
++    TS = 32.0
++    I_LIM = 0.75
++    P_LIM = 0.65
+     U_LO = 0.0
+     U_HI = 1.0
+-    ERR_FAR = 0.15
++    ERR_FAR = 0.08
+     ERR_DB = 0.002
+     if state is None:
+         state = {}
+@@ -82,20 +82,24 @@
+     u_s = u_s + al_s * (u_prev_f - u_s)
+     y_s = _clamp(float(y_s), 0.0, 1.0)
+     u_s = _clamp(float(u_s), 0.0, 1.0)
+-    gate_t = True if elapsed is None else (elapsed > 80.0)
+-    if gate_t and u_s > 0.18 and y_s > 0.12:
+-        if abs(float(yf) - y_s) < 0.03 and abs(u_prev_f - u_s) < 0.15:
+-            k_imp = (y_s - Y_AMB) / u_s if u_s > 0.05 else k_hat
+-            if _ok(k_imp):
+-                k_imp = _clamp(float(k_imp), 0.30, 1.40)
+-                w = dt / 180.0
+-                if w < 0.0:
+-                    w = 0.0
+-                if w > 0.03:
+-                    w = 0.03
+-                k_hat = float(k_hat) + w * (k_imp - float(k_hat))
+-                k_hat = _clamp(float(k_hat), K_LO, K_HI)
+-    ff = (target - Y_AMB) / k_hat if k_hat > 0.1 else (target - Y_AMB) / 0.4
++    if u_s > 0.15 and y_s > 0.11:
++        steady = (abs(float(yf) - y_s) < 0.025 and abs(u_prev_f - u_s) < 0.12)
++        tau_k = 55.0 if steady else 220.0
++        w = dt / tau_k
++        if w < 0.0:
++            w = 0.0
++        if w > 0.05:
++            w = 0.05
++        denom = u_s if u_s > 0.05 else 0.05
++        k_imp = (y_s - Y_AMB) / denom
++        if _ok(k_imp):
++            k_imp = _clamp(float(k_imp), 0.28, 1.45)
++            k_hat = float(k_hat) + w * (k_imp - float(k_hat))
++            k_hat = _clamp(float(k_hat), K_LO, K_HI)
++    if k_hat > 0.1:
++        ff = (target - Y_AMB) / k_hat
++    else:
++        ff = (target - Y_AMB) / 0.4
+     ff = _clamp(float(ff), 0.0, 1.0)
+     err = target - float(yf)
+     p = KP * err
+@@ -106,7 +110,7 @@
+     elif aerr > ERR_FAR:
+         integ_new = integ_prev + KI_FAR * err * dt
+     else:
+-        integ_new = integ_prev + KI * err * dt
++        integ_new = integ_prev + KI_NEAR * err * dt
+     integ_new = _clamp(integ_new, -I_LIM, I_LIM)
+     u_unsat = ff + p + integ_new
+     u = _clamp(u_unsat, U_LO, U_HI)

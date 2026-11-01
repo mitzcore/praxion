@@ -50,14 +50,24 @@ class MockMuseClient:
         self.totals = UsageTotals()
         self.records: list[CallRecord] = []
         self._n_proposals = 0
+        self._n_reid = 0
 
     def structured(self, stage: str, messages: list[dict[str, str]], contract: type[T]) -> tuple[T, CallRecord]:
         rec = CallRecord(stage=stage, model=MOCK_MODEL_ID, attempt=1, ok=True, latency_s=0.0)
         self.records.append(rec)
         self.totals.calls += 1
-        return self._answer(contract), rec  # type: ignore[return-value]
+        return self._answer(contract, stage), rec  # type: ignore[return-value]
 
-    def _answer(self, contract: type[BaseModel]) -> BaseModel:
+    def _answer(self, contract: type[BaseModel], stage: str = "") -> BaseModel:
+        if contract is ExperimentProposal and stage == "reidentifying":
+            # Two fixed experiments on the changed machine, then ready to revise (exercises the changed-twin path).
+            self._n_reid += 1
+            return ExperimentProposal(
+                hypotheses=[Hypothesis(id="C1", statement="MOCK: machine changed", confidence=0.5, evidence_refs=[])],
+                uncertainty_targeted="MOCK", command_u=[0.0, 0.6][(self._n_reid - 1) % 2], duration_s=30.0,
+                safety_argument="MOCK: bounded", expected_observation="MOCK", ready_to_generate=self._n_reid > 2,
+                readiness_justification="MOCK: fixed schedule", operator_note="MOCK after-change probe (CI only)",
+            )
         if contract is ExperimentProposal:
             self._n_proposals += 1
             u = [0.4, 0.7, 0.0, 0.55][(self._n_proposals - 1) % 4]

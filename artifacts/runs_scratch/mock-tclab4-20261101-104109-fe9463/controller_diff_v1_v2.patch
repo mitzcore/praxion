@@ -1,0 +1,16 @@
+--- a/mock-tclab4-20261101-104109-fe9463/controller_v1.py
++++ b/mock-tclab4-20261101-104109-fe9463/controller_v2.py
+@@ -1,4 +1,4 @@
+-# MOCK CONTROLLER (CI plumbing only; not model-authored)
++# MOCK CONTROLLER v2 (CI plumbing only; not model-authored)
+ import math
+ 
+ def control(obs, state):
+@@ -10,6 +10,6 @@
+     err = target - y
+     integ = state.get("integ", 0.0) + err * dt
+     integ = max(-2.0, min(2.0, integ))
+-    u = 0.5 + 2.5 * err + 0.2 * integ
++    u = 0.55 + 3.0 * err + 0.35 * integ
+     u = max(0.0, min(1.0, u))
+     return u, {"integ": integ}

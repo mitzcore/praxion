@@ -1,0 +1,20 @@
+{
+  "id": "tclabsim-fan4-20261101-102640-e5ad00-v4",
+  "run_id": "tclabsim-fan4-20261101-102640-e5ad00",
+  "version": 4,
+  "path": "artifacts/runs/tclabsim-fan4-20261101-102640-e5ad00/controller_v4.py",
+  "sha256": "fc97329ec013da0868a98fbb06a705ef25f68a95d659086e54a67b58a00cf0e3",
+  "parent_id": "tclabsim-fan4-20261101-102640-e5ad00-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-01T15:37:31.020435+00:00",
+  "byte_length": 5237,
+  "rationale": "Kept PI+feedforward skeleton but retargeted it for ~2.2x heat loss: faster steady-state gain estimator (40s/150s + 22s fast-track + persistent-low push to K_LO=0.32), higher authority integral (KI_FAR 0.065, I_LIM 0.90) to reach u*~0.95-1.0, slightly lower P (0.70) + filtered D (KD=15, TD=10, +/-0.25) to keep nominal overshoot small, and high-temperature back-off. This directly attacks outflow-increased starvation instead of just raising gain.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y_ss=Yamb+K*u, Yamb~0.08-0.09 unchanged. OLD: K~1.05-1.12, tau~150-165s (a~0.0065), u*(0.5)~0.39. NEW (changed): K~0.40-0.44, tau~70-90s (a~0.012-0.014, ~2.2x loss), u*(0.5)~0.93-1.0, y_ss(0.5)~0.30, y_ss(0.8)~0.42-0.46, y_ss(1.0)~0.50-0.52. Delay still <10-15s, noise <0.01 with 0.005 quantization, no dead-zone, limits 0.85 soft / 0.90 hard.",
+    "predicted_behavior": "Nominal: heat from ~0.07 with u~0.70-0.78, reach band in ~150-170s, overshoot <0.56, settle u~0.38-0.40, in-band >=0.78 after 300s, MAE ~0.011-0.013, zero overrides/violations. Changed severe: arrest fall within ~100s after change, climb from ~0.36 to band in ~180-280s, then hold 0.48-0.52 with u~0.90-1.0 saturated, no oscillation, no hard violations; moderate changed holds with u~0.60. Faster estimator is gated >120s so nominal heat-up not pulled low.",
+    "diagnosis": "Outflow/loss increased ~2.1-2.2x. E7 at u=0 falls much faster than E3 from same start (E7 -0.0021/s over first 60s vs E3 -0.0012/s, 300s endpoint 0.094 vs 180s endpoint 0.185, fitted tau ~70-85s vs 153s) with unchanged <15s delay and unchanged ~0.005 quantization/low noise, ruling out response_slower and sensor_changed. Same u holds much lower level: E8 u=0.5 settles ~0.29-0.30 vs ~0.61 expected, E9/E10 u=0.8 reaches only ~0.40 after 110s and ~0.433 after 195s still rising, implying y_ss~0.08-0.09+0.42*u vs 0.08+1.07*u before. Actuator still heats (no dead-zone) so actuator_weaker alone would leave u=0 decay overlaying E3, which it does not. Hence bigger leak requiring u* 0.39->~0.95-1.0, y_ss(1.0)~0.51 just reachable.",
+    "diagnosis_category": "outflow_increased"
+  }
+}

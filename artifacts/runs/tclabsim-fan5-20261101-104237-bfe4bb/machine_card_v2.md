@@ -1,0 +1,1 @@
+First-order heater y in [0,1], ambient ~0.08-0.09, delay ~6s. Pre: ss(y)=amb+~0.92*u, tau ~130-170s, hold(0.5)~0.38. Post: ss(y)=amb+~0.44*u, tau ~80-100s, hold(0.5)~0.90. K ratio ~0.8, L ratio ~1.7-2.0. Reachable with u=1.0 (ss ~0.52). No extra delay, no sensor change.

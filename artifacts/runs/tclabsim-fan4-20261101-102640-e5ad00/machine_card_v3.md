@@ -1,0 +1,1 @@
+Heater with ~2.2x heat loss: tau 155s->~75s, K 1.05->0.43 (amb ~0.085), u* for y=0.5 0.39->~0.95, deadtime still <10s, noise/quant ~0.005 unchanged, saturation at u=1 leaves ~0.05 headroom.

@@ -1,0 +1,48 @@
+--- a/tclabsim-fan5-20261101-104237-bfe4bb/controller_v1.py
++++ b/tclabsim-fan5-20261101-104237-bfe4bb/controller_v2.py
+@@ -61,7 +61,7 @@
+     try:
+         yf_prev = float(state.get("yf", y_raw))
+     except Exception:
+-        yf_prev = y_raw if math.isfinite(y_raw) else 0.5
++        yf_prev = 0.5
+     try:
+         i_prev = float(state.get("i", 0.0))
+     except Exception:
+@@ -74,10 +74,10 @@
+         yf_prev = 0.0
+     if yf_prev > 1.0:
+         yf_prev = 1.0
+-    if i_prev > 0.25:
+-        i_prev = 0.25
+-    if i_prev < -0.25:
+-        i_prev = -0.25
++    if i_prev > 0.65:
++        i_prev = 0.65
++    if i_prev < -0.30:
++        i_prev = -0.30
+     if not math.isfinite(y_raw):
+         y_meas = yf_prev
+     else:
+@@ -86,14 +86,14 @@
+             y_meas = 0.0
+         if y_meas > 1.0:
+             y_meas = 1.0
+-    kp = 1.0
+-    ki = 0.012
+-    tf = 12.0
+-    i_max = 0.25
+-    i_min = -0.25
+-    u_max = 0.80
++    kp = 1.2
++    ki = 0.022
++    tf = 10.0
++    i_max = 0.65
++    i_min = -0.30
++    u_max = 1.0
+     u_min = 0.0
+-    e_en = 0.12
++    e_en = 0.20
+     alpha = dt / (tf + dt)
+     yf = (1.0 - alpha) * yf_prev + alpha * y_meas
+     if not math.isfinite(yf):

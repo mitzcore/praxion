@@ -1,0 +1,274 @@
+{
+ "run_id": "mock-tclab2-20261101-104020-81cc97",
+ "stage": "COMPLETE",
+ "model_id": "MOCK-NOT-MUSE",
+ "agent_mode": "mock",
+ "prompt_version": "v1.5",
+ "prompt_hash": "800a3f74457b2c8e",
+ "sandbox_mode": "subprocess_dev_only",
+ "profile": {
+  "name": "tclab_sim",
+  "dt": 1.0,
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "y_unit": "\u00b0C",
+  "y_scale": 60.0,
+  "y_offset": 15.0,
+  "episode_s": 900.0,
+  "settle_s": 300.0,
+  "eval_plant": "twin",
+  "operator_disturbance": false
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.4,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.070",
+    "u": 0.4,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 0.0
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "u_before": 0.4,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.7,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.090",
+    "u": 0.7,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 8.0
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "u_before": 0.7,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "MOCK: u raises y",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "MOCK",
+    "command_u": 0.0,
+    "duration_s": 8.0,
+    "safety_argument": "MOCK: bounded",
+    "expected_observation": "MOCK",
+    "ready_to_generate": false,
+    "readiness_justification": "MOCK: fixed schedule",
+    "operator_note": "MOCK proposal (CI only)"
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.067",
+    "u": 0.0,
+    "duration_s": 8.0
+   },
+   "status": "completed",
+   "t_start": 16.0
+  }
+ ],
+ "ledger_history": [
+  {
+   "after_experiment": null,
+   "ts": 1793547620.0589561,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E1",
+   "ts": 1793547620.060787,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E2",
+   "ts": 1793547620.06272,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E3",
+   "ts": 1793547620.065281,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "MOCK: u raises y",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  }
+ ],
+ "candidates": [
+  {
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1",
+   "version": 1,
+   "parent_id": null,
+   "model_id": "MOCK-NOT-MUSE",
+   "prompt_hash": "800a3f74457b2c8e",
+   "submission_kind": "controller",
+   "submission": {
+    "machine_card": "MOCK machine card",
+    "design_rationale": "MOCK",
+    "source_code": "# MOCK CONTROLLER (CI plumbing only; not model-authored)\nimport math\n\ndef control(obs, state):\n    y = obs[\"y\"]\n    target = obs[\"target\"]\n    dt = obs[\"dt\"] if obs[\"dt\"] > 0 else 0.1\n    if not math.isfinite(y):\n        return 0.0, state\n    err = target - y\n    integ = state.get(\"integ\", 0.0) + err * dt\n    integ = max(-2.0, min(2.0, integ))\n    u = 0.5 + 2.5 * err + 0.2 * integ\n    u = max(0.0, min(1.0, u))\n    return u, {\"integ\": integ}\n",
+    "predicted_behavior": "MOCK",
+    "self_test_expectations": [
+     "MOCK"
+    ],
+    "operator_note": "MOCK controller (CI only)"
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=1",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0; process alive, next valid step u=1",
+    "inf_y: ok y=+inf: returned finite u=0; process alive, next valid step u=1",
+    "zero_dt: ok dt=0: returned finite u=1; process alive, next valid step u=1",
+    "negative_dt: ok dt=-0.1: returned finite u=1; process alive, next valid step u=1",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.012s (budget 10s)"
+   ],
+   "status": "approved"
+  }
+ ],
+ "monitoring": {
+  "deployed_candidate_id": "mock-tclab2-20261101-104020-81cc97-v1",
+  "baseline_window_mae": 0.027339361111111033,
+  "recent_window_mae": 0.034941638888888925,
+  "degraded": false,
+  "degraded_at_t": null,
+  "disturbance_family": "extra_leak",
+  "disturbance_at_t": 600.0
+ },
+ "stage_history": [
+  {
+   "from": "NEW",
+   "to": "EXPLORING",
+   "ts": 1793547620.05828
+  },
+  {
+   "from": "EXPLORING",
+   "to": "GENERATING",
+   "ts": 1793547620.507245
+  },
+  {
+   "from": "GENERATING",
+   "to": "STATIC_CHECK",
+   "ts": 1793547620.510038,
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793547620.510679,
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793547620.8124459,
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "DEPLOYABLE",
+   "ts": 1793547622.0160499,
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1"
+  },
+  {
+   "from": "DEPLOYABLE",
+   "to": "MONITORING",
+   "ts": 1793547622.0168698,
+   "candidate_id": "mock-tclab2-20261101-104020-81cc97-v1"
+  },
+  {
+   "from": "MONITORING",
+   "to": "COMPLETE",
+   "ts": 1793547622.211412,
+   "reason": "no degradation detected; deployed controller retained"
+  }
+ ],
+ "model_usage": {
+  "calls": 5,
+  "failed_calls": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cost_usd": 0.0
+ },
+ "elapsed_s": 2.2,
+ "finished_at": 1793547622.211628
+}

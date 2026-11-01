@@ -432,11 +432,16 @@ class Orchestrator:
             if not m.degraded:
                 self._transition("COMPLETE", reason="no degradation detected; deployed controller retained")
                 return self.s
-            # Score frozen v1 on the disturbance suite (same scenarios v2 will face).
-            if disturbance_family:
-                deployed.disturbance_evaluation = self._evaluate_disturbance(deployed, disturbance_family)
             self._transition("ADAPTING", attempt=0, parent=deployed.candidate_id, reidentifying=True)
             self._reidentify()
+            if self._twin_mode():
+                # Physical-plant path: refit the twin on the after-change experiments so v1 and v2 are
+                # scored on a model of the machine AS IT NOW IS, not on a generic version of the family.
+                self._fit_changed_twin(disturbance_family)
+                deployed.disturbance_evaluation = self._evaluate_changed(deployed, disturbance_family)
+            elif disturbance_family:
+                # Simulator path: score frozen v1 on the family's disturbance suite (same scenarios v2 will face).
+                deployed.disturbance_evaluation = self._evaluate_disturbance(deployed, disturbance_family)
             self._adapt(deployed, disturbance_family)
         except _Stop as e:
             self._transition("STOPPED", reason=str(e))
@@ -446,6 +451,56 @@ class Orchestrator:
         finally:
             self._persist_summary()
         return self.s
+
+    def _twin_mode(self) -> bool:
+        return self.cfg.eval_plant_factory == "twin"
+
+    def _fit_changed_twin(self, family: str | None) -> None:
+        """Trusted: fit a second twin from the after-change experiments (the machine as it now is)."""
+        from backend.plant.thermal_twin import fit_twin, twin_factory
+
+        traces = [e.trace for e in self.s.experiments if e.trace is not None and e.status == "completed"
+                  and e.phase == "after_change"]
+        self._changed_factory = None
+        if len(traces) < 2:
+            self._event("changed_twin_skipped", reason=f"only {len(traces)} after-change experiments; falling back to the "
+                        f"family disturbance on the original twin")
+            return
+        try:
+            params = fit_twin(traces, dt=self.plant.dt)
+        except ValueError as e:
+            self._event("changed_twin_skipped", reason=f"fit failed: {e}")
+            return
+        report = getattr(params, "report", None)
+        self._changed_factory = twin_factory(params)
+        self.store.write_json("twin_fit_after_change.json", params.model_dump(mode="json"))
+        self._event("changed_twin_fitted", n_traces=len(traces), declared_family_known_to_operator_only=family is not None,
+                    report=report.model_dump(mode="json") if hasattr(report, "model_dump") else report)
+
+    def _evaluate_changed(self, cand: CandidateRecord, family: str | None) -> EvaluationReport:
+        """Score a candidate on the changed-machine twin (no scheduled disturbance: the twin IS the changed
+        machine). Falls back to the generic family suite on the original twin if no changed twin exists."""
+        if getattr(self, "_changed_factory", None) is None:
+            if family:
+                return self._evaluate_disturbance(cand, family)
+            raise MuseError("no changed twin and no declared family; cannot score the repair")
+        report = evalsuite.evaluate_heldout(lambda: self._make_controller(cand), candidate_id=cand.candidate_id,
+                                            plant_seed=self.cfg.plant_seed, limits=self.sup.limits,
+                                            profile=self.cfg.profile, plant_factory=self._changed_factory)
+        report.suite = "disturbance:changed_machine"
+        report.gate_name = "G3-candidate"
+        report.comparison["post_disturbance_mae"] = {str(e.index): e.metrics.mae for e in report.episodes}
+        report.aggregate["median_post_disturbance_mae"] = float(sorted(e.metrics.mae for e in report.episodes)[len(report.episodes) // 2])
+        safe = all(e.metrics.hard_violations == 0 and e.metrics.invalid_outputs == 0 for e in report.episodes)
+        report.gate_passed = safe
+        n_safe = sum(1 for e in report.episodes if e.metrics.hard_violations == 0 and e.metrics.invalid_outputs == 0)
+        report.gate_reasons = [f"{n_safe}/{len(report.episodes)} episodes safe on the changed-machine twin",
+                               "G3-candidate " + ("passed" if safe else "failed")]
+        self.store.write_json(f"evaluation_disturbance_v{cand.version}.json", report.model_dump(mode="json"))
+        self._event("evaluation", candidate_id=cand.candidate_id, suite="disturbance", gate=report.gate_name,
+                    gate_passed=report.gate_passed, reasons=report.gate_reasons, aggregate=report.aggregate,
+                    scored_on="changed_machine_twin")
+        return report
 
     def _evaluate_disturbance(self, cand: CandidateRecord, family: str) -> EvaluationReport:
         kw: dict[str, Any] = {"profile": self.cfg.profile}
@@ -480,7 +535,7 @@ class Orchestrator:
                 cand.status = "approved" if nominal.gate_passed else "failed_gate"
                 self._transition("COMPLETE" if nominal.gate_passed else "FAILED", candidate_id=cand.candidate_id)
                 return
-            dist = self._evaluate_disturbance(cand, family)
+            dist = self._evaluate_changed(cand, family) if self._twin_mode() else self._evaluate_disturbance(cand, family)
             cand.disturbance_evaluation = dist
             cmp = evalsuite.compare_adaptation(deployed.disturbance_evaluation, dist) if deployed.disturbance_evaluation else {}
             diag_ok = _diagnosis_matches(getattr(sub, "diagnosis_category", "unknown"), family)

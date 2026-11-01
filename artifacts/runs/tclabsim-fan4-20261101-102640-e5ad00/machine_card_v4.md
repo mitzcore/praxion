@@ -1,0 +1,1 @@
+First-order heater y_ss=Yamb+K*u, Yamb~0.08-0.09 unchanged. OLD: K~1.05-1.12, tau~150-165s (a~0.0065), u*(0.5)~0.39. NEW (changed): K~0.40-0.44, tau~70-90s (a~0.012-0.014, ~2.2x loss), u*(0.5)~0.93-1.0, y_ss(0.5)~0.30, y_ss(0.8)~0.42-0.46, y_ss(1.0)~0.50-0.52. Delay still <10-15s, noise <0.01 with 0.005 quantization, no dead-zone, limits 0.85 soft / 0.90 hard.
