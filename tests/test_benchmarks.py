@@ -113,3 +113,21 @@ def test_benchmark_markdown_and_cache(tmp_path: Path) -> None:
     sha = run["candidates"][0]["sha256"]
     assert c.get(sha, "heldout", 7, "docker") is None
     assert c.get(sha, "heldout", 7, "subprocess_dev_only") is not None
+
+
+def test_after_change_plant_s_distinguishes_none_completed_from_no_proposals():
+    """0.0 when the agent proposed after-change experiments but none completed; None when the bundle has none."""
+    from backend.evaluation.benchmarks import _after_change_plant_s
+
+    none_tagged = {"experiments": [{"phase": None, "status": "completed", "proposal": {"duration_s": 20.0}}]}
+    rejected_only = {"experiments": [{"phase": "after_change", "status": "rejected", "proposal": {"duration_s": 40.0}}]}
+    mixed = {"experiments": [
+        {"phase": "after_change", "status": "completed", "proposal": {"duration_s": 40.0}, "verdict": {"duration_s": 40.0}},
+        {"phase": "after_change", "status": "completed", "proposal": {"duration_s": 15.0}},
+        {"phase": "after_change", "status": "invalid", "proposal": {"duration_s": 35.0}},
+        {"phase": "discovery", "status": "completed", "proposal": {"duration_s": 99.0}},
+    ]}
+    assert _after_change_plant_s({}) is None
+    assert _after_change_plant_s(none_tagged) is None
+    assert _after_change_plant_s(rejected_only) == 0.0
+    assert _after_change_plant_s(mixed) == 55.0

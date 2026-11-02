@@ -365,11 +365,17 @@ def _model_call_stats(run: RunInfo, upto_ts: float | None = None) -> dict[str, A
 
 
 def _after_change_plant_s(result: dict[str, Any]) -> float | None:
-    """Plant seconds the agent spent on after-change (re-identification) experiments, from the stored proposals."""
-    exps = [e for e in (result.get("experiments") or []) if e.get("phase") == "after_change" and e.get("status") == "completed"]
+    """Plant seconds the agent spent on after-change (re-identification) experiments, from the stored proposals.
+
+    None when the bundle has no phase-tagged after-change proposals at all (older bundles, or no adaptation);
+    0.0 when it proposed after-change experiments but none completed (all rejected by the supervisor's
+    worst-case bound), i.e. the repair was authored from the monitored traces alone.
+    """
+    exps = [e for e in (result.get("experiments") or []) if e.get("phase") == "after_change"]
     if not exps:
         return None
-    return float(sum(float(e.get("verdict", {}).get("duration_s") or e["proposal"].get("duration_s") or 0.0) for e in exps))
+    done = [e for e in exps if e.get("status") == "completed"]
+    return float(sum(float(e.get("verdict", {}).get("duration_s") or e["proposal"].get("duration_s") or 0.0) for e in done))
 
 
 def _experiment_stats(result: dict[str, Any]) -> dict[str, Any]:
@@ -754,8 +760,10 @@ def render_markdown(data: dict[str, Any], command: str) -> str:
               "160 s), so the comparison leans toward the classical method. Praxion's wall time also includes model "
               "latency; the relay's is simulated plant time only."), "",
               ("| run | family | fixed PID post | Muse v1 frozen post | Full Praxion post | relay PI nominal post | "
-              "relay PI re-tuned post | re-tuned? | Praxion after-change plant s | relay plant s | Praxion cost USD |"),
-              "|---|---|---:|---:|---:|---:|---:|---|---:|---:|---:|"]
+              "relay PI re-tuned post | post in-band Praxion / relay | re-tuned? | Praxion after-change plant s | "
+              "relay plant s | relay hard-cutoff ticks while identifying | Praxion cost USD |"),
+              "|---|---|---:|---:|---:|---:|---:|---|---|---:|---:|---:|---:|"]
+        h2h: list[dict[str, Any]] = []
         for r in data["runs"]:
             fam = r.get("disturbance_family")
             bt = r.get("baseline_tuning") or {}
@@ -765,12 +773,33 @@ def render_markdown(data: dict[str, Any], command: str) -> str:
             def post(v: str, rows_: dict[str, Any] = rows) -> str:
                 return _fmt((rows_.get(v) or {}).get("post_median_mae"))
             rt = bt["relay_pi_retuned"][fam]
+            prax, relay = rows.get("Full Praxion") or {}, rows.get(BASELINE_LABELS["relay_pi_retuned"]) or {}
+            h2h.append({"plant_seed": r.get("plant_seed"), "prax_post": prax.get("post_median_mae"),
+                        "relay_post": relay.get("post_median_mae"), "prax_plant_s": r.get("after_change_plant_s"),
+                        "relay_plant_s": rt.get("plant_s_total"), "relay_hard": rt.get("hard_violations_total")})
             L.append(f"| `{r['run_id']}` | `{fam}` | {post('fixed PID')} | {post('Muse v1 frozen')} | {post('Full Praxion')} | "
                      f"{post(BASELINE_LABELS['relay_pi'])} | {post(BASELINE_LABELS['relay_pi_retuned'])} | "
+                     f"{_fmt(prax.get('post_in_band'), 3)} / {_fmt(relay.get('post_in_band'), 3)} | "
                      f"{'yes' if rt['retuned'] else 'no (monitor silent)' if rt['detector_fired_at_s'] is None else 'no (failed)'} | "
                      f"{_fmt(r.get('after_change_plant_s'), 0)} | {_fmt(rt['plant_s_total'], 0)} | "
+                     f"{_fmt(rt.get('hard_violations_total'), 0)} | "
                      f"{_fmt((r.get('model_calls_total') or {}).get('cost_usd'), 3)} |")
         L.append("")
+        scored = [h for h in h2h if _finite(h["prax_post"]) and _finite(h["relay_post"])]
+        if scored:
+            relay_wins = sum(h["relay_post"] < h["prax_post"] for h in scored)
+            prax_plant = [h["prax_plant_s"] for h in scored if _finite(h["prax_plant_s"])]
+            relay_plant = [h["relay_plant_s"] for h in scored if _finite(h["relay_plant_s"])]
+            seeds = {h["plant_seed"]: h["relay_hard"] for h in scored}
+            hard_seeds = sum(1 for v in seeds.values() if (v or 0) > 0)
+            L += [(f"**Reading.** Lower post-change MAE: relay re-tuned PI in {relay_wins} of {len(scored)} runs, Full Praxion in "
+                   f"{len(scored) - relay_wins}. Identification time on the machine: relay median {_fmt(statistics.median(relay_plant), 0)} s "
+                   f"vs Praxion median {_fmt(statistics.median(prax_plant), 0) if prax_plant else '—'} s "
+                   f"(Praxion's cell is 0 when it proposed after-change experiments but the supervisor rejected them all, "
+                   f"and — when the bundle has no after-change proposals). The relay touched the hard cutoff while identifying "
+                   f"on {hard_seeds} of {len(seeds)} plant seeds (ticks in the table); Praxion's after-change experiments are "
+                   f"approved only under a worst-case bound below the soft limit, so they cannot. Both methods were developed on "
+                   f"exploration plant seeds that include the run plant seeds; the scenario seeds scored here were hidden from both."), ""]
 
     # ---------- every run (failures included)
     L += ["## Every run", "",
