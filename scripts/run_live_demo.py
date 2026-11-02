@@ -9,7 +9,9 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
+import signal
 import sys
 import time
 from pathlib import Path
@@ -119,6 +121,8 @@ def main() -> int:
                          "(default: twin for --plant tclab, same otherwise)")
     ap.add_argument("--max-experiments", type=int, default=None, help="default: the profile's max_experiments")
     ap.add_argument("--max-candidates", type=int, default=5)
+    ap.add_argument("--max-wall-clock-s", type=float, default=None,
+                    help="default: 30 min for simulators, 3 h for --plant tclab (a hardware run takes 60-75 min)")
     ap.add_argument("--reasoning-effort", default=None)
     ap.add_argument("--label", default="run")
     ap.add_argument("--root", default="artifacts/runs")
@@ -145,9 +149,14 @@ def main() -> int:
     run_id = new_run_id(args.label)
     store = RunStore(run_id, root=Path(args.root))
     ss = session_settings(profile, args.max_experiments)
+    budget_kw = dict(ss["budget_kw"])
+    if args.max_wall_clock_s is not None:
+        budget_kw["max_wall_clock_s"] = float(args.max_wall_clock_s)
+    elif args.plant == "tclab":
+        budget_kw["max_wall_clock_s"] = 3 * 3600.0  # real time: the 30 min simulator default stops a hardware run mid-repair
     session = Session(run_id=run_id, plant_description=plant.public_description(), agent_mode=args.agent_mode,
                       objective=ss["objective"], constraints=ss["constraints"],
-                      budget=Budget(max_candidates=args.max_candidates, **ss["budget_kw"]))
+                      budget=Budget(max_candidates=args.max_candidates, **budget_kw))
     if args.agent_mode == "mock":
         agent = MockMuseClient()
     else:
@@ -183,9 +192,23 @@ def main() -> int:
           + (f" = {profile.to_display(profile.soft_high_limit):.0f}/{profile.to_display(profile.hard_cutoff):.0f} {profile.y_unit}"
              if show_c else "")
           + f"; episode {profile.episode_s:.0f}s settle {profile.settle_s:.0f}s\n")
-    orch.run_discovery()
-    if session.stage == "DEPLOYABLE":
-        orch.run_monitoring(None if args.disturbance == "none" else args.disturbance)
+    # Hardware safety: whatever ends the process (normal return, Ctrl-C, SIGTERM, a closed terminal
+    # window = SIGHUP, or an exception), the actuator is turned off and the port closed.
+    def _raise_exit(signum: int, _frame: object) -> None:
+        raise SystemExit(128 + signum)
+
+    for sig in (signal.SIGTERM, signal.SIGHUP):
+        with contextlib.suppress(Exception):
+            signal.signal(sig, _raise_exit)
+    try:
+        orch.run_discovery()
+        if session.stage == "DEPLOYABLE":
+            orch.run_monitoring(None if args.disturbance == "none" else args.disturbance)
+    finally:
+        close = getattr(plant, "close", None)
+        if callable(close):
+            with contextlib.suppress(Exception):
+                close()
 
     totals = getattr(agent, "totals", None)
     print(f"\nfinal stage: {session.stage}")

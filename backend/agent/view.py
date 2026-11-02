@@ -38,6 +38,19 @@ MODEL_FREE_TEXT_KEYS: frozenset[str] = frozenset({
 })
 
 
+# Candidate ids are ``<run_id>-v<N>``. The run id carries the operator's label (which may name the
+# disturbance, e.g. "fan") and the plant seed; the model only ever sees the opaque version "vN".
+_OPAQUE_RE = re.compile(r"-v([1-9][0-9]*)$")
+
+
+def opaque_candidate_id(candidate_id: str | None) -> str | None:
+    """``"<run_id>-v3"`` -> ``"v3"``. Anything else is returned unchanged."""
+    if candidate_id is None:
+        return None
+    m = _OPAQUE_RE.search(candidate_id)
+    return f"v{m.group(1)}" if m else candidate_id
+
+
 def build_agent_view(session: Session, *, include_candidate_traces: bool = True) -> dict[str, Any]:
     """Assemble the permitted projection of the session for the next model call."""
     view: dict[str, Any] = {
@@ -98,9 +111,9 @@ def _experiment_view(e: ExperimentRecord) -> dict[str, Any]:
 
 def _candidate_view(c: CandidateRecord, include_traces: bool) -> dict[str, Any]:
     out: dict[str, Any] = {
-        "candidate_id": c.candidate_id,
+        "candidate_id": opaque_candidate_id(c.candidate_id),
         "version": c.version,
-        "parent_id": c.parent_id,
+        "parent_id": opaque_candidate_id(c.parent_id),
         "status": c.status,
         "static_check": {"ok": c.static_ok, "violations": c.static_violations},
         "sandbox_check": {"ok": c.sandbox_ok, "detail": c.sandbox_detail},
@@ -117,7 +130,7 @@ def _monitoring_view(session: Session) -> dict[str, Any] | None:
     if m.deployed_candidate_id is None:
         return None
     out: dict[str, Any] = {
-        "deployed_candidate_id": m.deployed_candidate_id,
+        "deployed_candidate_id": opaque_candidate_id(m.deployed_candidate_id),
         "degraded": m.degraded,
         "baseline_window_mae": _r(m.baseline_window_mae),
         "recent_window_mae": _r(m.recent_window_mae),
@@ -151,12 +164,13 @@ def _walk(node: Any, path: str, out: list[str], free_text: list[str]) -> None:
             _walk(v, f"{path}[{i}]", out, free_text)
 
 
-def find_leaks(view: dict[str, Any] | str) -> list[str]:
+def find_leaks(view: dict[str, Any] | str, *, secrets: tuple[str, ...] = ()) -> list[str]:
     """Return a list of leak descriptions found in a view (empty means clean).
 
     Keys are checked structurally (trusted code names them). Values are checked for specific
     trusted-only identifiers everywhere, and for hidden-seed-like numbers everywhere except
-    model-authored free text."""
+    model-authored free text. ``secrets`` are run-specific strings that must not appear anywhere
+    (the run id, which carries the operator's label and the plant seed)."""
     data = json.loads(view) if isinstance(view, str) else view
     leaks: list[str] = []
     free_text: list[str] = []
@@ -164,6 +178,7 @@ def find_leaks(view: dict[str, Any] | str) -> list[str]:
     full = serialize_view(data)
     low = full.lower()
     leaks += [f"forbidden substring {s!r}" for s in FORBIDDEN_SUBSTRINGS if s.lower() in low]
+    leaks += [f"run-specific secret {s!r}" for s in secrets if len(s) >= 4 and s.lower() in low]
     structural = full
     for t in free_text:
         structural = structural.replace(json.dumps(t), '""')

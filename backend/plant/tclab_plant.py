@@ -35,7 +35,6 @@ import io
 import logging
 import math
 import time
-import weakref
 from collections import deque
 from collections.abc import Callable
 from typing import Any
@@ -264,7 +263,9 @@ class TCLabSim(PlantAdapter):
 
 
 # =========================================================================== hardware
-_LIVE_BOARDS: weakref.WeakSet[TCLabHardware] = weakref.WeakSet()
+# A strong set: with a WeakSet the board object was usually garbage-collected before the atexit hook
+# ran, so the hook did nothing and the heater stayed on after a normal exit (audit 2026-11-02).
+_LIVE_BOARDS: set[TCLabHardware] = set()
 
 
 @atexit.register
@@ -305,6 +306,7 @@ class TCLabHardware(PlantAdapter):
         self._T1 = math.nan
         self._next_tick: float | None = None
         self.overruns = 0
+        self.serial_retries = 0
         _LIVE_BOARDS.add(self)
 
     @property
@@ -342,11 +344,47 @@ class TCLabHardware(PlantAdapter):
         self._T1 = T
         return self.observe()
 
+    is_physical = True
+    SERIAL_RETRIES = 3
+
     def observe(self) -> Observation:
         if self._lab is None:
             raise RuntimeError("TCLabHardware.reset() must be called first")
-        self._T1 = float(self._lab.T1)
+        self._T1 = self._read_T1()
         return self._obs()
+
+    def _read_T1(self) -> float:
+        """One missed or garbled serial reply must not end an hour-long run: retry a few times,
+        flushing the input buffer between attempts. Persistent failure still raises."""
+        last: Exception | None = None
+        for attempt in range(self.SERIAL_RETRIES):
+            try:
+                return float(self._lab.T1)
+            except (ValueError, UnicodeDecodeError, OSError) as exc:
+                last = exc
+                self.serial_retries += 1
+                log.warning("TCLab T1 read failed (%s); retry %d/%d", exc, attempt + 1, self.SERIAL_RETRIES)
+                self._flush_serial()
+                self._sleep(0.2)
+        raise RuntimeError(f"TCLab T1 read failed {self.SERIAL_RETRIES} times: {last!r}")
+
+    def _send_Q1(self, percent: float) -> None:
+        last: Exception | None = None
+        for attempt in range(self.SERIAL_RETRIES):
+            try:
+                self._lab.Q1(percent)
+                return
+            except (ValueError, UnicodeDecodeError, OSError) as exc:
+                last = exc
+                self.serial_retries += 1
+                log.warning("TCLab Q1 write failed (%s); retry %d/%d", exc, attempt + 1, self.SERIAL_RETRIES)
+                self._flush_serial()
+                self._sleep(0.2)
+        raise RuntimeError(f"TCLab Q1 write failed {self.SERIAL_RETRIES} times: {last!r}")
+
+    def _flush_serial(self) -> None:
+        with contextlib.suppress(Exception):
+            self._lab.sp.reset_input_buffer()
 
     def _obs(self) -> Observation:
         return Observation(t=self._t, y=normalize(self._T1), interlock_high=bool(self._T1 >= INTERLOCK_C))
@@ -355,7 +393,7 @@ class TCLabHardware(PlantAdapter):
         if self._lab is None:
             raise RuntimeError("TCLabHardware.reset() must be called first")
         u = _validate_u(u_applied)
-        self._lab.Q1(100.0 * u)
+        self._send_Q1(100.0 * u)
         self._wait_for_tick()
         self._k += 1
         return self.observe()

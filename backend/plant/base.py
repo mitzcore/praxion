@@ -19,6 +19,8 @@ class PlantAdapter(ABC):
     #####################################################################################
     """
 
+    is_physical: bool = False  # True for real hardware: the orchestrator idles the actuator between stages
+
     @property
     @abstractmethod
     def dt(self) -> float:

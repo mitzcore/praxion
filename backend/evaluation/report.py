@@ -15,6 +15,12 @@ from pydantic import BaseModel, Field
 from backend.schemas import Metrics, Trace
 
 
+def _opaque(candidate_id: str) -> str:
+    """``"<run_id>-v3"`` -> ``"v3"`` (mirrors backend.agent.view.opaque_candidate_id without the import)."""
+    _head, sep, tail = candidate_id.rpartition("-v")
+    return f"v{tail}" if sep and tail.isdigit() else candidate_id
+
+
 class EpisodeResult(BaseModel):
     index: int = Field(description="Position in the suite, NOT the seed.")
     seed: int = Field(description="TRUSTED ONLY.")
@@ -58,10 +64,11 @@ class EvaluationReport(BaseModel):
             eps.append(item)
         agg = {k: round(v, 4) for k, v in self.aggregate.items() if not k.startswith("baseline")}
         return {
-            "candidate_id": self.candidate_id,
+            # Opaque to the agent: the run id inside a candidate id carries the operator's label and plant seed.
+            "candidate_id": _opaque(self.candidate_id),
             "suite_kind": "disturbance" if self.suite.startswith("disturbance") else self.suite,
             "gate_passed": self.gate_passed,
-            "gate_reasons": list(self.gate_reasons),
+            "gate_reasons": [r.replace(self.candidate_id, _opaque(self.candidate_id)) for r in self.gate_reasons],
             "aggregate": agg,
             "episodes": eps,
         }

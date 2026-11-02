@@ -4,7 +4,7 @@ evaluator, monitor and prompts stay plant-agnostic.
 The TANK profile reproduces the frozen constants used for every recorded benchmark run; changing
 it invalidates recorded scores (see evaluation/config.py). The TCLAB profiles are new (2026-11-01)
 for the physical heater: slower dynamics, one-second control period, temperature normalized so
-20 °C → 0.0 and 80 °C → 1.0.
+15 °C → 0.0 and 80 °C → 1.0.
 """
 from __future__ import annotations
 
@@ -72,9 +72,10 @@ TANK = PlantProfile(
 )
 
 # TCLab: T1 thermistor, heater Q1. Normalized y = (T - 15) / 60 (zero at 15 °C so cool rooms never clamp).
-# Target 45 °C = 0.50; band ±1.5 °C. Soft limit 0.85 = 66 °C, hard cutoff 0.90 = 69 °C (TCLab firmware cuts at 100 °C).
-# Heating rate at full power is roughly 0.15–0.25 °C/s near room temperature → ≤ 0.0042 /s normalized;
-# the envelope uses 0.006 to stay conservative.
+# Target 45 °C = 0.50; band ±1.5 °C. Soft limit 0.85 = 66 °C, hard cutoff 0.90 = 69 °C (the TCLab firmware's 50 °C alarm only blinks the LED; it does not cut power).
+# Heating rate at full power is up to about 0.35 °C/s near room temperature → about 0.0058 /s normalized
+# (measured 2026-11-02 on TCLabModel); the envelope's 0.006 leaves only a 3% margin, so the soft limit can be
+# exceeded briefly by an adversarial sequence of approved experiments (never the 69 °C interlock).
 _TCLAB_COMMON = {
     "dt": 1.0,
     "target": (45.0 - 15.0) / 60.0, "band": ((43.5 - 15.0) / 60.0, (46.5 - 15.0) / 60.0),

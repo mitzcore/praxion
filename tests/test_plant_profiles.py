@@ -235,3 +235,47 @@ def test_terminal_pause_is_noop_without_tty(monkeypatch):
 
     monkeypatch.setattr(sys, "stdin", io.StringIO(""))
     terminal_operator_pause()  # must not block or raise
+
+
+def test_operator_pause_non_blocking_keeps_control_running() -> None:
+    """A pause hook that returns a callable must not stop the loop: the controller keeps stepping while
+    the operator works, and the first tick at which the callable reports done is the disturbance time."""
+    from backend.evaluation.monitor import run_monitored_rollout
+    from backend.plant.tclab_plant import TCLabSim
+    from backend.safety.supervisor import SafetyLimits, Supervisor
+
+    plant = TCLabSim()
+    sup = Supervisor(SafetyLimits.from_profile(TCLAB))
+
+    class Ctrl:
+        name = "test"
+        isolation = "none"
+        calls = 0
+
+        def reset(self) -> None:
+            pass
+
+        def step(self, obs: dict) -> float:
+            self.calls += 1
+            return 0.4
+
+        def close(self) -> None:
+            pass
+
+    ctrl = Ctrl()
+    polls = {"n": 0}
+
+    def pause() -> object:
+        def done() -> bool:
+            polls["n"] += 1
+            return polls["n"] > 25  # "Enter" arrives 25 ticks after the prompt
+        return done
+
+    res = run_monitored_rollout(plant, ctrl, sup, duration_s=200.0, target=TCLAB.target, seed=1, disturbance=None,
+                                calibrate_s=80.0, profile=TCLAB, pause_for_operator=pause, disturbance_at_s=100.0,
+                                stop_after_detection_s=None)
+    ts = [s.t for s in res.trace.steps]
+    assert len(ts) == 200 and ctrl.calls == 200, "control loop paused during the operator prompt"
+    op_t = res.trace.meta.get("operator_disturbance_at_s")
+    assert op_t is not None and 124.0 <= op_t <= 126.0, op_t
+    assert res.trace.disturbance_at == op_t

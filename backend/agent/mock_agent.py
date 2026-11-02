@@ -6,7 +6,7 @@ presented as model output, and the UI must show a MOCK badge whenever it is in u
 """
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel
 
@@ -46,15 +46,20 @@ class MockMuseClient:
 
     model = MOCK_MODEL_ID
 
+    instances: ClassVar[list[MockMuseClient]] = []  # tests inspect the prompts the last run produced
+
     def __init__(self) -> None:
         self.totals = UsageTotals()
         self.records: list[CallRecord] = []
+        self.requests: list[tuple[str, list[dict[str, str]]]] = []
+        MockMuseClient.instances.append(self)
         self._n_proposals = 0
         self._n_reid = 0
 
     def structured(self, stage: str, messages: list[dict[str, str]], contract: type[T]) -> tuple[T, CallRecord]:
         rec = CallRecord(stage=stage, model=MOCK_MODEL_ID, attempt=1, ok=True, latency_s=0.0)
         self.records.append(rec)
+        self.requests.append((stage, [dict(m) for m in messages]))
         self.totals.calls += 1
         return self._answer(contract, stage), rec  # type: ignore[return-value]
 

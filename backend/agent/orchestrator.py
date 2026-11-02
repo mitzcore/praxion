@@ -7,7 +7,11 @@ returns is re-validated here or by the Supervisor before anything touches the pl
 """
 from __future__ import annotations
 
+import contextlib
+import json
+import logging
 import math
+import threading
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -43,6 +47,7 @@ from backend.safety.supervisor import Supervisor
 from backend.schemas import DisturbanceSpec
 from backend.storage.artifacts import RunStore
 
+log = logging.getLogger(__name__)
 
 class AgentLike(Protocol):
     model: str
@@ -127,7 +132,16 @@ class Orchestrator:
 
     # ============================================================ model calls
     def _ask(self, stage: str, messages: list[dict[str, str]], contract: type[Any], view: dict[str, Any]) -> Any:
-        leaks = find_leaks(view)
+        # The view is scanned, and so is the full message list: feedback text and gate reasons are built
+        # outside the view. The run id is a secret because the operator's label and the plant seed are in it.
+        # The model's own controller source is shown back to it for revision and is exempt (it may
+        # legitimately contain any identifier it chose); everything else in the messages is scanned.
+        secrets = (self.s.run_id,)
+        scan_text = json.dumps(messages, ensure_ascii=False)
+        for c in self.s.candidates:
+            with contextlib.suppress(Exception):  # a missing source is not a leak
+                scan_text = scan_text.replace(json.dumps(self._source(c), ensure_ascii=False)[1:-1], "")
+        leaks = find_leaks(view, secrets=secrets) + find_leaks({"messages": scan_text}, secrets=secrets)
         if leaks:  # defense in depth: never send a leaking view
             self._event("error", error="agent view leak blocked", leaks=leaks)
             raise _Stop("agent view leak blocked")
@@ -153,6 +167,7 @@ class Orchestrator:
                         profile=self._profile_summary())
             self._transition("EXPLORING")
             self._explore()
+            self._idle_physical_plant("after discovery")
             self._prepare_eval_plant()
             self._transition("GENERATING")
             approved = self._author_until_approved()
@@ -165,6 +180,10 @@ class Orchestrator:
         except MuseError as e:
             self._event("error", error=f"model: {e}")
             self._transition("FAILED", reason=f"model error: {e}")
+        except Exception as e:
+            log.exception("unexpected error during discovery")
+            self._event("error", error=f"unexpected: {type(e).__name__}: {e}")
+            self._transition("FAILED", reason=f"unexpected error: {type(e).__name__}: {e}")
         finally:
             self._persist_summary()
         return self.s
@@ -343,7 +362,14 @@ class Orchestrator:
     def _source(self, cand: CandidateRecord) -> str:
         return self.registry.load_source(cand.candidate_id)
 
+    def _scrub(self, text: str) -> str:
+        """Replace the run id (operator label, plant seed) in trusted feedback text with the opaque form."""
+        return text.replace(self.s.run_id + "-v", "v").replace(self.s.run_id, "this run")
+
     def _feedback_for(self, cand: CandidateRecord) -> str:
+        return self._scrub(self._feedback_for_raw(cand))
+
+    def _feedback_for_raw(self, cand: CandidateRecord) -> str:
         if cand.status == "rejected_static":
             return "Static check rejected the module:\n- " + "\n- ".join(cand.static_violations)
         if cand.status == "rejected_sandbox":
@@ -418,7 +444,11 @@ class Orchestrator:
                 )
             finally:
                 ctrl.close()
+                self._idle_physical_plant("after monitored rollout")
             m.pre_trace, m.post_trace = res.pre_trace, res.post_trace
+            op_t = res.trace.meta.get("operator_disturbance_at_s") if res.trace.meta else None
+            if op_t is not None:
+                self._event("operator_disturbance_applied", t=op_t)
             if res.trace.steps:
                 self._last_u = float(res.trace.steps[-1].u_applied)
                 self._last_u_change_t = float(res.trace.steps[-1].t)
@@ -434,6 +464,7 @@ class Orchestrator:
                 return self.s
             self._transition("ADAPTING", attempt=0, parent=deployed.candidate_id, reidentifying=True)
             self._reidentify()
+            self._idle_physical_plant("after re-identification")
             if self._twin_mode():
                 # Physical-plant path: refit the twin on the after-change experiments so v1 and v2 are
                 # scored on a model of the machine AS IT NOW IS, not on a generic version of the family.
@@ -448,7 +479,12 @@ class Orchestrator:
         except MuseError as e:
             self._event("error", error=f"model: {e}")
             self._transition("FAILED", reason=f"model error during adaptation: {e}")
+        except Exception as e:
+            log.exception("unexpected error during monitoring/adaptation")
+            self._event("error", error=f"unexpected: {type(e).__name__}: {e}")
+            self._transition("FAILED", reason=f"unexpected error: {type(e).__name__}: {e}")
         finally:
+            self._idle_physical_plant("end of run")
             self._persist_summary()
         return self.s
 
@@ -577,14 +613,33 @@ class Orchestrator:
             self._run_experiment(proposal, phase="after_change")
         self._event("reidentification_budget_exhausted")
 
-    def _operator_pause(self) -> None:
-        """Physical plants: wait for the operator to apply the disturbance. Logged, never described to the agent."""
+    def _idle_physical_plant(self, when: str) -> None:
+        """Real hardware only: between stages (authoring, gating, model calls) nothing steps the plant, so
+        the last command would be held open-loop for minutes. Turn the actuator off and record it. The
+        simulator path is untouched: its state does not evolve between stages."""
+        if not getattr(self.plant, "is_physical", False):
+            return
+        with contextlib.suppress(Exception):
+            self.plant.emergency_stop()
+        self._last_u = 0.0
+        self._event("actuator_idled", when=when)
+
+    def _operator_pause(self) -> Callable[[], bool]:
+        """Physical plants: ask the operator to apply the disturbance. Non-blocking: the control loop keeps
+        running (the heater stays under control) while a thread waits for Enter; the monitor records the
+        first tick after Enter as the disturbance time. Logged, never described to the agent."""
         self._event("operator_disturbance_prompt", note="operator asked to apply the physical change now")
-        try:
-            input("\n>>> Apply the physical disturbance now, then press Enter to continue monitoring... ")
-        except EOFError:
-            pass
-        self._event("operator_disturbance_applied")
+        done = threading.Event()
+
+        def _wait() -> None:
+            try:
+                input("\n>>> Apply the physical disturbance now, then press Enter (control keeps running)... ")
+            except EOFError:
+                pass
+            done.set()
+
+        threading.Thread(target=_wait, name="operator-prompt", daemon=True).start()
+        return done.is_set
 
     def _adaptation_feedback(self, parent: CandidateRecord) -> str:
         m = self.s.monitoring
@@ -600,7 +655,7 @@ class Orchestrator:
             lines.append(self._feedback_for(parent))
         elif parent.status == "failed_gate" and parent.disturbance_evaluation is not None:
             lines.append("Your previous revision did not improve enough on the post-change scenarios, or broke nominal behaviour.")
-        return "\n".join(lines)
+        return self._scrub("\n".join(lines))
 
     # ================================================================ summary
     def _profile_summary(self) -> dict[str, Any]:

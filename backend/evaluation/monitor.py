@@ -16,10 +16,12 @@ import math
 import sys
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
+from typing import Any
 
 from pydantic import BaseModel
 
 from backend.controller.protocol import Controller
+from backend.controller.runtime import _apply
 from backend.evaluation.config import (
     DEGRADATION_FACTOR,
     DEGRADATION_FLOOR,
@@ -197,7 +199,11 @@ class MonitoredResult(BaseModel):
     post_trace: Trace | None
 
 
-OperatorPause = Callable[[], None]
+# Returns None to block until the operator is done (the loop pauses), or a zero-argument callable that
+# reports whether the operator has finished: then the control loop keeps running while the operator
+# works (on hardware the heater must stay under control), and the first tick at which it returns True
+# is recorded as the disturbance time.
+OperatorPause = Callable[[], Any]
 
 
 def terminal_operator_pause(prompt: str = "Apply the physical disturbance now, then press Enter to resume... ") -> None:
@@ -277,14 +283,21 @@ def run_monitored_rollout(
     stop_t: float | None = None
     paused = False
     operator_t: float | None = None
+    waiter: Callable[[], Any] | None = None
     for _ in range(_n_ticks(duration_s, dt)):
         obs = plant.observe()
         if pause_at is not None and not paused and obs.t >= pause_at - dt / 2:
             paused = True
-            operator_t = obs.t
             assert pause_for_operator is not None
-            pause_for_operator()
-            obs = plant.observe()  # fresh reading after the (possibly long) pause
+            ret = pause_for_operator()
+            if callable(ret):
+                waiter = ret  # non-blocking: control continues while the operator applies the change
+            else:
+                operator_t = obs.t
+                obs = plant.observe()  # fresh reading after the (possibly long) pause
+        if waiter is not None and operator_t is None and waiter():
+            operator_t = obs.t
+            waiter = None
         exc_reason: str | None = None
         try:
             u_req = float(controller.step({"y": obs.y, "target": target, "dt": dt, "elapsed_s": obs.t}))
@@ -293,7 +306,10 @@ def run_monitored_rollout(
             exc_reason = f"controller_exception:{type(exc).__name__}"
         decision = supervisor.filter(u_req, obs, now_t=obs.t)
         h_true = float(plant.true_state()["h_true"])
-        plant.step(decision.u_applied)
+        # Same path as run_episode: on an interlock / hard-cutoff trip the plant's emergency stop also
+        # flushes commands queued in the actuator delay line (audit 2026-11-02: plant.step alone let
+        # up to 20 s of queued pump commands keep filling the tank after a trip).
+        _apply(plant, decision.u_applied, decision.reason)
         steps.append(
             TraceStep(
                 t=obs.t,

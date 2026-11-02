@@ -50,7 +50,7 @@ def test_twin_deterministic_and_api():
     ya = [a.step(0.5).y for _ in range(50)]
     yb = [b.step(0.5).y for _ in range(50)]
     assert ya == yb and a.observe().t == 50.0
-    assert "0 = 20 °C" in a.public_description()
+    assert "0 = 15 °C" in a.public_description()
     with pytest.raises(ValueError):
         a.step(float("nan"))
 

@@ -106,3 +106,59 @@ def test_real_run_snapshots_are_blind(snapshot_dir: Path | None) -> None:
     for p in sorted(snapshot_dir.glob("*.json")):
         leaks = find_leaks(json.loads(p.read_text()))
         assert leaks == [], f"{p}: {leaks}"
+
+
+def test_candidate_ids_are_opaque_and_run_id_is_a_secret() -> None:
+    """The run id carries the operator's label (which may name the disturbance, e.g. "fan") and the plant
+    seed. The model sees only "vN", and the scanner treats the run id as a forbidden secret."""
+    s = _rich_session()
+    view = build_agent_view(s)
+    ids = [c["candidate_id"] for c in view["candidates"]]
+    assert ids and all(i.startswith("v") and i[1:].isdigit() for i in ids), ids
+    assert all(c["parent_id"] is None or c["parent_id"].startswith("v") for c in view["candidates"])
+    assert s.run_id not in serialize_view(view)
+    assert find_leaks(view, secrets=(s.run_id,)) == []
+    planted = json.loads(serialize_view(view))
+    planted["objective"]["notes"] = f"see {s.run_id}"
+    assert any("secret" in leak for leak in find_leaks(planted, secrets=(s.run_id,)))
+
+
+def test_opaque_candidate_id_helper() -> None:
+    from backend.agent.view import opaque_candidate_id
+    assert opaque_candidate_id("tclabsim-fan5-20261101-104237-bfe4bb-v2") == "v2"
+    assert opaque_candidate_id("v13-s11-20261031-020922-a0e68e-v1") == "v1"
+    assert opaque_candidate_id(None) is None
+    assert opaque_candidate_id("odd") == "odd"
+
+
+@pytest.mark.parametrize("calls_file", sorted(Path("artifacts/runs").glob("*/model_calls.jsonl")) or [None])
+def test_real_run_model_calls_are_blind(calls_file: Path | None) -> None:
+    """Audits the full request messages actually sent to the model, not only the view snapshots.
+
+    Forbidden identifiers and hidden-seed tokens must never appear. The run id (operator label, plant
+    seed) is checked for runs started on or after 2026-11-02; earlier runs carried it in candidate ids,
+    which is recorded as a known contamination of their diagnosis-correctness scores."""
+    if calls_file is None:
+        pytest.skip("no recorded runs yet")
+    run_id = calls_file.parent.name
+    date = next((tok for tok in run_id.split("-") if len(tok) == 8 and tok.isdigit()), "0")
+    secrets = (run_id,) if date >= "20261102" else ()
+    for line in calls_file.read_text().splitlines():
+        rec = json.loads(line)
+        msgs = rec.get("request_messages") or []
+        leaks = find_leaks({"messages": msgs}, secrets=secrets)
+        assert leaks == [], f"{calls_file} stage={rec.get('stage')}: {leaks}"
+
+
+def test_readiness_ignores_experiments_without_samples() -> None:
+    from backend.agent.session import MIN_EXPERIMENT_SAMPLES
+    s = _rich_session()
+    _ok, _ = s.may_generate()
+    n_real = len(s.completed_experiments())
+    # Replace every completed experiment's trace with an empty one: nothing should count any more.
+    for e in s.completed_experiments():
+        e.trace = e.trace.model_copy(update={"steps": []}) if e.trace is not None else None
+    if all(e.trace is not None for e in s.completed_experiments()):
+        ok2, why = s.may_generate()
+        assert not ok2 and "0 completed" in why, (n_real, why)
+    assert MIN_EXPERIMENT_SAMPLES >= 1

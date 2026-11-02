@@ -50,6 +50,13 @@ _FINGERPRINT_FILES = (
     "backend/safety/envelope.py",
     "backend/controller/runtime.py",
     "backend/controller/sandbox_runner.py",
+    # Added 2026-11-02 (audit): these also determine scores. schemas.py holds the Trace accessors every
+    # metric reads; monitor.py decides when the relay rival re-tunes; sandbox.py sets the per-step
+    # timeout that turns a slow step into an invalid output; protocol.py is the controller contract.
+    "backend/schemas.py",
+    "backend/evaluation/monitor.py",
+    "backend/controller/sandbox.py",
+    "backend/controller/protocol.py",
 )
 
 FROZEN_KEYS = (
@@ -235,6 +242,7 @@ def baseline_key(name: str, family: str | None = None) -> str:
     bsrc = (REPO_ROOT / "backend/evaluation/baselines.py").read_bytes()
     if name in SEED_TUNED_BASELINES:
         bsrc += (REPO_ROOT / "backend/evaluation/autotune.py").read_bytes()
+        bsrc += (REPO_ROOT / "backend/evaluation/monitor.py").read_bytes()  # the re-tune fires on its detector
     return _sha256(json.dumps({"baseline": name, "params": params, "family": family}, sort_keys=True).encode() + bsrc)
 
 
@@ -584,7 +592,9 @@ def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache:
     later = [c for c in cands if v1 is not None and c.version > v1.version]
     g3: dict[str, Any] = {"family": fam, "family_kind": cfg.DISTURBANCE_FAMILIES.get(fam) if fam else None,
                           "attempts": []}
-    if fam is None:
+    if fam is None and v1 is None:
+        g3.update(passed=False, status="NOT REACHED", detail="no approved v1: the run never reached deployment")
+    elif fam is None:
         g3.update(passed=None, status="N/A", detail="no disturbance in this run")
     elif v1 is None:
         g3.update(passed=False, status="NOT REACHED", detail="no approved v1")
@@ -877,9 +887,9 @@ def render_markdown(data: dict[str, Any], command: str) -> str:
         L += ["### Ablation (same plant seed, same frozen scenarios)", "",
               ("Nominal = 10 held-out episodes scored after settling. Post = 5 disturbance episodes, MAE over "
               "t >= disturbance time, in-band scored from disturbance + settle. Adaptation latency = median seconds "
-              "from the disturbance to the start of the first 10 s sustained in-band run (recovered episodes only); as "
-              "frozen in `metrics.py` it is 0 s when the level is still in band right after the change, even if the "
-              "loop destabilises later, so read it together with post in-band. Overrides and hard "
+              "from the disturbance to the start of the FINAL in-band run of the true level, which must last at least "
+              "10 s and reach the end of the episode (recovered episodes only); as frozen in `metrics.py` it is 0 s "
+              "when the level never leaves the band after the change. Overrides and hard "
               "violations are shown nominal / post. Model calls and cost: v1 frozen counts calls up to v1's "
               "registration; Full Praxion counts the whole run. Wall time: v1 = start to v1 approval; "
               "Full = whole run."), ""]

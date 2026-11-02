@@ -86,3 +86,16 @@ def test_monitoring_recorded_without_leaking_family(mock_run: tuple[Session, Run
 def test_docker_mode_smoke(tmp_path: Path) -> None:
     s, _ = _run(tmp_path, "docker", None)
     assert s.candidates and s.candidates[0].sandbox_ok is not None
+
+
+def test_mock_run_prompts_never_contain_run_id(mock_run: tuple[Session, RunStore]) -> None:
+    """The run id carries the operator label and plant seed; no recorded prompt may contain it."""
+    from backend.agent.mock_agent import MockMuseClient
+
+    s, _store = mock_run
+    agents = [a for a in MockMuseClient.instances if a.requests]
+    assert agents, "mock run recorded no model calls"
+    for stage, messages in agents[-1].requests:
+        txt = json.dumps(messages)
+        i = txt.find(s.run_id)
+        assert i < 0, f"{stage}: ...{txt[max(0, i - 200):i + 60]}..."

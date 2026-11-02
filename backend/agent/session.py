@@ -18,6 +18,8 @@ Stage = Literal[
     "REVISING", "DEPLOYABLE", "MONITORING", "ADAPTING", "COMPLETE", "FAILED", "STOPPED",
 ]
 
+MIN_EXPERIMENT_SAMPLES = 5  # samples a completed experiment needs to count toward readiness
+
 
 class Budget(BaseModel):
     max_experiments: int = 12
@@ -135,7 +137,10 @@ class Session(BaseModel):
         return max(0.0, self.budget.max_wall_clock_s - self.elapsed_s())
 
     def may_generate(self) -> tuple[bool, str]:
-        n = len(self.completed_experiments())
+        # An experiment counts toward readiness only if it produced data: a proposal shorter than one
+        # sample completes with an empty trace and must not satisfy the minimum.
+        n = len([e for e in self.completed_experiments()
+                 if e.trace is None or len(e.trace.steps) >= MIN_EXPERIMENT_SAMPLES])
         if n < self.budget.min_experiments_before_generate:
             return False, f"only {n} completed experiments; minimum is {self.budget.min_experiments_before_generate}"
         return True, "ok"

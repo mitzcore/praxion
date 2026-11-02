@@ -19,7 +19,7 @@ The state is integrated exactly (zero-order hold on u) with dt = 1.0 s, internal
 units x = (T - 15) / 60, so K_n = K / 60 and Ta_n = (Ta - 15) / 60.
 
 Disturbance families (same names and default ranges as TCLabSim, applied at t >= at_t):
-  * actuator_lag : extra pure delay of `magnitude` seconds (default seeded 20-40 s)
+  * actuator_lag : extra pure delay of `magnitude` seconds (default seeded 90-150 s)
   * pump_derate  : heater gain multiplied by (1 - magnitude) (default 0.25-0.40)
   * extra_leak   : heat-loss coefficient multiplied by (1 + magnitude) (default 0.40-0.60)
   * drain_shift  : same mechanism as extra_leak, smaller default (0.20-0.35)
@@ -31,8 +31,8 @@ Disturbance families (same names and default ranges as TCLabSim, applied at t >=
   * no input excitation (all experiments at the same u, or all at u = 0): K is unidentifiable.
   * a segment that starts while the plant is still responding to an UNRECORDED earlier input:
     the model assumes u = `u_before` (default 0) before the first recorded tick of each segment.
-  * clamped readings (y == 0 below 20 °C, y == 1 above 80 °C) carry no information and are masked;
-    if the room is below 20 °C the early part of every cold-start experiment is masked.
+  * clamped readings (y == 0 below 15 °C, y == 1 above 75 °C) carry no information and are masked;
+    if the room is below 15 °C the early part of every cold-start experiment is masked.
   * the real TCLab is second order (heater block + sensor lag); FOPDT folds the faster mode into L.
 """
 from __future__ import annotations
@@ -209,7 +209,7 @@ class ThermalTwin(PlantAdapter):
         return (
             "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; "
             "the device loses heat to the room on its own. Output y in [0,1] is a normalized "
-            "temperature reading (0 = 20 °C, 1 = 80 °C)."
+            "temperature reading (0 = 15 °C, 1 = 75 °C)."
         )
 
     def schedule_disturbance(self, spec: DisturbanceSpec) -> None:
