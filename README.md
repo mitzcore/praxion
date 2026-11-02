@@ -125,7 +125,7 @@ A control engineer's first objection is that a 1970s self-tuner solves the tank.
 
 Gate definitions are in `PRAXION_IMPLEMENTATION_PLAN.md` section 10 and frozen in `backend/evaluation/config.py`.
 
-- **G0 foundation:** tests green (status doc: 415 passed), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
+- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
 - **G1 discovery:** ≥ 3 distinct experiments tied to the ledger, ≥ 1 valid verbatim Muse controller.
 - **G2 performance:** ≥ 8/10 held-out scenarios, zero violations and overrides, ≥ 0.70 in-band after settling.
 - **G3 self-repair:** the repair cuts post-change MAE by ≥ 20% vs frozen v1 on ≥ 3/5 disturbance scenarios, with zero hard violations and zero invalid outputs.
@@ -155,7 +155,7 @@ Summary: G1 5/5, G2 5/5 on the first candidate, G3 5/5, diagnosis 5/5, nominal k
 
 ### The promotion rule
 
-A repair is promoted on the changed machine's criteria only: ≥ 3/5 disturbance scenarios with ≥ 20% lower post-change MAE than frozen v1, zero hard violations, and zero invalid outputs. Nominal G2 after repair is re-scored and reported, as in the "nominal kept" column, but it does not gate promotion. The repaired controller is for the machine as it now is. Requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. We decided this on 2026-11-01, while no run had yet passed Gate 3 (decisions log in `docs/IMPLEMENTATION_STATUS.md`). Run spark3 recorded FAILED under the earlier rule, which also required nominal G2. That recorded verdict was not rewritten.
+A repair is promoted on the changed machine's criteria only: ≥ 3/5 disturbance scenarios with ≥ 20% lower post-change MAE than frozen v1, zero hard violations, and zero invalid outputs. Nominal G2 after repair is re-scored and reported, as in the "nominal kept" column, but it does not gate promotion. The repaired controller is for the machine as it now is. Requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. We decided this on 2026-10-31, while no run had yet passed Gate 3 (decisions log in `docs/IMPLEMENTATION_STATUS.md`). Run spark3 recorded FAILED under the earlier rule, which also required nominal G2. That recorded verdict was not rewritten.
 
 ## Quickstart
 

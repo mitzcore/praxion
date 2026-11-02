@@ -94,7 +94,7 @@ def test_benchmark_markdown_and_cache(tmp_path: Path) -> None:
     run = first["runs"][0]
     assert run["gates"]["G1"]["passed"] is True
     assert run["gates"]["G3"]["family"] == "actuator_lag"
-    # Promotion rule (2026-11-01): G3 is judged on changed-machine criteria; the synthetic v2 meets them even
+    # Promotion rule (2026-10-31): G3 is judged on changed-machine criteria; the synthetic v2 meets them even
     # though the recorded run did not promote it, and the benchmark reports both facts.
     g3 = run["gates"]["G3"]
     assert len(g3["attempts"]) == 1 and g3["status"] == ("PASS" if g3["attempts"][0]["gate_passed"] else "FAIL")

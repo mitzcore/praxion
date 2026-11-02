@@ -601,7 +601,7 @@ def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache:
             g3.update(passed=False, status="NOT REACHED",
                       detail=f"no repair candidate (final stage {result.get('stage')}: {out['final_stage_reason']})")
         else:
-            # Promotion rule (2026-11-01): G3 = changed-machine criteria (>= GATE3_MIN_PASS scenarios improved
+            # Promotion rule (2026-10-31): G3 = changed-machine criteria (>= GATE3_MIN_PASS scenarios improved
             # >= GATE3_MIN_MAE_REDUCTION, zero hard violations, zero invalid outputs). Nominal G2 after repair
             # and in-run promotion are reported as separate facts, never folded into the verdict.
             best = max(g3["attempts"], key=lambda x: (bool(x["gate_passed"]), x["median_reduction"]))

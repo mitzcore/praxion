@@ -242,7 +242,7 @@ def test_stream_live_tail_closes_for_finished_run(client: TestClient) -> None:
 
 
 # ---------------------------------------------------------------------------------------------
-# Protocol v1.1/v1.2 fields and the 2026-11-01 promotion rule, on a small synthetic bundle shaped
+# Protocol v1.1/v1.2 fields and the 2026-10-31 promotion rule, on a small synthetic bundle shaped
 # like run spark3 (the real run is 26 MB, too large to vendor as a fixture).
 SYN = "syn-20261101-000000-abcdef"
 

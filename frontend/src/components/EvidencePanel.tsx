@@ -163,7 +163,7 @@ function Adaptation({ files, verdicts, stage, protocol, changedSuite, twins }: {
   return (
     <>
       <div className="small muted">
-        Promotion rule (decided 2026-11-01): Gate 3 = post-change suite, ≥ 3 scenarios improved ≥ 20% vs frozen v1 (thresholds as
+        Promotion rule (decided 2026-10-31): Gate 3 = post-change suite, ≥ 3 scenarios improved ≥ 20% vs frozen v1 (thresholds as
         stated in each candidate's gate reasons below), zero hard violations, zero invalid outputs. Nominal G2 after repair is re-scored
         and reported, not gated.
       </div>
