@@ -174,3 +174,17 @@ def test_onoff_hysteresis(y, expected):
     for yy in seq[: seq.index(y) + 1]:
         out = c.step({"y": yy, "target": 0.6, "dt": 0.1, "elapsed_s": 0.0})
     assert out == expected
+
+
+def test_pid_bias_is_inside_saturation_and_default_is_identity():
+    obs = {"y": 0.6, "target": 0.6, "dt": 0.1, "elapsed_s": 0.0}
+    assert PIDController(kp=0.0, ki=0.0, u_bias=0.4).step(obs) == 0.4
+    # with bias the integral may go negative (pull the output below the bias)
+    pid = PIDController(kp=0.0, ki=0.5, u_bias=0.6)
+    for _ in range(200):
+        u = pid.step({"y": 0.7, "target": 0.6, "dt": 0.1, "elapsed_s": 0.0})
+    assert u < 0.6 and u >= 0.0
+    # default u_bias = 0 reproduces the frozen controller tick for tick
+    a, b = PIDController(), PIDController(u_bias=0.0)
+    for y in (0.2, 0.3, 0.55, 0.62, 0.59, 0.7, 0.4):
+        assert a.step({"y": y, "target": 0.6, "dt": 0.1, "elapsed_s": 0.0}) == b.step({"y": y, "target": 0.6, "dt": 0.1, "elapsed_s": 0.0})

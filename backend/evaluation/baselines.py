@@ -13,9 +13,12 @@ SLOW_PID_TUNING = {"kp": 0.8, "ki": 0.03, "kd": 0.0}
 class PIDController:
     """Textbook PID: derivative on measurement, conditional integration + integral clamp.
 
-    u = kp*e + ki*I - kd*dy/dt, clamped to [0, 1]; e = target - y.
+    u = u_bias + kp*e + ki*I - kd*dy/dt, clamped to [0, 1]; e = target - y.
     Anti-windup: the integral only accumulates when the output is not saturated in the direction
-    the error pushes, and ki*I is clamped to [0, 1].
+    the error pushes, and u_bias + ki*I is clamped to [0, 1] (with u_bias = 0 this is the original
+    clamp of ki*I to [0, 1], so the frozen baselines are unchanged).
+    ``u_bias`` (default 0.0) is the classical "manual reset" output offset used by the relay auto-tuned
+    baselines (evaluation/autotune.py); it is not used by the frozen fixed/slow PID baselines.
     Default tuning (kp=3.0, ki=0.15, kd=0.0) is the brief's starting point and holds band on
     exploration seeds 1-10 (see tests/test_baselines.py); it was NOT tuned on held-out seeds.
     It is deliberately aggressive: it rejects every offset disturbance but loses its stability
@@ -25,8 +28,10 @@ class PIDController:
 
     isolation = "trusted"
 
-    def __init__(self, kp: float = 3.0, ki: float = 0.15, kd: float = 0.0, name: str = "baseline_pid"):
+    def __init__(self, kp: float = 3.0, ki: float = 0.15, kd: float = 0.0, name: str = "baseline_pid",
+                 u_bias: float = 0.0):
         self.kp, self.ki, self.kd, self.name = float(kp), float(ki), float(kd), name
+        self.u_bias = float(u_bias)
         self.reset()
 
     def reset(self) -> None:
@@ -42,12 +47,13 @@ class PIDController:
         self._y_prev = y
         i_new = self._i + e * dt
         if self.ki > 0:
-            i_new = min(max(i_new, 0.0), 1.0 / self.ki)
-        u_unsat = self.kp * e + self.ki * i_new - self.kd * d
+            lo = -self.u_bias / self.ki if self.u_bias else 0.0  # exactly the original clamp when u_bias == 0
+            i_new = min(max(i_new, lo), (1.0 - self.u_bias) / self.ki)
+        u_unsat = self.u_bias + self.kp * e + self.ki * i_new - self.kd * d
         saturating = (u_unsat > 1.0 and e > 0) or (u_unsat < 0.0 and e < 0)
         if not saturating:
             self._i = i_new
-        u = self.kp * e + self.ki * self._i - self.kd * d
+        u = self.u_bias + self.kp * e + self.ki * self._i - self.kd * d
         return min(max(u, 0.0), 1.0)
 
     def close(self) -> None:

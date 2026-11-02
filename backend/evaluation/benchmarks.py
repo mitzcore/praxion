@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any
 
 from backend.controller.registry import Candidate, Registry
+from backend.evaluation import autotune
 from backend.evaluation import config as cfg
 from backend.evaluation.baselines import SLOW_PID_TUNING, OnOffController, PIDController
 from backend.evaluation.report import EpisodeResult, EvaluationReport
@@ -42,6 +43,7 @@ _FINGERPRINT_FILES = (
     "backend/evaluation/suite.py",
     "backend/evaluation/metrics.py",
     "backend/evaluation/baselines.py",
+    "backend/evaluation/autotune.py",
     "backend/plant/tank_sim.py",
     "backend/plant/base.py",
     "backend/safety/supervisor.py",
@@ -60,13 +62,20 @@ BASELINE_LABELS = {
     "fixed_pid": "fixed PID",
     "fixed_onoff": "fixed on/off",
     "slow_pid": "slow PID",
+    "relay_pi": "relay auto-tuned PI (nominal)",
+    "relay_pi_retuned": "relay PI re-tuned after change",
 }
+# Baselines tuned per plant seed by the classical auto-tuner (evaluation/autotune.py). "relay_pi" is tuned once on
+# the nominal machine (rival of Muse v1 frozen); "relay_pi_retuned" re-identifies on the changed machine when the
+# shared degradation detector fires (rival of Full Praxion), so it is tuned per (seed, family).
+SEED_TUNED_BASELINES = ("relay_pi", "relay_pi_retuned")
 BASELINE_SPECS: dict[str, tuple[Callable[[], Any], dict[str, Any]]] = {
     "fixed_pid": (lambda: PIDController(), {"class": "PIDController", "kp": 3.0, "ki": 0.15, "kd": 0.0}),
     "fixed_onoff": (lambda: OnOffController(), {"class": "OnOffController", "hysteresis": 0.02}),
     "slow_pid": (lambda: PIDController(**SLOW_PID_TUNING, name="baseline_slow_pid"),
                  {"class": "PIDController", **SLOW_PID_TUNING}),
 }
+ALL_BASELINES = (*BASELINE_SPECS, *SEED_TUNED_BASELINES)
 SOURCE_STAGES = ("authoring", "revising", "fixing", "adapting")
 
 
@@ -220,10 +229,13 @@ def score_candidate(source: str, candidate_id: str, *, plant_seed: int, sandbox_
                          families=list(families or cfg.DISTURBANCE_FAMILIES), cache=cache)
 
 
-def baseline_key(name: str) -> str:
-    _, params = BASELINE_SPECS[name]
+def baseline_key(name: str, family: str | None = None) -> str:
+    """Cache key for a baseline: its name/params/family plus the bytes of the code that defines it."""
+    params = BASELINE_SPECS[name][1] if name in BASELINE_SPECS else {"seed_tuned": True, "rule": autotune.RULE}
     bsrc = (REPO_ROOT / "backend/evaluation/baselines.py").read_bytes()
-    return _sha256(json.dumps({"baseline": name, "params": params}, sort_keys=True).encode() + bsrc)
+    if name in SEED_TUNED_BASELINES:
+        bsrc += (REPO_ROOT / "backend/evaluation/autotune.py").read_bytes()
+    return _sha256(json.dumps({"baseline": name, "params": params, "family": family}, sort_keys=True).encode() + bsrc)
 
 
 def score_baseline(name: str, *, plant_seed: int, cache: ReportCache,
@@ -231,6 +243,31 @@ def score_baseline(name: str, *, plant_seed: int, cache: ReportCache,
     factory, _ = BASELINE_SPECS[name]
     return _score_suites(factory, ident=f"baseline:{name}", key_sha=baseline_key(name), plant_seed=plant_seed,
                          isolation="trusted", families=list(families or cfg.DISTURBANCE_FAMILIES), cache=cache)
+
+
+def score_relay_baselines(*, plant_seed: int, cache: ReportCache, families: Iterable[str],
+                          which: Iterable[str] = SEED_TUNED_BASELINES) -> dict[str, Any]:
+    """Classical self-tuner rows. Returns {"relay_pi": {"scores": suites, "tuning": report},
+    "relay_pi_retuned": {family: {"scores": {"heldout", "disturbance:<family>"}, "tuning": report}}}.
+    The tuning itself is deterministic and cheap, so only the scored suites are cached."""
+    fams = list(families)
+    nominal = autotune.autotune_nominal(plant_seed)
+    out: dict[str, Any] = {}
+    if "relay_pi" in which:
+        sc = _score_suites(lambda: autotune.controller_from(nominal), ident="baseline:relay_pi",
+                           key_sha=baseline_key("relay_pi"), plant_seed=plant_seed, isolation="trusted",
+                           families=fams, cache=cache)
+        out["relay_pi"] = {"scores": sc, "tuning": autotune.report_dict(nominal)}
+    if "relay_pi_retuned" in which:
+        per: dict[str, Any] = {}
+        for fam in fams:
+            rep = autotune.autotune_after_change(plant_seed, fam, nominal)
+            sc = _score_suites(lambda rep=rep: autotune.controller_from(rep), ident=f"baseline:relay_pi_retuned:{fam}",
+                               key_sha=baseline_key("relay_pi_retuned", fam), plant_seed=plant_seed,
+                               isolation="trusted", families=[fam], cache=cache)
+            per[fam] = {"scores": sc, "tuning": autotune.report_dict(rep)}
+        out["relay_pi_retuned"] = per
+    return out
 
 
 # =========================================================================== run discovery
@@ -327,6 +364,14 @@ def _model_call_stats(run: RunInfo, upto_ts: float | None = None) -> dict[str, A
             "cost_usd": float(sum(float(c.get("cost_usd") or 0.0) for c in calls)), "source": "model_calls.jsonl"}
 
 
+def _after_change_plant_s(result: dict[str, Any]) -> float | None:
+    """Plant seconds the agent spent on after-change (re-identification) experiments, from the stored proposals."""
+    exps = [e for e in (result.get("experiments") or []) if e.get("phase") == "after_change" and e.get("status") == "completed"]
+    if not exps:
+        return None
+    return float(sum(float(e.get("verdict", {}).get("duration_s") or e["proposal"].get("duration_s") or 0.0) for e in exps))
+
+
 def _experiment_stats(result: dict[str, Any]) -> dict[str, Any]:
     exps = result.get("experiments") or []
     completed = [e for e in exps if e.get("status") == "completed"]
@@ -375,7 +420,7 @@ def _variant_metrics(scores: dict[str, dict[str, Any]], family: str) -> dict[str
 
 
 def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache: ReportCache,
-                  baselines: Iterable[str] = tuple(BASELINE_SPECS), families: Iterable[str] | None = None,
+                  baselines: Iterable[str] = ALL_BASELINES, families: Iterable[str] | None = None,
                   progress: Callable[[str], None] | None = None) -> dict[str, Any]:
     say = progress or (lambda _m: None)
     fams = list(families or cfg.DISTURBANCE_FAMILIES)
@@ -414,10 +459,21 @@ def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache:
         src = registry.load_source(c.id)
         cand_scores[c.id] = score_candidate(src, c.id, plant_seed=run.plant_seed, sandbox_mode=sandbox_mode,
                                             cache=cache, families=fams)
+    baselines = list(baselines)
     base_scores: dict[str, dict[str, Any]] = {}
     for b in baselines:
+        if b in SEED_TUNED_BASELINES:
+            continue
         say(f"  scoring baseline {b}")
         base_scores[b] = score_baseline(b, plant_seed=run.plant_seed, cache=cache, families=fams)
+    relay: dict[str, Any] = {}
+    seed_tuned = [b for b in baselines if b in SEED_TUNED_BASELINES]
+    if seed_tuned:
+        say("  tuning and scoring classical relay baselines")
+        relay = score_relay_baselines(plant_seed=run.plant_seed, cache=cache, families=fams, which=seed_tuned)
+    out["baseline_tuning"] = {k: (v["tuning"] if k == "relay_pi" else {f: x["tuning"] for f, x in v.items()})
+                              for k, v in relay.items()}
+    out["after_change_plant_s"] = _after_change_plant_s(result)
 
     out["candidates"] = []
     for c in cands:
@@ -471,10 +527,22 @@ def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache:
     for fam in fams:
         rows: list[dict[str, Any]] = []
         for b in baselines:
-            rows.append({"variant": BASELINE_LABELS[b], "candidate": f"baseline:{b}",
-                         **_variant_metrics(base_scores[b], fam), "model_calls": 0, "cost_usd": 0.0, "wall_s": None,
-                         "note": "tuned post hoc on DISTURBANCE_SEEDS (existence proof, not a fair rival)"
-                         if b == "slow_pid" else ""})
+            if b == "relay_pi":
+                rows.append({"variant": BASELINE_LABELS[b], "candidate": "baseline:relay_pi",
+                             **_variant_metrics(relay[b]["scores"], fam), "model_calls": 0, "cost_usd": 0.0,
+                             "wall_s": None, "plant_s": relay[b]["tuning"]["plant_s_total"],
+                             "note": relay[b]["tuning"]["note"]})
+            elif b == "relay_pi_retuned":
+                r = relay[b][fam]
+                rows.append({"variant": BASELINE_LABELS[b], "candidate": f"baseline:relay_pi_retuned:{fam}",
+                             **_variant_metrics(r["scores"], fam), "model_calls": 0, "cost_usd": 0.0, "wall_s": None,
+                             "plant_s": r["tuning"]["plant_s_total"], "retuned": r["tuning"]["retuned"],
+                             "note": r["tuning"]["note"]})
+            else:
+                rows.append({"variant": BASELINE_LABELS[b], "candidate": f"baseline:{b}",
+                             **_variant_metrics(base_scores[b], fam), "model_calls": 0, "cost_usd": 0.0, "wall_s": None,
+                             "note": "tuned post hoc on DISTURBANCE_SEEDS (existence proof, not a fair rival)"
+                             if b == "slow_pid" else ""})
         if v1 is not None:
             rows.append({"variant": "Muse v1 frozen", "candidate": v1.id, **_variant_metrics(cand_scores[v1.id], fam),
                          "model_calls": (v1_calls or {}).get("calls"), "cost_usd": (v1_calls or {}).get("cost_usd"),
@@ -554,7 +622,7 @@ def benchmark_run(run: RunInfo, *, registry: Registry, sandbox_mode: str, cache:
 # =========================================================================== whole benchmark
 def build_benchmarks(artifact_root: Path, *, sandbox_mode: str, cache_dir: Path, include_mock: bool = False,
                      plant_seed_override: int | None = None, run_ids: Iterable[str] | None = None,
-                     baselines: Iterable[str] = tuple(BASELINE_SPECS), families: Iterable[str] | None = None,
+                     baselines: Iterable[str] = ALL_BASELINES, families: Iterable[str] | None = None,
                      progress: Callable[[str], None] | None = None) -> dict[str, Any]:
     if sandbox_mode not in ("docker", "subprocess_dev_only"):
         raise BenchmarkError(f"unknown sandbox mode {sandbox_mode!r}")
@@ -673,6 +741,36 @@ def render_markdown(data: dict[str, Any], command: str) -> str:
     if not data["summary"]:
         L.append("| — | 0 | — | — | — | — | — | — | — |")
     L.append("")
+
+    # ---------- head to head with the classical self-tuner
+    if any("relay_pi_retuned" in (r.get("baseline_tuning") or {}) for r in data["runs"]):
+        L += ["## Praxion vs the classical self-tuner (family used in each run)", "",
+              ("Same plant seed, same five frozen disturbance scenarios, post-change MAE (median). *Relay PI nominal* is "
+              "an Åström–Hägglund relay auto-tune on the nominal machine (rival of Muse v1 frozen). *Relay PI re-tuned* "
+              "re-identifies with a small-amplitude relay when the SAME degradation detector fires, then redesigns "
+              "(rival of Full Praxion). Plant seconds are identification time on the machine: for Praxion, the "
+              "after-change experiments it chose; for the relay, settle + relay. The relay switches in closed loop, "
+              "which the agent's experiment API does not allow, and its time cap is generous (600 s vs the agent's "
+              "160 s), so the comparison leans toward the classical method. Praxion's wall time also includes model "
+              "latency; the relay's is simulated plant time only."), "",
+              ("| run | family | fixed PID post | Muse v1 frozen post | Full Praxion post | relay PI nominal post | "
+              "relay PI re-tuned post | re-tuned? | Praxion after-change plant s | relay plant s | Praxion cost USD |"),
+              "|---|---|---:|---:|---:|---:|---:|---|---:|---:|---:|"]
+        for r in data["runs"]:
+            fam = r.get("disturbance_family")
+            bt = r.get("baseline_tuning") or {}
+            if r.get("aborted") or not fam or fam not in r.get("ablation", {}) or "relay_pi_retuned" not in bt:
+                continue
+            rows = {row["variant"]: row for row in r["ablation"][fam] if row.get("candidate")}
+            def post(v: str, rows_: dict[str, Any] = rows) -> str:
+                return _fmt((rows_.get(v) or {}).get("post_median_mae"))
+            rt = bt["relay_pi_retuned"][fam]
+            L.append(f"| `{r['run_id']}` | `{fam}` | {post('fixed PID')} | {post('Muse v1 frozen')} | {post('Full Praxion')} | "
+                     f"{post(BASELINE_LABELS['relay_pi'])} | {post(BASELINE_LABELS['relay_pi_retuned'])} | "
+                     f"{'yes' if rt['retuned'] else 'no (monitor silent)' if rt['detector_fired_at_s'] is None else 'no (failed)'} | "
+                     f"{_fmt(r.get('after_change_plant_s'), 0)} | {_fmt(rt['plant_s_total'], 0)} | "
+                     f"{_fmt((r.get('model_calls_total') or {}).get('cost_usd'), 3)} |")
+        L.append("")
 
     # ---------- every run (failures included)
     L += ["## Every run", "",
@@ -796,6 +894,12 @@ def render_markdown(data: dict[str, Any], command: str) -> str:
           ("- Baselines are transparent and never shown to the model. The *slow PID* tuning was chosen by a small "
           "manual sweep on the disturbance scenarios; it is an existence proof that the dynamics disturbance is "
           "repairable, not a fair competitor. If a baseline beats Praxion, that is the result."),
+          ("- The *relay auto-tuned PI* baselines (`backend/evaluation/autotune.py`) are the fair classical rival: a "
+          "fully automatic relay-feedback identification and Tyreus–Luyben PI design, tuned per plant seed from the "
+          "same start state the agent discovers from, and re-tuned on the changed machine only when the shared "
+          "degradation detector fires. Every constant (relay amplitudes, hysteresis, tuning rule) was frozen on "
+          "exploration seeds 1–20 before any hidden-seed scoring; the per-run notes report plant time used, gains "
+          "and any hard-cutoff ticks during identification."),
           ""]
     return "\n".join(L)
 

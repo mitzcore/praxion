@@ -10,7 +10,7 @@ from backend.evaluation import benchmarks as bm
 from backend.evaluation.config import DISTURBANCE_FAMILIES
 from tests.test_audit import build_run
 
-BASELINES = ("fixed_onoff", "slow_pid")
+BASELINES = ("fixed_onoff", "slow_pid", "relay_pi", "relay_pi_retuned")
 
 
 def _build(tmp_path: Path, **kw) -> tuple[Path, Path]:
@@ -70,7 +70,9 @@ def test_benchmark_markdown_and_cache(tmp_path: Path) -> None:
 
     first = _bench(art, cache)
     n_suites = 1 + len(DISTURBANCE_FAMILIES)
-    assert first["cache"] == {"hits": 0, "misses": (2 + len(BASELINES)) * n_suites, "dir": str(cache)}
+    # 2 candidates + on/off + slow PID + relay nominal: every suite; relay re-tuned: heldout + its family, per family
+    expected_misses = (2 + 3) * n_suites + 2 * len(DISTURBANCE_FAMILIES)
+    assert first["cache"] == {"hits": 0, "misses": expected_misses, "dir": str(cache)}
     bm.write_outputs(first, markdown_path=md, json_path=js, command="pytest")
     text = md.read_text()
     for section in ("# Praxion benchmarks", "## Frozen configuration", "## Cross-run summary (per protocol version)",
@@ -78,8 +80,13 @@ def test_benchmark_markdown_and_cache(tmp_path: Path) -> None:
                     "### Ablation (same plant seed, same frozen scenarios)", "## How to reproduce",
                     "#### `actuator_lag` (dynamics) — **family used in this run**"):
         assert section in text, section
-    for variant in ("fixed on/off", "slow PID", "Muse v1 frozen", "Full Praxion"):
+    for variant in ("fixed on/off", "slow PID", "relay auto-tuned PI (nominal)", "relay PI re-tuned after change",
+                    "Muse v1 frozen", "Full Praxion"):
         assert f"| {variant} |" in text, variant
+    assert "## Praxion vs the classical self-tuner" in text
+    bt = first["runs"][0]["baseline_tuning"]
+    assert bt["relay_pi"]["retuned"] is False and set(bt["relay_pi_retuned"]) == set(DISTURBANCE_FAMILIES)
+    assert bt["relay_pi_retuned"]["actuator_lag"]["retuned"] is True
     assert "MOCK RUNS INCLUDED" in text and "| MOCK |" in text
     assert "DEV ONLY" in text  # subprocess sandbox is labeled
     assert "Full Praxion = v1 retained" in text  # v2 failed its gate, so the full system keeps v1

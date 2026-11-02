@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from backend.evaluation.benchmarks import BASELINE_SPECS, BenchmarkError, build_benchmarks, write_outputs
+from backend.evaluation.benchmarks import ALL_BASELINES, BenchmarkError, build_benchmarks, write_outputs
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,7 +26,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--include-mock", action="store_true", help="include mock runs (every row labeled MOCK)")
     ap.add_argument("--plant-seed", type=int, default=None,
                     help="fallback plant seed for runs whose stored evaluation lacks audit entries")
-    ap.add_argument("--baseline", action="append", choices=sorted(BASELINE_SPECS), dest="baselines",
+    ap.add_argument("--baseline", action="append", choices=sorted(ALL_BASELINES), dest="baselines",
                     help="restrict baselines (default: all)")
     ap.add_argument("--out", default="docs/BENCHMARKS.md")
     ap.add_argument("--json-out", default=None, help="default: <root>/benchmarks/latest.json")
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
         data = build_benchmarks(
             root, sandbox_mode=args.sandbox, cache_dir=Path(args.cache_dir or root / "benchmarks" / "cache"),
             include_mock=args.include_mock, plant_seed_override=args.plant_seed, run_ids=args.runs,
-            baselines=tuple(args.baselines or BASELINE_SPECS), progress=None if args.quiet else print,
+            baselines=tuple(args.baselines or ALL_BASELINES), progress=None if args.quiet else print,
         )
     except BenchmarkError as e:
         print(f"error: {e}", file=sys.stderr)
