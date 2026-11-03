@@ -232,12 +232,18 @@ def read_bundle(d: Path) -> dict | None:
         cmp_ = bv.get("comparison") or {}
         f = 1.0 if str(bv.get("units", cmp_.get("units", ""))).replace("°", "").upper() in {"C", "DEGC"} else scale
         b1, b2 = _num(cmp_.get("post_mae_v1")), _num(cmp_.get("post_mae_v2"))
+        ib1, ib2 = _num(cmp_.get("in_band_v1")), _num(cmp_.get("in_band_v2"))
+        # a run with no promoted repair verifies v1 alone: comparison is empty, so read the trial itself
+        by_label = {t.get("label"): t for t in (bv.get("trials") or []) if isinstance(t, dict)}
+        if b1 is None and "v1" in by_label:
+            b1, ib1 = _num(by_label["v1"].get("post_mae")), _num(by_label["v1"].get("post_in_band"))
+        if b2 is None and "v2" in by_label:
+            b2, ib2 = _num(by_label["v2"].get("post_mae")), _num(by_label["v2"].get("post_in_band"))
         bred = _num(cmp_.get("reduction"))
         if bred is None and b1 and b2 is not None:
             bred = 1 - b2 / b1
         r["board"] = {"fake_board": bool(bv.get("fake_board")), "v1_c": b1 * f if b1 is not None else None, "v2_c": b2 * f if b2 is not None else None,
-                      "reduction": bred, "in_band_v1": _num(cmp_.get("in_band_v1")),
-                      "in_band_v2": _num(cmp_.get("in_band_v2")), "order": bv.get("order"),
+                      "reduction": bred, "in_band_v1": ib1, "in_band_v2": ib2, "order": bv.get("order"),
                       "trials": [{k: t.get(k) for k in ("label", "controller_sha256", "start_T_display", "post_mae",
                                                          "post_in_band", "overrides", "hard_violations",
                                                          "invalid_outputs", "interlock_hit")}
@@ -358,7 +364,8 @@ def render_markdown(runs: list[dict], agg: dict, fig_rel: str | None, root_displ
                 f"{_f(r['twin_v1_c'])} → {_f(r['twin_v2_c'])} ({_pct(r['twin_reduction'])})")
         b = r["board"]
         board = DASH if not b else (("fake board, excluded: " if b["fake_board"] else "")
-                                    + f"{_f(b['v1_c'])} → {_f(b['v2_c'])} ({_pct(b['reduction'])})"
+                                    + (f"{_f(b['v1_c'])} → — (no repair promoted; v1 alone on board)" if b["v2_c"] is None
+                                       else f"{_f(b['v1_c'])} → {_f(b['v2_c'])} ({_pct(b['reduction'])})")
                                     + (f" mismatch (different change: {b['change']}), excluded" if b["mismatch"] else ""))
         L.append(f"| `{r['run_id']}` | {r['date'] or DASH} | {r['disturbance']} | {r['stage']} | {g2} | "
                  f"{_f(r['detection_latency_s'], '{:.0f}')} | {_yn(r['diagnosis_correct'])} | {twin} | {board} | "

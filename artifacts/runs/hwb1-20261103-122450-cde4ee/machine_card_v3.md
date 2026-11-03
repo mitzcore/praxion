@@ -1,0 +1,1 @@
+Heater y in [0,1] (0=15C,1=75C), u in [0,1]. Pre: AMB~0.17, K~1.15, tau~180-250s, delay ~15-20s, noise 0.01-0.02 RMS, u_ss(0.5)=0.27-0.29. Post: AMB~0.16, tau/delay/noise unchanged, K~0.55-0.65 (~~0.55x), u_ss(0.5)=0.55-0.60. Target 0.5 band 0.475-0.525, soft 0.85/hard 0.9.

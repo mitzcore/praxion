@@ -1,0 +1,205 @@
+--- a/hwb1-20261103-122450-cde4ee/controller_v3.py
++++ b/hwb1-20261103-122450-cde4ee/controller_v4.py
+@@ -1,57 +1,45 @@
+ import math
+-
+ def _clamp(v, lo, hi):
+     if v < lo:
+         return lo
+     if v > hi:
+         return hi
+     return v
+-
+ def control(obs, state):
+-    y_raw = obs.get("y", 0.5)
+-    target = obs.get("target", 0.5)
++    y_raw_in = obs.get("y", 0.5)
++    target_in = obs.get("target", 0.5)
+     dt_in = obs.get("dt", 1.0)
+     try:
+-        y_raw = float(y_raw)
++        y_raw_t = float(y_raw_in)
+     except Exception:
+-        y_raw = 0.5
++        y_raw_t = float('nan')
+     try:
+-        target = float(target)
++        target = float(target_in)
+     except Exception:
+         target = 0.5
+     try:
+         dt = float(dt_in)
+     except Exception:
+         dt = 1.0
+-    if not math.isfinite(y_raw):
+-        y_raw = 0.5
+     if not math.isfinite(target):
+         target = 0.5
++    target = _clamp(target, 0.0, 1.0)
+     if not math.isfinite(dt) or dt <= 0.0:
+         dt = 1.0
+-    if dt < 0.2:
+-        dt = 0.2
+-    if dt > 30.0:
+-        dt = 30.0
+-    if target < 0.0:
+-        target = 0.0
+-    if target > 1.0:
+-        target = 1.0
+-    if y_raw < -0.2:
+-        y_raw = -0.2
+-    if y_raw > 1.2:
+-        y_raw = 1.2
+-    AMB = 0.175
+-    K_INIT = 1.15
+-    KP = 1.2
+-    KI = 0.022
+-    TF = 10.0
++    dt = _clamp(dt, 0.2, 30.0)
++    AMB = 0.17
++    K_NOM = 1.15
++    KMIN = 0.35
++    KMAX = 1.60
++    KP0 = 1.10
++    KI0 = 0.020
++    TF = 8.0
++    TAVG = 60.0
++    TADAPT = 55.0
+     UMIN = 0.0
+-    UMAX = 0.82
+-    IMIN = -0.18
+-    IMAX = 0.35
+-    KMIN = 0.40
+-    KMAX = 1.50
++    UMAX = 0.85
++    IMIN = -0.20
++    IMAX = 0.50
+     try:
+         yf_prev = state.get("yf", None)
+         if yf_prev is not None:
+@@ -65,9 +53,9 @@
+     except Exception:
+         I_prev = 0.0
+     try:
+-        Kest_prev = float(state.get("Kest", K_INIT))
++        Kest_prev = float(state.get("Kest", K_NOM))
+     except Exception:
+-        Kest_prev = K_INIT
++        Kest_prev = K_NOM
+     try:
+         y_avg_prev = state.get("y_avg", None)
+         if y_avg_prev is not None:
+@@ -102,10 +90,21 @@
+         I_prev = 0.0
+     I_prev = _clamp(I_prev, IMIN, IMAX)
+     if not math.isfinite(Kest_prev):
+-        Kest_prev = K_INIT
++        Kest_prev = K_NOM
+     Kest_prev = _clamp(Kest_prev, KMIN, KMAX)
+     if t_prev < 0.0 or t_prev > 1e7:
+         t_prev = 0.0
++    if not math.isfinite(y_raw_t):
++        if yf_prev is not None:
++            y_raw = float(yf_prev)
++        else:
++            y_raw = 0.5
++    else:
++        y_raw = float(y_raw_t)
++        if y_raw < -0.2:
++            y_raw = -0.2
++        if y_raw > 1.2:
++            y_raw = 1.2
+     if yf_prev is None:
+         yf = _clamp(y_raw, 0.0, 1.0)
+     else:
+@@ -116,58 +115,55 @@
+         yf = yf_prev + alpha * diff
+         if not math.isfinite(yf):
+             yf = yf_prev
+-        if yf < 0.0:
+-            yf = 0.0
+-        if yf > 1.0:
+-            yf = 1.0
++        yf = _clamp(yf, 0.0, 1.0)
+     if y_avg_prev is None:
+         y_avg = float(yf)
+     else:
+         y_avg = float(y_avg_prev)
++    if not math.isfinite(y_avg):
++        y_avg = float(yf)
+     if u_avg_prev is None:
+-        ff_init = (target - AMB) / Kest_prev
+-        ff_init = _clamp(ff_init, 0.0, UMAX)
+-        u_avg = float(ff_init)
++        ff0 = (target - AMB) / Kest_prev
++        u_avg = _clamp(ff0, 0.0, UMAX)
+     else:
+         u_avg = float(u_avg_prev)
+-    if not math.isfinite(y_avg):
+-        y_avg = float(yf)
+     if not math.isfinite(u_avg):
+         u_avg = 0.28
+     u_avg = _clamp(u_avg, 0.0, 1.0)
+     t_new = t_prev + dt
+-    a = dt / (60.0 + dt)
++    a = dt / (TAVG + dt)
+     y_avg = y_avg + a * (yf - y_avg)
+     if u_prev_raw is None:
+-        u_for_avg = u_avg
++        u_for_avg = float(u_avg)
+     else:
+-        u_for_avg = _clamp(u_prev_raw, UMIN, UMAX)
++        u_for_avg = _clamp(float(u_prev_raw), UMIN, UMAX)
+     u_avg = u_avg + a * (u_for_avg - u_avg)
+     u_avg = _clamp(u_avg, 0.0, 1.0)
+     Kest = float(Kest_prev)
+-    if t_new > 80.0 and yf < 0.72 and y_avg > 0.22 and u_avg > 0.12:
+-        if abs(yf - y_avg) < 0.016:
+-            e_chk = target - yf
+-            if abs(e_chk) < 0.15:
+-                denom = u_avg if u_avg >= 0.08 else 0.08
+-                Kobs = (y_avg - AMB) / denom
+-                Kobs = _clamp(Kobs, KMIN, KMAX)
+-                rate = dt / 90.0
+-                if rate > 1.0:
+-                    rate = 1.0
+-                Kest = Kest + rate * (Kobs - Kest)
+-                Kest = _clamp(Kest, KMIN, KMAX)
++    if t_new > 60.0 and yf < 0.75 and y_avg > 0.22 and y_avg < 0.72 and u_avg > 0.12:
++        if abs(yf - y_avg) < 0.02:
++            denom = u_avg if u_avg >= 0.08 else 0.08
++            Kobs = (y_avg - AMB) / denom
++            Kobs = _clamp(Kobs, KMIN, KMAX)
++            rate = dt / TADAPT
++            if rate > 1.0:
++                rate = 1.0
++            Kest = Kest + rate * (Kobs - Kest)
++            Kest = _clamp(Kest, KMIN, KMAX)
+     if not math.isfinite(Kest):
+         Kest = Kest_prev
+     ff = (target - AMB) / Kest if Kest > 0.05 else UMAX
+     ff = _clamp(ff, 0.0, UMAX)
++    scale = K_NOM / Kest if Kest > 0.05 else 1.9
++    scale = _clamp(scale, 0.8, 1.9)
++    KP = KP0 * scale
++    KI = KI0 * scale
+     e = target - yf
+-    P = KP * e
+     I_new = float(I_prev)
+-    if abs(e) < 0.18 and yf < 0.70:
++    if abs(e) < 0.20 and yf < 0.72:
+         I_tent = I_prev + KI * e * dt
+         I_tent = _clamp(I_tent, IMIN, IMAX)
+-        u_tent = ff + P + I_tent
++        u_tent = ff + KP * e + I_tent
+         if u_tent > UMAX and e > 0.0:
+             I_new = I_prev
+         elif u_tent < UMIN and e < 0.0:
+@@ -179,6 +175,7 @@
+         if decay < 0.0:
+             decay = 0.0
+         I_new = I_new * decay
++    P = KP * e
+     u_dem = ff + P + I_new
+     u_dem = _clamp(u_dem, UMIN, UMAX)
+     if u_prev_raw is None:

@@ -1,0 +1,352 @@
+{
+ "plant": {
+  "description": "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; the device loses heat to the room on its own. Output y in [0,1] is a normalized temperature reading (0 = 15 \u00b0C, 1 = 75 \u00b0C).",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "scored_after_settling_s": 300.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 480.0,
+  "after_change_max_single_experiment_s": 480.0,
+  "worst_case_rate_per_unit_u_per_s": 0.006,
+  "experiments_remaining": 7,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 180.0,
+  "y": 0.5387
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 180.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Reduces uncertainty in response direction, magnitude/gain and lag at mid-power, which is required to estimate steady-state input for target and to choose controller gain and timing.",
+   "expected_observation": "If positive-gain heater hypothesis is right, y should start near 0.25, rise after a short lag with positive slope, reaching roughly 0.4-0.6 by end of 180s with slope flattening if approaching equilibrium.",
+   "verdict": "approved; worst-case bound 0.708",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2133
+    ],
+    [
+     3.0,
+     0.2326
+    ],
+    [
+     6.0,
+     0.2299
+    ],
+    [
+     9.0,
+     0.2277
+    ],
+    [
+     12.0,
+     0.2283
+    ],
+    [
+     15.0,
+     0.2347
+    ],
+    [
+     18.0,
+     0.2374
+    ],
+    [
+     21.0,
+     0.2369
+    ],
+    [
+     24.0,
+     0.2417
+    ],
+    [
+     27.0,
+     0.2455
+    ],
+    [
+     30.0,
+     0.253
+    ],
+    [
+     33.0,
+     0.2541
+    ],
+    [
+     36.0,
+     0.2632
+    ],
+    [
+     39.0,
+     0.2702
+    ],
+    [
+     42.0,
+     0.2707
+    ],
+    [
+     45.0,
+     0.2788
+    ],
+    [
+     48.0,
+     0.2863
+    ],
+    [
+     51.0,
+     0.2927
+    ],
+    [
+     54.0,
+     0.2992
+    ],
+    [
+     57.0,
+     0.2944
+    ],
+    [
+     60.0,
+     0.3174
+    ],
+    [
+     63.0,
+     0.3239
+    ],
+    [
+     66.0,
+     0.2863
+    ],
+    [
+     69.0,
+     0.297
+    ],
+    [
+     72.0,
+     0.347
+    ],
+    [
+     75.0,
+     0.3529
+    ],
+    [
+     78.0,
+     0.3599
+    ],
+    [
+     81.0,
+     0.3669
+    ],
+    [
+     84.0,
+     0.3647
+    ],
+    [
+     87.0,
+     0.3787
+    ],
+    [
+     90.0,
+     0.3867
+    ],
+    [
+     93.0,
+     0.3846
+    ],
+    [
+     96.0,
+     0.398
+    ],
+    [
+     99.0,
+     0.4018
+    ],
+    [
+     102.0,
+     0.4109
+    ],
+    [
+     105.0,
+     0.4168
+    ],
+    [
+     108.0,
+     0.42
+    ],
+    [
+     111.0,
+     0.4233
+    ],
+    [
+     114.0,
+     0.4313
+    ],
+    [
+     117.0,
+     0.4367
+    ],
+    [
+     120.0,
+     0.434
+    ],
+    [
+     123.0,
+     0.4206
+    ],
+    [
+     126.0,
+     0.4168
+    ],
+    [
+     129.0,
+     0.4501
+    ],
+    [
+     132.0,
+     0.4319
+    ],
+    [
+     135.0,
+     0.4678
+    ],
+    [
+     138.0,
+     0.4705
+    ],
+    [
+     141.0,
+     0.4797
+    ],
+    [
+     144.0,
+     0.4818
+    ],
+    [
+     147.0,
+     0.4899
+    ],
+    [
+     150.0,
+     0.4909
+    ],
+    [
+     153.0,
+     0.4974
+    ],
+    [
+     156.0,
+     0.5054
+    ],
+    [
+     159.0,
+     0.5071
+    ],
+    [
+     162.0,
+     0.5135
+    ],
+    [
+     165.0,
+     0.5183
+    ],
+    [
+     168.0,
+     0.5221
+    ],
+    [
+     171.0,
+     0.5221
+    ],
+    [
+     174.0,
+     0.5302
+    ],
+    [
+     177.0,
+     0.536
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 179.0,
+    "y_start": 0.213,
+    "y_end": 0.539,
+    "y_min": 0.213,
+    "y_max": 0.539,
+    "y_mean_last_5s": 0.534,
+    "u_mean_last_5s": 0.5,
+    "y_slope_last_5s_per_s": 0.002
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases steady-state y (positive gain).",
+   "confidence": 0.8,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "Response lags command by tens of seconds and settles over several minutes, not instantly.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "There is negligible dead-zone: u=0.2-0.5 produces a clear rise from current y.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0, y decays on its own toward ambient low values.",
+   "confidence": 0.75,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state gain is approximately linear across input levels.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state input needed to hold target y=0.5 is in mid-range ~0.4-0.6.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor noise is small (<0.01) relative to control band width 0.05.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

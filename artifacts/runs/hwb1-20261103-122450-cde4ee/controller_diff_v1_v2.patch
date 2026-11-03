@@ -1,0 +1,105 @@
+--- a/hwb1-20261103-122450-cde4ee/controller_v1.py
++++ b/hwb1-20261103-122450-cde4ee/controller_v2.py
+@@ -42,27 +42,37 @@
+     if y_raw > 1.2:
+         y_raw = 1.2
+     AMB = 0.175
+-    KEST = 1.15
+-    KP = 0.9
+-    KI = 0.008
++    K0 = 1.15
++    KP = 1.0
++    KI = 0.009
++    KFF = 0.006
+     TF = 12.0
+     UMIN = 0.0
+-    UMAX = 0.75
++    UMAX = 0.80
+     IMIN = -0.18
+-    IMAX = 0.22
++    IMAX = 0.32
++    BMIN = -0.12
++    BMAX = 0.40
+     E_ENABLE = 0.15
+-    ff = (target - AMB) / KEST
+-    ff = _clamp(ff, 0.0, UMAX)
++    E_ADAPT = 0.12
++    ff0 = (target - AMB) / K0
++    ff0 = _clamp(ff0, 0.0, UMAX)
+     yf_prev = state.get("yf", None)
+-    I_prev = state.get("I", 0.0)
+-    u_prev = state.get("u", None)
+     try:
+-        I_prev = float(I_prev)
++        I_prev = float(state.get("I", 0.0))
+     except Exception:
+         I_prev = 0.0
++    try:
++        bias_prev = float(state.get("bias", 0.0))
++    except Exception:
++        bias_prev = 0.0
++    u_prev_raw = state.get("u", None)
+     if not math.isfinite(I_prev):
+         I_prev = 0.0
++    if not math.isfinite(bias_prev):
++        bias_prev = 0.0
+     I_prev = _clamp(I_prev, IMIN, IMAX)
++    bias_prev = _clamp(bias_prev, BMIN, BMAX)
+     if yf_prev is None:
+         yf = _clamp(y_raw, 0.0, 1.0)
+     else:
+@@ -89,27 +99,36 @@
+     if abs(e) < E_ENABLE and yf < 0.70:
+         I_tent = I_prev + KI * e * dt
+         I_tent = _clamp(I_tent, IMIN, IMAX)
+-        u_tent = ff + P + I_tent
+-        if u_tent > UMAX and e > 0.0:
++        u_tent_c = ff0 + bias_prev + P + I_tent
++        if u_tent_c > UMAX and e > 0.0:
+             I_new = I_prev
+-        elif u_tent < UMIN and e < 0.0:
++        elif u_tent_c < UMIN and e < 0.0:
+             I_new = I_prev
+         else:
+             I_new = I_tent
+-    else:
+-        I_new = I_prev
+     if yf > 0.70 and I_new > 0.0:
+         decay = 1.0 - dt / 120.0
+         if decay < 0.0:
+             decay = 0.0
+         I_new = I_new * decay
+-    u_dem = ff + P + I_new
++    bias_new = bias_prev
++    if abs(e) < E_ADAPT and yf < 0.70:
++        b_tent = bias_prev + KFF * e * dt
++        b_tent = _clamp(b_tent, BMIN, BMAX)
++        u_tent_b = ff0 + b_tent + P + I_new
++        if u_tent_b > UMAX and e > 0.0:
++            bias_new = bias_prev
++        elif u_tent_b < UMIN and e < 0.0:
++            bias_new = bias_prev
++        else:
++            bias_new = b_tent
++    u_dem = ff0 + bias_new + P + I_new
+     u_dem = _clamp(u_dem, UMIN, UMAX)
+-    if u_prev is None:
++    if u_prev_raw is None:
+         u = u_dem
+     else:
+         try:
+-            u_prev_f = float(u_prev)
++            u_prev_f = float(u_prev_raw)
+         except Exception:
+             u_prev_f = u_dem
+         if not math.isfinite(u_prev_f):
+@@ -125,7 +144,7 @@
+     if y_raw > 0.85:
+         u = 0.0
+     if not math.isfinite(u):
+-        u = _clamp(ff, UMIN, UMAX)
++        u = _clamp(ff0 + bias_new, UMIN, UMAX)
+     u = _clamp(u, 0.0, 1.0)
+-    new_state = {"yf": float(yf), "I": float(I_new), "u": float(u)}
++    new_state = {"yf": float(yf), "I": float(I_new), "bias": float(bias_new), "u": float(u)}
+     return (float(u), new_state)

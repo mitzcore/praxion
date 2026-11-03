@@ -1,0 +1,20 @@
+{
+  "id": "hwb1-20261103-122450-cde4ee-v4",
+  "run_id": "hwb1-20261103-122450-cde4ee",
+  "version": 4,
+  "path": "artifacts/runs/hwb1-20261103-122450-cde4ee/controller_v4.py",
+  "sha256": "7f9cb8aacc6930ab4fa05f645bbbcc17f83346ba41b0bcc1071c2ced7a687392",
+  "parent_id": "hwb1-20261103-122450-cde4ee-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T18:39:31.342689+00:00",
+  "byte_length": 5800,
+  "rationale": "Kept safe nominal structure but made steady-state feedforward adaptive with faster settled-data gain estimator and gain-scheduled PI. Kest init 1.15, range [0.35,1.6], update rate ~55s only when settled (|yf-yavg|<0.02, y in [0.22,0.72], uavg>0.12, t>60s) so nominal cold-start stays ~0.55 and is not broken, but after gain drop to ~0.6 the estimator drives ff from ~0.28 to ~0.50-0.55. Loop gain preserved by scale=(1.15/Kest) in [0.8,1.9] applied to KP0=1.1/KI0=0.020, I limits widened to [-0.20,0.50] and UMAX 0.85 so degraded hold ~0.53 is reachable without windup. Filter/outlier, slew limit and y>0.75 shutoff retained for noise and safety.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater + loss to room, y in [0,1] (0.15C=0.15, 0.75C=1). Pre: AMB~0.17, tau~150-220s, delay ~15-20s, K~1.15, u_ss(0.5)~0.28. Post: AMB~0.16-0.17, tau~140-170s, delay ~15-20s, noise same, K~0.59-0.67 (~0.55x), u_ss(0.5)~0.53-0.58. No delay increase, no extra loss, no sensor shift.",
+    "predicted_behavior": "Nominal: ff~0.28, Kest~1.15, rise in ~120-180s, MAE ~0.006-0.008, in-band >0.94, u_mean ~0.28, zero overrides. Degraded (K~0.6): settled detector raises Kest to ~0.60-0.68 within ~150-250s, ff to ~0.49-0.55, scheduled KP~2.0/KI~0.038 plus integrator trims residual, y returns to 0.5 band, MAE ~0.010-0.013, in-band ~0.86-0.97, u_mean ~0.42-0.45, zero hard violations/overrides.",
+    "diagnosis": "Actuator (heater) gain fell to ~52-58% of pre-change with same delay, time-constant, ambient and sensor. Pre: u=0.28 holds 0.506 => K=(0.506-0.175)/0.28=1.18; u=0.30 holds 0.531 =>1.19; K_nom~1.15. Post E9: u=0.35 holds ~0.375 => K=(0.375-0.17)/0.35=0.59 (50% of 1.18). E10: u=0.60 rising 0.393->0.491 in 120s slope ~0.0007/s vs baseline ~0.0012-0.0015/s at lower u, extrapolated eq ~0.51-0.55 => K~(0.53-0.17)/0.6=0.60 (52%). Monitoring after-change: u~0.41 holds y~0.45 => K~(0.45-0.175)/0.41=0.67. Zero-input decay test rules out outflow_increased: E3 0.66->0.20 in 480s toward ~0.17, E8 0.405->0.166 toward ~0.16 with similar normalized tau ~140-160s (e.g. E3 0.366->0.222 over 80s tau~160s; E8 0.164->0.093 over 80s tau~141s, within noise). Delay still ~15-20s flat in E9/E10 as in E4, so not response_slower. Ambient ~0.16-0.18 and noise ~0.01-0.02 outliers 0.03-0.05 unchanged, so not sensor_changed. Consistent with C1.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

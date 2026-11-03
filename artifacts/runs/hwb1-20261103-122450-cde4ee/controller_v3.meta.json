@@ -1,0 +1,20 @@
+{
+  "id": "hwb1-20261103-122450-cde4ee-v3",
+  "run_id": "hwb1-20261103-122450-cde4ee",
+  "version": 3,
+  "path": "artifacts/runs/hwb1-20261103-122450-cde4ee/controller_v3.py",
+  "sha256": "59c0029dc264023ca424d00afc19af8ba0e35030cbdb4fc66d15bcb5c553a838",
+  "parent_id": "hwb1-20261103-122450-cde4ee-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T18:37:06.303369+00:00",
+  "byte_length": 5712,
+  "rationale": "Kept safe PI core but replaced fixed feedforward + slow bias with an online gain estimator. yf spike-filter, Kp=1.2, Ki=0.022 with anti-windup, UMAX 0.82, output smoothing 1.5s. Added slow EMAs (tau 60s) for y_avg/u_avg and settled-gated Kest adaptation (init 1.15, limits 0.40-1.50, tau ~90s). ff=(target-AMB)/Kest now moves from ~0.28 nominal to ~0.55 degraded automatically. This directly targets weaker-actuator diagnosis: same cooling/delay but ~0.55x heating slope needs ~1.8x steady u, which fixed-ff v1 (KI 0.009/KFF 0.006) could only reach after >500s.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Heater y in [0,1] (0=15C,1=75C), u in [0,1]. Pre: AMB~0.17, K~1.15, tau~180-250s, delay ~15-20s, noise 0.01-0.02 RMS, u_ss(0.5)=0.27-0.29. Post: AMB~0.16, tau/delay/noise unchanged, K~0.55-0.65 (~~0.55x), u_ss(0.5)=0.55-0.60. Target 0.5 band 0.475-0.525, soft 0.85/hard 0.9.",
+    "predicted_behavior": "Nominal: Kest stays ~1.1-1.2, ff~0.27-0.30, MAE ~0.006-0.008, in-band >0.93, energy ~100-105, zero overrides. Degraded (0.55x gain): after cold start u~0.65, Kest converges to ~0.55-0.65 within ~150-250s of settling, ff to ~0.50-0.58, I trims remainder, y reaches band in ~250-350s and stays, steady u~0.55-0.60 (energy ~185-200), MAE ~0.011-0.013, in-band ~0.85-0.98, zero hard violations. If diagnosis wrong (faster outflow), higher ff still helps holding level, only tau mismatch remains.",
+    "diagnosis": "Actuator weaker to ~55% (gain loss ~45%). E8 u=0 fall from 0.405: 80s drop 0.082 (0.0010/s on excess ~0.24 => tau ~240s) vs E3 u=0 fall 0.118 in 80s on excess 0.48 (tau ~320s) and later 80s segments both ~0.005/s normalized - same order, same ambient ~0.16-0.18, no 2x speedup; immediate fall within 8-16s => delay still ~15-20s. E9 u=0.35 rise 0.171->0.37 in 300s (0.00066/s) vs E4 same u 0.177->0.501 (0.00108/s) and eq 0.375 vs >0.55 baseline. E10 u=0.6 rise 0.393->0.491 in 119s (0.00082/s) vs baseline ~0.0012-0.0017/s at u=0.5. Excess/u: old (0.56-0.175)/0.35=1.10, new (0.375-0.17)/0.35=0.59; (0.483-0.17)/0.6=0.52 vs 1.10 => ratio 0.47-0.54. Outflow 1.9x would halve tau, not observed; delay/sensor unchanged (noise 0.01-0.02 both). Hence same input produces smaller heating but zero-input decay speed unchanged.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

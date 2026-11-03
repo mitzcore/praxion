@@ -1,0 +1,1 @@
+First-order heater + loss to room, y in [0,1] (0.15C=0.15, 0.75C=1). Pre: AMB~0.17, tau~150-220s, delay ~15-20s, K~1.15, u_ss(0.5)~0.28. Post: AMB~0.16-0.17, tau~140-170s, delay ~15-20s, noise same, K~0.59-0.67 (~0.55x), u_ss(0.5)~0.53-0.58. No delay increase, no extra loss, no sensor shift.

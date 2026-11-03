@@ -1,0 +1,1 @@
+Heater y in [0,1] (0.15-0.20 ambient at u=0), first-order lag tau ~150-250s, delay ~15-20s, no dead-zone. Nominal K~1.07-1.15, u*(0.5)~0.27-0.29. Post-change: same tau/delay/ambient/noise (~0.01-0.02), K~0.58-0.69 (~0.6x, -40%), u*(0.5)~0.50-0.58. UMAX must allow >=0.65; safety soft 0.85/hard 0.9 unchanged.
