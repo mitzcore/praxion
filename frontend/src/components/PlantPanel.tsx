@@ -100,7 +100,11 @@ export default function PlantPanel({ profile, events, monitoring, replay }: { pr
     <section className="panel plant">
       <div className="panel-head">
         <h2>Plant</h2>
-        <span className="badge sim">SIMULATED</span>
+        {profile.name === "tclab" ? (
+          <span className="badge hw" title="physical plant: APMonitor TCLab heater board over USB serial">HARDWARE</span>
+        ) : (
+          <span className="badge sim">SIMULATED</span>
+        )}
         {replay && <span className="badge replay">REPLAY</span>}
         <span className="muted small">
           {d.data.length ? `${d.nRaw} stored samples (showing ${d.data.length}) · overrides ${d.overrides}` : ""}

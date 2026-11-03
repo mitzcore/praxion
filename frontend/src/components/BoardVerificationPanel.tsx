@@ -69,7 +69,8 @@ export default function BoardVerificationPanel({ bv, profile }: { bv: BoardVerif
   return (
     <div className="metric-block">
       <h3>
-        Measured on the board · frozen v1 vs promoted v2 under the same change
+        Measured on the board ·{" "}
+        {trials.length > 1 ? "frozen v1 vs promoted v2 under the same change" : "frozen v1 alone under the change (no repair was promoted)"}
         <span className="protocol" title="trusted artifact written after the hardware run">board_verification.json</span>{" "}
         {bv.fake_board && (
           <span className="chip bad" title="fake_board: true in board_verification.json">FAKE BOARD</span>
