@@ -1,0 +1,87 @@
+--- a/hwb2-20261103-140309-91b643/controller_v2.py
++++ b/hwb2-20261103-140309-91b643/controller_v3.py
+@@ -5,17 +5,19 @@
+     if x > hi:
+         return hi
+     return x
+-def control(obs, state):
++def control(obs: dict, state: dict) -> tuple[float, dict]:
+     AMB = 0.15
+     G0 = 1.32
+-    Kp = 1.0
+-    Ki = 0.008
+-    TAU_F = 22.0
+-    TAU_U = 60.0
+-    TAU_K = 150.0
+-    INT_LIM = 0.20
+-    U_MAX = 0.70
+-    K_MIN = 0.55
++    Kp = 0.9
++    Ki_FAR = 0.006
++    Ki_NEAR = 0.022
++    ERR_SPLIT = 0.12
++    TAU_F = 18.0
++    TAU_U = 40.0
++    TAU_K = 60.0
++    INT_LIM = 0.35
++    U_MAX = 0.75
++    K_MIN = 0.45
+     K_MAX = 1.60
+     try:
+         y_in = float(obs.get("y", 0.5))
+@@ -83,7 +85,7 @@
+             alpha = alpha * 0.5
+         yf = yf_prev + alpha * (y_raw - yf_prev)
+         yf = _clip(yf, 0.0, 1.0)
+-    ff_init = _clip((target - AMB) / K_prev, 0.0, 0.65)
++    ff_init = _clip((target - AMB) / K_prev, 0.0, 0.70)
+     if uf_prev is None or not math.isfinite(uf_prev):
+         if u_prev is not None and math.isfinite(u_prev):
+             uf = _clip(u_prev, 0.0, 1.0)
+@@ -100,18 +102,23 @@
+     Kest = K_prev
+     if yf_prev is not None and math.isfinite(yf_prev):
+         rate = (yf - yf_prev) / dt
+-        u_settled = (u_prev is not None and math.isfinite(u_prev) and abs(_clip(u_prev, 0.0, 1.0) - uf) < 0.10)
+-        if (uf > 0.12 and uf < 0.75 and yf > 0.20 and yf < 0.85 and yf > AMB + 0.04 and u_settled and abs(rate) < 0.0008):
++        settled = False
++        if u_prev is not None and math.isfinite(u_prev):
++            if abs(_clip(u_prev, 0.0, 1.0) - uf) < 0.12:
++                settled = True
++        else:
++            settled = True
++        if uf > 0.10 and uf < 0.80 and yf > 0.20 and yf < 0.85 and yf > AMB + 0.03 and settled and abs(rate) < 0.0012:
+             Kraw = (yf - AMB) / uf
+             if math.isfinite(Kraw):
+-                Kraw = _clip(Kraw, 0.45, 1.60)
++                Kraw = _clip(Kraw, 0.40, 1.65)
+                 beta = dt / (TAU_K + dt)
+                 Kest = K_prev + beta * (Kraw - K_prev)
+                 Kest = _clip(Kest, K_MIN, K_MAX)
+     ff = (target - AMB) / Kest
+     if not math.isfinite(ff):
+         ff = ff_init
+-    ff = _clip(ff, 0.0, 0.65)
++    ff = _clip(ff, 0.0, 0.70)
+     err = target - yf
+     if err > 0.5:
+         err = 0.5
+@@ -122,7 +129,8 @@
+         P = 0.35
+     if P < -0.35:
+         P = -0.35
+-    i_prop = i_prev + Ki * err * dt
++    Ki_eff = Ki_NEAR if abs(err) <= ERR_SPLIT else Ki_FAR
++    i_prop = i_prev + Ki_eff * err * dt
+     i_prop = _clip(i_prop, -INT_LIM, INT_LIM)
+     u_test = ff + P + i_prop
+     integ = i_prop
+@@ -131,7 +139,7 @@
+     u = ff + P + integ
+     u = _clip(u, 0.0, U_MAX)
+     if u_prev is not None and math.isfinite(u_prev):
+-        max_step = 0.10 + 0.03 * dt
++        max_step = 0.12 + 0.04 * dt
+         du = u - u_prev
+         if du > max_step:
+             u = u_prev + max_step

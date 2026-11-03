@@ -1,0 +1,1 @@
+First-order heater y in [0,1], u in [0,1]. Pre: yss=0.15+1.32*u, tau~150s, delay <30s, u*(0.5)=0.265. Post: yss=0.157+0.72*u, same tau/delay/ambient/noise, u*(0.5)=0.476. Soft y-limit 0.85, hard cutoff 0.9 forces u=0. Noise +/-0.03 with 0.05-0.08 outliers; use 12s filtered y and outlier gate.

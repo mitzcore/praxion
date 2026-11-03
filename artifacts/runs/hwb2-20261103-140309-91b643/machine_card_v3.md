@@ -1,0 +1,1 @@
+First-order heater y in [0,1] (0.15 ambient), K~1.32 pre, ~0.71 post (~46% weaker), tau ~150s, dead-time ~10-20s, noise +/-0.03 with outliers. Pre u*(0.5)~0.265, post u*~0.48-0.49. No dead-zone 0.25-0.55. Limits 0-1, soft 0.85 hard 0.9.

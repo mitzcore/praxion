@@ -1,0 +1,20 @@
+{
+  "id": "hwb2-20261103-140309-91b643-v2",
+  "run_id": "hwb2-20261103-140309-91b643",
+  "version": 2,
+  "path": "artifacts/runs/hwb2-20261103-140309-91b643/controller_v2.py",
+  "sha256": "88b97386dc33dde3a77a4723daf9ce25bb0c9d93516b949145366b88ab12cc44",
+  "parent_id": "hwb2-20261103-140309-91b643-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T20:18:53.126803+00:00",
+  "byte_length": 4407,
+  "rationale": "Kept proven PI+feedforward+filter core but made steady-state gain adaptive. Added online K estimator (Kest init 1.32, adapted only when filtered output-rate and input are settled) driving ff=(target-AMB)/Kest, raised fast-integral authority from 0.15 to 0.20 with Ki 0.007->0.008, kept U_MAX 0.70 and rate limiter. This directly targets ~45% loss of heater gain while leaving nominal dynamics, filtering, and safety clamps unchanged.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y in [0,1] (0.15 ambient). Pre: yss=0.15+1.32*u, tau ~150 s, deadtime <30 s, u* (0.5)=0.265, noise +/-0.03 with 0.05-0.08 outliers. Post: yss=0.157+0.71*u (range 0.68-0.82 given 110-270 s settles), tau ~120-180 s unchanged, deadtime tens of s unchanged, ambient ~0.15-0.16 unchanged, u*(0.5)=0.47-0.50 (twin needing ~0.375 implies K'~0.93 in that twin; design covers 0.55-1.60), no deadzone, soft limit 0.85 / hard 0.9 unchanged.",
+    "predicted_behavior": "Nominal: Kest stays ~1.30, ff~0.265, MAE ~0.025, in-band ~0.76 after 300 s, energy ~130, zero overrides as before. Degraded (K'~0.7): Kest converges 1.32->~0.72 in ~300 s, ff 0.265->~0.48, y rises without overshoot >0.70, settles 0.475-0.525 by ~300-400 s, residual MAE ~0.014-0.020, in-band ~0.76-0.78, energy ~185-195 due to higher u, zero hard violations/overrides. If diagnosis wrong (faster loss), Kest still moves to match observed (yf-AMB)/u and integral covers remainder, so no worse than v1.",
+    "diagnosis": "Actuator gain fell ~45%: pre K=(yss-0.15)/u ~1.27-1.40 (0.33->0.571, 0.27->0.527, 0.26->0.483, 0.25->0.466) with ambient ~0.15 and tau ~120-180 s; post K'~0.70-0.75 (0.4->~0.44 from E9 0.174->0.406 in 270 s flattening, 0.55->~0.55 from E10 0.417->0.496 in 130 s, 0.48->0.547 in E11) with same ambient 0.157 and same u=0 decay shape/time as E2, and same 10-40 s initial response. Hence same input now produces ~0.55x temperature rise, decay at zero input unchanged, delay unchanged, sensor scatter/ambient unchanged. Old ff=0.265 + max I 0.15 cannot supply new u*~0.48, leaving ~0.05 steady error as seen in monitoring after-change trace y~0.45 at u~0.40 and climbing only 0.0007/s.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

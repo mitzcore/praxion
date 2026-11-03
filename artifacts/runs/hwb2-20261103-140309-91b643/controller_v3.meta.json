@@ -1,0 +1,20 @@
+{
+  "id": "hwb2-20261103-140309-91b643-v3",
+  "run_id": "hwb2-20261103-140309-91b643",
+  "version": 3,
+  "path": "artifacts/runs/hwb2-20261103-140309-91b643/controller_v3.py",
+  "sha256": "866258f881689250dfcc92477350cefa679e5dc8c895d9ca3430aaa615e4b47d",
+  "parent_id": "hwb2-20261103-140309-91b643-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T20:21:08.847181+00:00",
+  "byte_length": 4641,
+  "rationale": "Kept structure (filtered PI + adaptive feedforward) but retuned for ~46% gain loss: TAU_K 150s->60s with looser settled gating (|rate|<0.0012, |u-uf|<0.12) so K drops from 1.32 to ~0.71 in ~150s; split integral Ki far 0.006 / near 0.022 with INT_LIM 0.20->0.35 so stale FF 0.265 can be bridged to new u*~0.48 by integrator alone; U_MAX 0.70->0.75, K_MIN 0.55->0.45, TAU_U 60->40s, P clamp kept. Far-error Ki reduction preserves nominal overshoot.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y in [0,1] (0.15 ambient), K~1.32 pre, ~0.71 post (~46% weaker), tau ~150s, dead-time ~10-20s, noise +/-0.03 with outliers. Pre u*(0.5)~0.265, post u*~0.48-0.49. No dead-zone 0.25-0.55. Limits 0-1, soft 0.85 hard 0.9.",
+    "predicted_behavior": "Changed machine: y rises without >100s stall, reaches 0.475-0.525 in ~200-300s, stays in band, u settles ~0.47-0.50, MAE ~0.014-0.016, in-band ~0.77, energy ~185-195, zero overrides/hard violations. Nominal machine: unchanged cold-start with brief overshoot <0.72, settles to u~0.27-0.28, MAE ~0.025, in-band ~0.76. Result confirms actuator_weaker; if outflow had increased, u=0 decay would be faster and this fix would overheat.",
+    "diagnosis": "Actuator (heater gain) ~46% weaker with same loss/dynamics. Pre K=(y-0.15)/u ~1.28-1.40 avg ~1.32 (E7 0.483@0.26=>1.28, E5 0.527@0.27=>1.40, u*~0.265 for 0.5). Post K'~(y-0.157)/u ~0.68-0.81 central ~0.71-0.72 (E9 ~0.43@0.4=>0.68, E10 ~0.55@0.55=>0.71, E11 0.547@0.48=>0.81 but 110s short/noisy): reduction (1.32-0.71)/1.32~46%. Zero-input final 0.147 (E2) vs 0.157 (E8) and 63% time ~170s both, fall onset 16-24s (E8) vs tens of s pre, rise onset 30-40s (E9) and 6-9s (E10) same as pre, so tau ~120-180s, dead-time tens of s, ambient ~0.15-0.16, noise +/-0.03 unchanged. This rules out outflow_increased (would need faster u=0 fall and lower ambient), response_slower (would need >100s flat after step), sensor_changed (ambient/scatter unchanged, ordered heating preserved). New steady input u*=(0.5-0.157)/0.72~0.476-0.49 vs pre 0.265.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

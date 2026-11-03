@@ -1,0 +1,352 @@
+{
+ "plant": {
+  "description": "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; the device loses heat to the room on its own. Output y in [0,1] is a normalized temperature reading (0 = 15 \u00b0C, 1 = 75 \u00b0C).",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "scored_after_settling_s": 300.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 480.0,
+  "after_change_max_single_experiment_s": 480.0,
+  "worst_case_rate_per_unit_u_per_s": 0.006,
+  "experiments_remaining": 7,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 300.0,
+  "y": 0.4732
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.3,
+   "duration_s": 300.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Direction/magnitude of gain and lag/time-to-settle, which set controller sign, feedforward level for 0.5, and required integral/settling time.",
+   "expected_observation": "If positive-gain heater hypothesis is right, y will rise from ~0.231 with short lag (tens of s) toward ~0.35-0.50, with positive early slope flattening over 300 s; slope at end indicates how close to equilibrium.",
+   "verdict": "approved; worst-case bound 0.761",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.2261
+    ],
+    [
+     5.0,
+     0.2165
+    ],
+    [
+     10.0,
+     0.2009
+    ],
+    [
+     15.0,
+     0.2159
+    ],
+    [
+     20.0,
+     0.2396
+    ],
+    [
+     25.0,
+     0.2417
+    ],
+    [
+     30.0,
+     0.2476
+    ],
+    [
+     35.0,
+     0.2385
+    ],
+    [
+     40.0,
+     0.2541
+    ],
+    [
+     45.0,
+     0.2637
+    ],
+    [
+     50.0,
+     0.2584
+    ],
+    [
+     55.0,
+     0.275
+    ],
+    [
+     60.0,
+     0.2793
+    ],
+    [
+     65.0,
+     0.2637
+    ],
+    [
+     70.0,
+     0.2917
+    ],
+    [
+     75.0,
+     0.2922
+    ],
+    [
+     80.0,
+     0.3013
+    ],
+    [
+     85.0,
+     0.3046
+    ],
+    [
+     90.0,
+     0.3174
+    ],
+    [
+     95.0,
+     0.3261
+    ],
+    [
+     100.0,
+     0.3298
+    ],
+    [
+     105.0,
+     0.3336
+    ],
+    [
+     110.0,
+     0.34
+    ],
+    [
+     115.0,
+     0.3481
+    ],
+    [
+     120.0,
+     0.355
+    ],
+    [
+     125.0,
+     0.3556
+    ],
+    [
+     130.0,
+     0.3577
+    ],
+    [
+     135.0,
+     0.3642
+    ],
+    [
+     140.0,
+     0.34
+    ],
+    [
+     145.0,
+     0.3755
+    ],
+    [
+     150.0,
+     0.3797
+    ],
+    [
+     155.0,
+     0.3685
+    ],
+    [
+     160.0,
+     0.3932
+    ],
+    [
+     165.0,
+     0.3953
+    ],
+    [
+     170.0,
+     0.3985
+    ],
+    [
+     175.0,
+     0.3899
+    ],
+    [
+     180.0,
+     0.4104
+    ],
+    [
+     185.0,
+     0.391
+    ],
+    [
+     190.0,
+     0.4072
+    ],
+    [
+     195.0,
+     0.4206
+    ],
+    [
+     200.0,
+     0.4222
+    ],
+    [
+     205.0,
+     0.4216
+    ],
+    [
+     210.0,
+     0.426
+    ],
+    [
+     215.0,
+     0.4157
+    ],
+    [
+     220.0,
+     0.4168
+    ],
+    [
+     225.0,
+     0.4206
+    ],
+    [
+     230.0,
+     0.4184
+    ],
+    [
+     235.0,
+     0.4394
+    ],
+    [
+     240.0,
+     0.4367
+    ],
+    [
+     245.0,
+     0.4507
+    ],
+    [
+     250.0,
+     0.4523
+    ],
+    [
+     255.0,
+     0.4539
+    ],
+    [
+     260.0,
+     0.4378
+    ],
+    [
+     265.0,
+     0.4576
+    ],
+    [
+     270.0,
+     0.4426
+    ],
+    [
+     275.0,
+     0.4469
+    ],
+    [
+     280.0,
+     0.4555
+    ],
+    [
+     285.0,
+     0.4646
+    ],
+    [
+     290.0,
+     0.448
+    ],
+    [
+     295.0,
+     0.4689
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 299.0,
+    "y_start": 0.226,
+    "y_end": 0.469,
+    "y_min": 0.201,
+    "y_max": 0.471,
+    "y_mean_last_5s": 0.469,
+    "u_mean_last_5s": 0.3,
+    "y_slope_last_5s_per_s": 0.0005
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Steady-state y is monotonically increasing in u: a step to u=0.3 from y~0.23 causes a sustained rise >0.05 given enough hold time.",
+   "confidence": 0.7,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "Response has lag/inertia, not instantaneous: 63% of step response takes 30-180 s, observable as curved rise and non-zero end slope on 300 s hold if not settled.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "No large dead zone: u in 0.2-0.4 produces measurable heating (>0.02 rise) rather than zero response.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0, y decays on its own toward room level (~0.05-0.20) due to heat loss, rather than holding or rising.",
+   "confidence": 0.7,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Static gain is approximately linear across u in [0,1]: doubling u roughly doubles steady-state rise above ambient.",
+   "confidence": 0.35,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Steady-state input needed to hold target y=0.5 is between 0.3 and 0.7.",
+   "confidence": 0.3,
+   "evidence_refs": []
+  },
+  {
+   "id": "H7",
+   "statement": "Sensor short-term noise is small (<0.01): trends >0.02 over 100s are real dynamics, not noise.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

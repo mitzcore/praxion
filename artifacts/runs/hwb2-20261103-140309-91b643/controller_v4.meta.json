@@ -1,0 +1,20 @@
+{
+  "id": "hwb2-20261103-140309-91b643-v4",
+  "run_id": "hwb2-20261103-140309-91b643",
+  "version": 4,
+  "path": "artifacts/runs/hwb2-20261103-140309-91b643/controller_v4.py",
+  "sha256": "454c19689ea55aa847addfbd501f8f07cb64f30c1e42c9a827263466fbd26f80",
+  "parent_id": "hwb2-20261103-140309-91b643-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T20:23:23.578121+00:00",
+  "byte_length": 4642,
+  "rationale": "Kept robust PI+feedforward skeleton but made steady-state feedforward self-re-estimating and faster: y-filter 18s->12s with outlier gate, u-filter 40s->25s, gain update tau 60s->30s with relaxed settled/rate gates, Ki_near 0.022->0.032, INT_LIM 0.35->0.40, U_MAX 0.75->0.80, Kp 0.9->0.75. This lets Kest move from 1.32 to ~0.72 in ~60-90s and ff move from 0.265 to ~0.48, while nominal Kraw~1.29 leaves ff unchanged.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y in [0,1], u in [0,1]. Pre: yss=0.15+1.32*u, tau~150s, delay <30s, u*(0.5)=0.265. Post: yss=0.157+0.72*u, same tau/delay/ambient/noise, u*(0.5)=0.476. Soft y-limit 0.85, hard cutoff 0.9 forces u=0. Noise +/-0.03 with 0.05-0.08 outliers; use 12s filtered y and outlier gate.",
+    "predicted_behavior": "Cold start nominal: kick to ~0.60 then settle to 0.27, in-band >0.75 after 300s, MAE ~0.025. Cold start weak plant: same kick, slower rise, Kest 1.32->0.75 in ~90s, ff 0.265->0.47, settle to u~0.48 y=0.50 +/-0.02, in-band >0.75 after 300s MAE ~0.015. Bumpless transfer from old state: u ramps 0.39->0.48 in ~100-150s, error decays to <0.02 without overshoot or overrides.",
+    "diagnosis": "Actuator weaker, not leak/delay/sensor. E8 u=0 fall starts in 16-24s and reaches 0.157 same as E2 0.147 with same curvature and tau ~150s, so outflow and delay unchanged. E9 same u=0.4 from ~0.17 rises to only 0.406 in 270s flattening toward ~0.44-0.46 vs E3 from 0.16 to 0.54 still rising toward ~0.60+. E10 0.417->0.496 in 130s at 0.55 implies yss~0.55 vs ~0.89 pre. Ambient 0.15-0.16 unchanged, scatter +/-0.03 unchanged. (yss-AMB)/u drops from 1.27-1.40 to 0.70-0.75, i.e. ~45% loss to K'~0.71-0.73, u* for 0.5 moves 0.265->0.476. Monitoring after-change y~0.45 at u~0.39-0.41 with persistent +0.05 error and slowly ramping u confirms insufficient steady power.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

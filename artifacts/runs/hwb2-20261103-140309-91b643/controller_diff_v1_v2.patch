@@ -1,0 +1,102 @@
+--- a/hwb2-20261103-140309-91b643/controller_v1.py
++++ b/hwb2-20261103-140309-91b643/controller_v2.py
+@@ -6,13 +6,17 @@
+         return hi
+     return x
+ def control(obs, state):
++    AMB = 0.15
++    G0 = 1.32
+     Kp = 1.0
+-    Ki = 0.007
+-    AMB = 0.15
+-    GAIN = 1.32
++    Ki = 0.008
+     TAU_F = 22.0
+-    INT_LIM = 0.15
++    TAU_U = 60.0
++    TAU_K = 150.0
++    INT_LIM = 0.20
+     U_MAX = 0.70
++    K_MIN = 0.55
++    K_MAX = 1.60
+     try:
+         y_in = float(obs.get("y", 0.5))
+     except Exception:
+@@ -39,6 +43,8 @@
+     yf_prev = state.get("yf", None)
+     i_prev = state.get("i", 0.0)
+     u_prev = state.get("u", None)
++    K_prev = state.get("K", G0)
++    uf_prev = state.get("uf", None)
+     try:
+         yf_prev = float(yf_prev) if yf_prev is not None else None
+     except Exception:
+@@ -51,6 +57,20 @@
+         u_prev = float(u_prev) if u_prev is not None else None
+     except Exception:
+         u_prev = None
++    try:
++        K_prev = float(K_prev)
++    except Exception:
++        K_prev = G0
++    try:
++        uf_prev = float(uf_prev) if uf_prev is not None else None
++    except Exception:
++        uf_prev = None
++    if K_prev is None or not math.isfinite(K_prev):
++        K_prev = G0
++    K_prev = _clip(K_prev, K_MIN, K_MAX)
++    if not math.isfinite(i_prev):
++        i_prev = 0.0
++    i_prev = _clip(i_prev, -INT_LIM, INT_LIM)
+     if yf_prev is None or not math.isfinite(yf_prev):
+         yf = y_raw
+     else:
+@@ -63,11 +83,35 @@
+             alpha = alpha * 0.5
+         yf = yf_prev + alpha * (y_raw - yf_prev)
+         yf = _clip(yf, 0.0, 1.0)
+-    if not math.isfinite(i_prev):
+-        i_prev = 0.0
+-    i_prev = _clip(i_prev, -INT_LIM, INT_LIM)
+-    ff = (target - AMB) / GAIN
+-    ff = _clip(ff, 0.0, 1.0)
++    ff_init = _clip((target - AMB) / K_prev, 0.0, 0.65)
++    if uf_prev is None or not math.isfinite(uf_prev):
++        if u_prev is not None and math.isfinite(u_prev):
++            uf = _clip(u_prev, 0.0, 1.0)
++        else:
++            uf = ff_init
++    else:
++        uf_prev = _clip(uf_prev, 0.0, 1.0)
++        if u_prev is not None and math.isfinite(u_prev):
++            au = dt / (TAU_U + dt)
++            uf = uf_prev + au * (_clip(u_prev, 0.0, 1.0) - uf_prev)
++        else:
++            uf = uf_prev
++        uf = _clip(uf, 0.0, 1.0)
++    Kest = K_prev
++    if yf_prev is not None and math.isfinite(yf_prev):
++        rate = (yf - yf_prev) / dt
++        u_settled = (u_prev is not None and math.isfinite(u_prev) and abs(_clip(u_prev, 0.0, 1.0) - uf) < 0.10)
++        if (uf > 0.12 and uf < 0.75 and yf > 0.20 and yf < 0.85 and yf > AMB + 0.04 and u_settled and abs(rate) < 0.0008):
++            Kraw = (yf - AMB) / uf
++            if math.isfinite(Kraw):
++                Kraw = _clip(Kraw, 0.45, 1.60)
++                beta = dt / (TAU_K + dt)
++                Kest = K_prev + beta * (Kraw - K_prev)
++                Kest = _clip(Kest, K_MIN, K_MAX)
++    ff = (target - AMB) / Kest
++    if not math.isfinite(ff):
++        ff = ff_init
++    ff = _clip(ff, 0.0, 0.65)
+     err = target - yf
+     if err > 0.5:
+         err = 0.5
+@@ -97,5 +141,5 @@
+     if not math.isfinite(u):
+         u = ff
+         integ = i_prev
+-    new_state = {"yf": float(yf), "i": float(integ), "u": float(u)}
++    new_state = {"yf": float(yf), "i": float(integ), "u": float(u), "K": float(Kest), "uf": float(uf)}
+     return (float(u), new_state)
