@@ -82,7 +82,7 @@ _TCLAB_COMMON = {
     "episode_s": 900.0, "settle_s": 300.0,
     "disturbance_at_s": 400.0, "disturbance_episode_s": 1200.0,
     "max_experiments": 8, "min_experiments_before_generate": 3,
-    "max_single_experiment_s": 180.0, "after_change_max_single_experiment_s": 300.0,
+    "max_single_experiment_s": 480.0, "after_change_max_single_experiment_s": 480.0,
     "worst_case_rate_per_unit_u": 0.006,
     "soft_high_limit": 0.85, "hard_cutoff": 0.90,
     "monitor_window_s": 60.0, "monitor_hold_s": 30.0, "monitor_factor": 2.0, "monitor_floor": 0.02,

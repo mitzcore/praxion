@@ -88,7 +88,7 @@ def test_safety_limits_from_tclab_profile():
     lim = SafetyLimits.from_profile(TCLAB)
     assert (lim.u_min, lim.u_max) == (0.0, 1.0)
     assert lim.soft_high_limit == 0.85 and lim.hard_cutoff == 0.90
-    assert lim.max_single_experiment_s == 180.0
+    assert lim.max_single_experiment_s == 480.0  # raised from 180 after hw1 (2026-11-03): board tau ~226 s
     assert lim.worst_case_rate_per_unit_u == 0.006
 
 
@@ -104,7 +104,7 @@ def test_validate_proposal_uses_limit_rate():
     assert ok.ok, ok.reason
     bad = tclab.validate_proposal(1.0, 180.0, obs, dt=1.0)  # 0.10 + 1.08 >= 0.85
     assert not bad.ok and "worst-case bound" in bad.reason
-    assert not tclab.validate_proposal(0.5, 181.0, obs, dt=1.0).ok  # max_single_experiment_s = 180
+    assert not tclab.validate_proposal(0.2, 481.0, obs, dt=1.0).ok  # max_single_experiment_s = 480
 
 
 # --------------------------------------------------------------------------- metrics
