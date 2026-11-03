@@ -307,8 +307,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--n", type=int, default=6)
     ap.add_argument("--start", type=int, default=1,
                     help="index of the first run (labels and v1/v2 order keep counting, e.g. --start 3 after a pause)")
-    ap.add_argument("--stop-file", default="artifacts/batch_logs/BATCH_STOP",
-                    help="if this file exists when a run is about to start, stop cleanly (checked between runs only)")
+    ap.add_argument("--stop-file", default=None,
+                    help="if this file exists when a run is about to start, stop cleanly (checked between runs only); "
+                         "default: BATCH_STOP next to --log")
     ap.add_argument("--port", default="/dev/cu.usbmodem1101")
     ap.add_argument("--label-prefix", default="hwb")
     ap.add_argument("--disturbance", default="pump_derate")
@@ -323,7 +324,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                     help="child command template; placeholders {port} {disturbance} {magnitude} {order} {label} {root}")
     ap.add_argument("--no-caffeinate", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="print the commands and exit")
-    return ap.parse_args(argv)
+    args = ap.parse_args(argv)
+    if args.stop_file is None:
+        args.stop_file = str(Path(args.log).parent / "BATCH_STOP")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
