@@ -119,3 +119,4 @@ def test_dry_run_prints_commands(capsys):
     assert "--verify-on-board v1,v2" in out[0] and "--label hwb1" in out[0]
     assert "--verify-on-board v2,v1" in out[1] and "--label hwb2" in out[1]
     assert "--disturbance-applied-by trusted" in out[0]
+    assert "--magnitude 0.35" in out[0]

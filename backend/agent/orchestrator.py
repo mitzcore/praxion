@@ -67,6 +67,9 @@ class OrchestratorConfig(BaseModel):
     eval_plant_factory: Any = None
     # Physical plants: the operator applies the disturbance by hand when prompted; nothing is scheduled.
     operator_disturbance: bool = False
+    # TRUSTED. Magnitude handed to the plant's schedule_disturbance (physical plants with a trusted actuator
+    # fault: pump_derate fraction). None → the plant's own default. Never in the agent view.
+    disturbance_magnitude: float | None = None
     max_adaptation_attempts: int = 3
 
     @property
@@ -426,7 +429,9 @@ class Orchestrator:
             if self.cfg.operator_disturbance:
                 spec = None  # the operator applies it by hand when prompted at monitor_pre_s
             else:
-                spec = DisturbanceSpec(family=disturbance_family, at_t=self.cfg.monitor_pre_s) if disturbance_family else None  # type: ignore[arg-type]
+                spec = (DisturbanceSpec(family=disturbance_family, at_t=self.cfg.monitor_pre_s,  # type: ignore[arg-type]
+                                        magnitude=self.cfg.disturbance_magnitude)
+                        if disturbance_family else None)
             self._event("disturbance_scheduled", scheduled=disturbance_family is not None,
                         operator_applied=self.cfg.operator_disturbance)  # family deliberately omitted
             ctrl = self._make_controller(deployed)

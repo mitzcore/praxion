@@ -81,7 +81,7 @@ def test_synthetic_bundle_row_and_stats(tmp_path):
     runs = hs.collect(root, "hw*")
     assert len(runs) == 1
     r = runs[0]
-    assert r["disturbance"] == "pump_derate (trusted)" and not r["board"]["mismatch"]
+    assert r["disturbance"] == "pump_derate (trusted, m=0.35)" and not r["board"]["mismatch"]
     assert r["detection_latency_s"] == 45.0
     assert r["v1_min_after_c"] == pytest.approx(0.4 * 60 + 15)
     assert r["twin_v1_c"] == pytest.approx(6.0) and r["twin_v2_c"] == pytest.approx(1.2)
@@ -140,7 +140,7 @@ def test_real_bundles_plus_synthetic(tmp_path):
     assert "FAILED" in hw1 and "no (0/10, 2.18)" in hw1 and "not reached" in hw1
     assert "operator (fan)" in hw2 and "yes (9/10, 0.72)" in hw2 and "| 66 |" in hw2
     assert "7.50 → 1.09 (86%)" in hw2 and "| — | 33.7 |" in hw2
-    assert "pump_derate (trusted)" in syn and "4.80 → 1.80 (62%)" in syn and "6.00 → 1.20 (80%)" in syn
+    assert "pump_derate (trusted, m=0.35)" in syn and "4.80 → 1.80 (62%)" in syn and "6.00 → 1.20 (80%)" in syn
     assert "| board-verified improvement (board reduction > 0 and in-band v2 > v1) | 1 / 1 |" in md
     assert "p = P(X ≥ 1 | n=1, ½) = 0.5000" in md
     assert "[0.025, 1.000]" in md

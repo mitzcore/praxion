@@ -40,7 +40,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_COMMAND = (
     "uv run python scripts/run_live_demo.py --plant tclab --port {port} --disturbance {disturbance} "
-    "--disturbance-applied-by trusted --verify-on-board {order} --label {label} --root {root} --quiet"
+    "--disturbance-applied-by trusted --magnitude {magnitude} --verify-on-board {order} --label {label} "
+    "--root {root} --quiet"
 )
 _RUN_ID_RE = re.compile(r"^run_id=(\S+)", re.MULTILINE)
 _STAGE_RE = re.compile(r"^final stage:\s*(\S+)", re.MULTILINE)

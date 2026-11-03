@@ -120,7 +120,16 @@ def read_bundle(d: Path) -> dict | None:
         r["disturbance"] = "operator (fan)"
     elif mon_res.get("disturbance_family"):
         r["run_change"] = ("trusted", mon_res["disturbance_family"])
-        r["disturbance"] = f"{mon_res['disturbance_family']} (trusted)"
+        # magnitude: monitoring.json records the spec (None = the board driver's default, which the board
+        # verification file resolves and records for the same family)
+        mon = _load_json(d / "monitoring.json")
+        mag = _num((((mon or {}).get("trace") or {}).get("meta") or {}).get("disturbance", {}).get("magnitude")) \
+            if isinstance(mon, dict) else None
+        bdist = (bv.get("disturbance") or {}) if isinstance(bv, dict) else {}
+        if mag is None and bdist.get("applied_by") == "trusted_actuator" and bdist.get("family") == mon_res["disturbance_family"]:
+            mag = _num(bdist.get("magnitude"))
+        r["disturbance_magnitude"] = mag
+        r["disturbance"] = f"{mon_res['disturbance_family']} (trusted" + (f", m={mag:.2f})" if mag is not None else ")")
     else:
         r["run_change"] = None
         r["disturbance"] = DASH if r["stage"] != "FAILED" else "not reached"

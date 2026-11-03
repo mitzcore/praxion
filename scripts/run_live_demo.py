@@ -130,6 +130,10 @@ def main() -> int:
     ap.add_argument("--disturbance-applied-by", choices=["operator", "trusted"], default="operator",
                     help="--plant tclab only (ignored for simulators): 'operator' applies the change by hand when "
                          "prompted; 'trusted' schedules it on the board (pump_derate only: Q1 * (1 - 0.35))")
+    ap.add_argument("--magnitude", type=float, default=None,
+                    help="--disturbance-applied-by trusted only: heater derate fraction m (Q1 * (1 - m)); "
+                         "default: the board driver's TRUSTED_DERATE_DEFAULT (0.35). Recorded in monitoring.json "
+                         "and board_verification.json; never shown to the agent")
     ap.add_argument("--verify-on-board", nargs="?", const="v1,v2", default=None, choices=["v1,v2", "v2,v1"],
                     help="--plant tclab only: after the run, re-run v1 and the promoted controller on the board "
                          "under the same disturbance mode (scripts/verify_on_board.py) and write board_verification.json")
@@ -138,6 +142,12 @@ def main() -> int:
     if trusted_hw and args.disturbance not in ("pump_derate", "none"):
         print(f"error: --disturbance-applied-by trusted supports only --disturbance pump_derate on the board "
               f"(a {args.disturbance!r} change is physical and must be applied by the operator)", file=sys.stderr)
+        return 2
+    if args.magnitude is not None and not trusted_hw:
+        print("error: --magnitude needs --plant tclab --disturbance-applied-by trusted", file=sys.stderr)
+        return 2
+    if args.magnitude is not None and not (0.0 < args.magnitude < 1.0):
+        print("error: --magnitude must be in (0, 1)", file=sys.stderr)
         return 2
     if args.verify_on_board and args.plant != "tclab":
         print("error: --verify-on-board needs --plant tclab", file=sys.stderr)
@@ -194,7 +204,8 @@ def main() -> int:
         print(f"[{time.time() - t0:6.1f}s] {kind:22s} {json.dumps(payload, default=str, ensure_ascii=False)[:300]}")
 
     cfg = OrchestratorConfig(plant_seed=args.plant_seed, sandbox_mode=args.sandbox, profile=profile,
-                             eval_plant_factory=eval_factory, operator_disturbance=operator_disturbance)
+                             eval_plant_factory=eval_factory, operator_disturbance=operator_disturbance,
+                             disturbance_magnitude=args.magnitude if trusted_hw else None)
     orch = Orchestrator(session, store, agent, plant, Supervisor(limits), None, cfg, on_event=on_event)
     lo, hi = profile.band
     print(f"run_id={run_id} model={getattr(agent, 'model', '?')} plant={profile.name} plant_seed={args.plant_seed} "
@@ -257,7 +268,8 @@ def _verify_on_board(run_dir: Path, plant: PlantAdapter, session: Session, args:
     mode = "derate" if args.disturbance_applied_by == "trusted" else "operator"
     print(f"\nboard verification: order={order} disturbance={mode}")
     try:
-        bv = run_verification(run_dir, plant, mode=mode, order=order, sandbox=args.sandbox, quiet=args.quiet)
+        kw = {"magnitude": args.magnitude} if args.magnitude is not None else {}
+        bv = run_verification(run_dir, plant, mode=mode, order=order, sandbox=args.sandbox, quiet=args.quiet, **kw)
     except BundleError as e:
         print(f"board verification aborted: {e}", file=sys.stderr)
         return
