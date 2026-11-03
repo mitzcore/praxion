@@ -2,12 +2,20 @@
 
 Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
-_Last updated: 2026-11-02 — audit done (`docs/AUDIT_2026-11-02.md`): hardware path fixed and verified on a fake board; blindness gap fixed and disclosed; evaluator fingerprint widened (re-score pending); TCLab hardware run next_
+_Last updated: 2026-11-03 00:50 — first TCLab hardware run `hw1-20261102-234915-81765d` FAILED G2 (all five candidates; every discovery experiment hit the 180 s cap on a board with tau ≈ 226 s); TCLab experiment cap raised to 480 s; second hardware run scheduled for the morning of Nov 3_
 
 ## Audit, 2026-11-02 (before the hardware run)
 
 Four independent reviewers plus a statistics pass; full record in `docs/AUDIT_2026-11-02.md`. Verified: every published metric recomputes from the stored traces with independent code; same-seed scoring holds; physics, seeds and monitor hold; no hidden parameter, seed or truth reached the model in any stored prompt. Fixed in commit: three critical hardware defects (30 min budget stopped a 75 min run; heater left on after normal exit, SIGTERM, SIGHUP; actuator held open-loop between stages), serial-retry and honest FAILED on plant faults, non-blocking operator prompt (control keeps running while the fan is switched on), run id (operator label, plant seed) no longer reaches the model, full prompt scanned, readiness ignores sample-less experiments, monitored rollout now flushes the delay line on a trip, fingerprint covers `schemas.py`, `monitor.py`, `sandbox.py`, `protocol.py` and the relay cache key covers its detector. Disclosed in README: the model sees measured traces of the scoring episodes before a repair; `tclabsim-fan*`/`weak` diagnosis-correctness contaminated by the label leak; relay result rests on five machines; v1.3 5/5 is in-sample; relay nominal tune handicapped by its hysteresis correction; twin scenarios differ only in noise. **Pending:** full Docker re-score under fingerprint `f4a4611dd0e71948` (about 2 h) after the hardware run; `docs/BENCHMARKS.md` currently carries `da2a92755d05af19`. Fake-board verification: full loop COMPLETE, `Q1=0.0, stopped=true` at exit. Suite after the fixes: `uv run pytest -q -m "not live and not docker"` → 559 passed (2026-11-02, `artifacts/batch_logs/pytest-audit-final.log`); Docker-marked tests run after Docker is back.
 
+
+## Hardware run 1, 2026-11-03 00:49–01:22 EST (`hw1-20261102-234915-81765d`): FAILED at G2
+
+Real APMonitor TCLab (Arduino Leonardo, firmware 2.0.1, port `/dev/cu.usbmodem1101`), Spark, prompts v1.5, Docker sandbox, gates on the twin, room 17 °C. Pre-flight per the runbook: vendor diagnostic (T1 22.0 → 26.0 °C in 30 s), plant-class smoke test (0 serial retries), fan calibration. The household fan was 4× the natural heat loss at 50 cm and still 4× at 1.5 m or aimed at a wall (board could not pass 40 °C at 80 % power); far corner + pointing away + a shield 20 cm from the board gave **1.32×** (60 s drop from 44 °C: 1.61 °C without fan, 2.16 °C with), which is the setting kept for run 2. Found and fixed before launch: with no TTY, `input()` returned EOF at once and the disturbance would have been logged at 600 s untouched; the prompt now waits for `artifacts/runs/<run_id>/OPERATOR_GO` when stdin is not a terminal (commit f84ad41, unit test).
+
+Result: discovery 6 proposals (5 completed, 1 rejected by the worst-case bound), **every one at the 180 s cap**: u = 0.5, 0, 0.3, 0.3, 0.34. Twin fit from the 900 s record: K = 96.6 °C per unit u, tau = 226 s, L = 30 s, Ta = 17.95 °C (matches the room), RMSE 0.44 °C, no warnings. Five candidates, all G2 FAIL on 0/10 scenarios; in-band after 300 s improved 0.21, 0.21, 0.34, 0.51, 0.53 (need 0.70): each controller aimed its feed-forward at ≈49 °C and oscillated slowly (period ≈ 400 s) on the twin. 14 model calls (2 timeouts, retried), $1.50, 33 min. Heater confirmed off at exit (`actuator_idled`; T1 24.5 °C afterwards).
+
+Reading: the board is slower than the vendor model the rehearsals used; with tau > the experiment cap no hold ever levelled off, so neither the twin's gain nor Muse's equilibrium estimate was observed, only extrapolated (K and tau are weakly identifiable from 180 s steps; the K/tau slope is what the data pins). The failure is the same class as spark6 on the tank (protocol v1.3 reason), now set by a profile constant rather than by the model's choice. **Change (commit 0761cf7):** `max_single_experiment_s` 180 → 480 and `after_change_max_single_experiment_s` 300 → 480 for the TCLab profiles; nothing else. The linear worst-case guard still limits long holds to low u, and a 480 s cooling hold needs no power at all, so tau becomes observable. Frozen tank config, gates and promotion rule untouched. The run stays in the bundle and in this record as a FAIL; the twin's asymptote (K) is unverified against the board and is stated as such.
 
 ## MVP-2: physical plant (TCLab), started 2026-11-01
 
@@ -165,6 +173,8 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 - None.
 
 ## Decisions log
+
+- **2026-11-03 — Hardware run 1 FAILED G2; TCLab experiment cap 180 → 480 s.** Recorded above. A protocol/profile change made after seeing the failure, disclosed as such; evaluator config unchanged. Run 2 in the morning with the same fan position (1.32× loss) and a neutral label.
 
 - **2026-11-02 — Audit outcome applied.** Hardware safety and budget fixes; opaque candidate ids and run-id secret; monitored rollout routed through the runtime's e-stop path; evaluator fingerprint widened to the files that determine scores (`f4a4611dd0e71948`), which invalidates the benchmark cache: BENCHMARKS.md is regenerated by a full Docker re-score before submission. Not changed: frozen config, promotion rule, the relay's identification (its handicap is disclosed), the envelope (disclosed). Diagnosis-correctness of the thermal-simulator runs is withdrawn as evidence because the run label reached the model.
 
