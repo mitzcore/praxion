@@ -122,7 +122,7 @@ def _statuses(run_dir: Path) -> dict[int, str]:
 def test_clean_synthetic_run_passes(tmp_path: Path, capsys) -> None:
     run_dir = build_run(tmp_path)
     st = _statuses(run_dir)
-    assert st == {1: "PASS", 2: "PASS", 3: "WARN", 4: "PASS", 5: "PASS", 6: "PASS", 7: "PASS"}  # 3: MOCK flagged
+    assert st == {1: "PASS", 2: "PASS", 3: "WARN", 4: "PASS", 5: "PASS", 6: "PASS", 7: "PASS", 8: "PASS"}  # 3: MOCK flagged; 8: skipped
     assert audit_run.main([run_dir.name, "--root", str(run_dir.parent)]) == 0
     out = capsys.readouterr().out
     assert "RESULT: PASS" in out and "MOCK" in out

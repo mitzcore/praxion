@@ -2,7 +2,7 @@
 
 Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
-_Last updated: 2026-11-03 13:30 — pre-submission validation pass clean (clean clone, secrets, audits, lint; see decisions log); full Docker benchmark re-score complete under fingerprint `bdfdc77bdafd157c` (Praxion numbers bit-identical; relay re-tune moved on two machines as the audit predicted); hardware run 2 `hw2-20261103-074537-698ba8` COMPLETE on the real TCLab: G2 first time, fan detected in 66 s, diagnosis correct, v2 promoted (−85 %, 10/10); run 1 FAILED G2 (kept). Docker benchmark re-score under `f4a4611dd0e71948` running_
+_Last updated: 2026-11-03 11:40 — pre-submission validation pass clean (clean clone, secrets, audits, lint; see decisions log); full Docker benchmark re-score complete under fingerprint `bdfdc77bdafd157c` (Praxion numbers bit-identical; relay re-tune moved on two machines as the audit predicted); hardware run 2 `hw2-20261103-074537-698ba8` COMPLETE on the real TCLab: G2 first time, fan detected in 66 s, diagnosis correct, v2 promoted (−85 %, 10/10); run 1 FAILED G2 (kept). Docker benchmark re-score under `f4a4611dd0e71948` running_
 
 ## Audit, 2026-11-02 (before the hardware run)
 

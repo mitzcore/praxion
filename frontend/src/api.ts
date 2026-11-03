@@ -155,6 +155,9 @@ export const isCelsius = (p: DisplayProfile) => p.y_unit === "°C";
 /** display value = y * y_scale + y_offset */
 export const toDisplay = (p: DisplayProfile, y: number | null | undefined): number | null =>
   y == null || !Number.isFinite(Number(y)) ? null : Number(y) * p.y_scale + p.y_offset;
+/** a difference/error (e.g. an MAE) in display units: offset does not apply */
+export const toDisplayDelta = (p: DisplayProfile, d: number | null | undefined): number | null =>
+  d == null || !Number.isFinite(Number(d)) ? null : Number(d) * p.y_scale;
 export const fmtY = (p: DisplayProfile, y: number | null | undefined, digits?: number): string => {
   const v = toDisplay(p, y);
   if (v == null) return "—";
@@ -172,6 +175,67 @@ export interface Evaluations {
   protocol: { prompt_version: string | null; prompt_hash: string | null };
   twin_fit: Json | null;
   twin_fit_after_change: Json | null;
+}
+
+// <run_dir>/board_verification.json (backend/evaluation/board_verify.py), shown verbatim.
+export interface TraceStep {
+  t: number;
+  y: number;
+  h_true: number;
+  u_requested: number;
+  u_applied: number;
+  override: boolean;
+  reason: string;
+}
+
+export interface StoredTrace {
+  steps: TraceStep[];
+  dt: number;
+  target: number;
+  disturbance_at: number | null;
+  meta: Json;
+}
+
+export interface BoardTrial {
+  label: string;
+  controller_sha256: string;
+  start_T_display?: number | null;
+  trace: StoredTrace;
+  post_mae: number | null;
+  post_in_band: number | null;
+  overrides: number | null;
+  hard_violations: number | null;
+  invalid_outputs: number | null;
+  interlock_hit: boolean | null;
+  [k: string]: any;
+}
+
+export interface BoardComparison {
+  post_mae_v1: number | null;
+  post_mae_v2: number | null;
+  reduction: number | null;
+  in_band_v1: number | null;
+  in_band_v2: number | null;
+}
+
+export interface PredVsMeas {
+  predicted: number | null;
+  measured: number | null;
+}
+
+export interface BoardVerification {
+  trials: BoardTrial[];
+  order: string[];
+  pre_s: number;
+  post_s: number;
+  disturbance: { family: string | null; magnitude: number | null; applied_by: "trusted_actuator" | "operator" | string; at_t?: number | null };
+  comparison: BoardComparison | Json;
+  twin_prediction: { trials: BoardTrial[]; comparison: BoardComparison | Json; prediction_basis?: string | null } | null;
+  twin_prediction_reason?: string | null;
+  prediction_vs_board: { post_mae_v1?: PredVsMeas; post_mae_v2?: PredVsMeas; reduction?: PredVsMeas; direction_agrees?: boolean; [k: string]: any } | null;
+  prediction_basis?: string | null;
+  fake_board?: boolean;
+  [k: string]: any;
 }
 
 export const CHANGED_MACHINE_SUITE = "disturbance:changed_machine";
@@ -204,6 +268,7 @@ export const api = {
   controllers: (id: string) => j<ControllerInfo[]>(`/api/runs/${enc(id)}/controllers`),
   experiments: (id: string) => j<ExperimentFacts[]>(`/api/runs/${enc(id)}/experiments`),
   evaluations: (id: string) => j<Evaluations>(`/api/runs/${enc(id)}/evaluations?traces=disturbance`),
+  boardVerification: (id: string) => j<BoardVerification | null>(`/api/runs/${enc(id)}/board_verification`),
   start: (body: Json) =>
     j<{ run_id: string }>("/api/runs", {
       method: "POST",

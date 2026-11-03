@@ -127,7 +127,24 @@ def main() -> int:
     ap.add_argument("--label", default="run")
     ap.add_argument("--root", default="artifacts/runs")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--disturbance-applied-by", choices=["operator", "trusted"], default="operator",
+                    help="--plant tclab only (ignored for simulators): 'operator' applies the change by hand when "
+                         "prompted; 'trusted' schedules it on the board (pump_derate only: Q1 * (1 - 0.35))")
+    ap.add_argument("--verify-on-board", nargs="?", const="v1,v2", default=None, choices=["v1,v2", "v2,v1"],
+                    help="--plant tclab only: after the run, re-run v1 and the promoted controller on the board "
+                         "under the same disturbance mode (scripts/verify_on_board.py) and write board_verification.json")
     args = ap.parse_args()
+    trusted_hw = args.plant == "tclab" and args.disturbance_applied_by == "trusted"
+    if trusted_hw and args.disturbance not in ("pump_derate", "none"):
+        print(f"error: --disturbance-applied-by trusted supports only --disturbance pump_derate on the board "
+              f"(a {args.disturbance!r} change is physical and must be applied by the operator)", file=sys.stderr)
+        return 2
+    if args.verify_on_board and args.plant != "tclab":
+        print("error: --verify-on-board needs --plant tclab", file=sys.stderr)
+        return 2
+    if args.verify_on_board and args.disturbance == "none":
+        print("error: --verify-on-board needs a disturbance", file=sys.stderr)
+        return 2
 
     if args.sandbox == "docker":
         if not docker_available():
@@ -144,7 +161,7 @@ def main() -> int:
         print(f"error: {e}", file=sys.stderr)
         return 2
     limits = SafetyLimits.from_profile(profile)
-    operator_disturbance = args.plant == "tclab" and args.disturbance != "none"
+    operator_disturbance = args.plant == "tclab" and args.disturbance != "none" and not trusted_hw
 
     run_id = new_run_id(args.label)
     store = RunStore(run_id, root=Path(args.root))
@@ -182,7 +199,8 @@ def main() -> int:
     lo, hi = profile.band
     print(f"run_id={run_id} model={getattr(agent, 'model', '?')} plant={profile.name} plant_seed={args.plant_seed} "
           f"disturbance={args.disturbance} sandbox={args.sandbox} eval_plant={eval_plant}"
-          f"{' operator_disturbance=yes' if operator_disturbance else ''}")
+          f"{' operator_disturbance=yes' if operator_disturbance else ''}"
+          f"{' disturbance_applied_by=trusted_actuator' if trusted_hw and args.disturbance != 'none' else ''}")
     print(f"profile: {profile.description_for_operator} dt={profile.dt}s units: y normalized "
           f"(display {profile.y_unit} = y*{profile.y_scale:g}+{profile.y_offset:g})")
     print(f"objective: target={profile.target:.4f} band=[{lo:.4f}, {hi:.4f}]"
@@ -204,6 +222,8 @@ def main() -> int:
         orch.run_discovery()
         if session.stage == "DEPLOYABLE":
             orch.run_monitoring(None if args.disturbance == "none" else args.disturbance)
+        if args.verify_on_board:
+            _verify_on_board(store.dir, plant, session, args)
     finally:
         close = getattr(plant, "close", None)
         if callable(close):
@@ -218,6 +238,30 @@ def main() -> int:
               f"{totals.prompt_tokens}/{totals.completion_tokens}/{totals.reasoning_tokens}, est. cost ${totals.cost_usd:.3f}")
     print(f"artifacts: {store.dir}")
     return 0 if session.stage in {"COMPLETE", "DEPLOYABLE"} else 1
+
+
+def _verify_on_board(run_dir: Path, plant: PlantAdapter, session: Session, args: argparse.Namespace) -> None:
+    """Board verification on the same plant instance, after the orchestrator has idled it. Runs only for
+    COMPLETE with a promoted v2 (v1 and v2) or FAILED with an approved v1 (v1 alone)."""
+    from scripts.verify_on_board import BundleError, format_table, run_verification
+
+    approved = [c.version for c in session.candidates if c.status == "approved"]
+    order = args.verify_on_board.split(",")
+    if session.stage == "COMPLETE" and approved and max(approved) >= 2:
+        pass
+    elif session.stage == "FAILED" and 1 in approved:
+        order = ["v1"]
+    else:
+        print(f"\nboard verification skipped: stage {session.stage}, approved versions {approved}")
+        return
+    mode = "derate" if args.disturbance_applied_by == "trusted" else "operator"
+    print(f"\nboard verification: order={order} disturbance={mode}")
+    try:
+        bv = run_verification(run_dir, plant, mode=mode, order=order, sandbox=args.sandbox, quiet=args.quiet)
+    except BundleError as e:
+        print(f"board verification aborted: {e}", file=sys.stderr)
+        return
+    print(format_table(run_dir, bv))
 
 
 _Y_KEYS = {"y", "target", "y_mean", "y_start", "y_end", "y_min", "y_max", "y_now", "baseline_window_mae"}

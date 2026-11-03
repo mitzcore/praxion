@@ -10,6 +10,9 @@ Checks (each prints PASS / FAIL / WARN; exit status is non-zero on any FAIL):
   5. each candidate_registered event's sha256 / byte_length matches the stored file
   6. registered source == source_code in the authoring model call's response_text (byte-identical): authorship
   7. no disturbance family name appears in any model request message
+  8. board_verification.json (only when present; otherwise skipped = pass): each trial's controller_sha256
+     matches a registered candidate's meta.json hash; 0 <= u_applied <= 1 on every step; no interlock trip;
+     a non-empty post-change window; no step with t < 0
 """
 from __future__ import annotations
 
@@ -317,6 +320,55 @@ def check_family_names(calls: list[dict[str, Any]], is_mock: bool, family_used: 
     return c
 
 
+def check_board_verification(run_dir: Path) -> Check:
+    c = Check(8, "board_verification.json: registered hashes, actuator in [0,1], no interlock, post window")
+    p = run_dir / "board_verification.json"
+    if not p.exists():
+        c.note("skipped: no board_verification.json in bundle")
+        return c
+    try:
+        bv = json.loads(p.read_text())
+    except json.JSONDecodeError as e:
+        c.fail(f"unreadable ({e})")
+        return c
+    registered: dict[str, str] = {}
+    for v in _versions(run_dir):
+        mp = run_dir / f"controller_v{v}.meta.json"
+        if mp.exists():
+            registered[str(json.loads(mp.read_text()).get("sha256"))] = f"v{v}"
+    trials = bv.get("trials") or []
+    if not trials:
+        c.fail("no trials")
+    if bv.get("fake_board"):
+        c.warn("fake_board=true: test-only run on an in-process fake board, not hardware evidence")
+    pre_s = bv.get("pre_s")
+    for t in trials:
+        label = t.get("label")
+        sha = str(t.get("controller_sha256"))
+        if sha not in registered:
+            c.fail(f"{label}: controller_sha256 {sha[:16]}… matches no registered candidate")
+        steps = (t.get("trace") or {}).get("steps") or []
+        bad_u = [s.get("t") for s in steps if not (isinstance(s.get("u_applied"), (int, float))
+                                                    and 0.0 <= float(s["u_applied"]) <= 1.0)]
+        if bad_u:
+            c.fail(f"{label}: {len(bad_u)} step(s) with u_applied outside [0, 1] (first t={bad_u[0]})")
+        neg = [s.get("t") for s in steps if float(s.get("t", 0.0)) < 0.0]
+        if neg:
+            c.fail(f"{label}: {len(neg)} step(s) with t < 0")
+        if t.get("interlock_hit") is not False:
+            c.fail(f"{label}: interlock_hit={t.get('interlock_hit')!r}")
+        d_at = (t.get("trace") or {}).get("disturbance_at", pre_s)
+        n_post = sum(1 for s in steps if d_at is not None and float(s.get("t", -1.0)) >= float(d_at) - 1e-9)
+        if n_post == 0:
+            c.fail(f"{label}: empty post-change window (disturbance_at={d_at})")
+        if c.status != "FAIL":
+            c.note(f"{label} = {registered.get(sha, '?')} sha256 {sha[:16]}…, {len(steps)} steps, {n_post} post-change, "
+                   f"post_mae={t.get('post_mae')}")
+    if bv.get("comparison"):
+        c.note(f"comparison: {bv['comparison']}")
+    return c
+
+
 # ------------------------------------------------------------------------------------------------ driver
 def audit(run_dir: Path) -> list[Check]:
     run_dir = Path(run_dir)
@@ -339,6 +391,7 @@ def audit(run_dir: Path) -> list[Check]:
         check_registered_events(run_dir, events),
         check_authorship(run_dir, calls, is_mock),
         check_family_names(calls, is_mock, family),
+        check_board_verification(run_dir),
     ]
 
 

@@ -415,3 +415,24 @@ def test_changed_machine_twin_exposed(tmp_path: Path) -> None:
     assert dist["data"]["suite"] == "disturbance:changed_machine" and len(dist["data"]["episodes"]) == 10
     evs = app.get(f"/api/runs/{run_id}/events", params={"after": 4}).json()
     assert [e["kind"] for e in evs] == ["changed_twin_fitted", "evaluation"] and evs[1]["scored_on"] == "changed_machine_twin"
+
+
+def test_board_verification_absent_is_null(client: TestClient) -> None:
+    r = client.get(f"/api/runs/{RUN_ID}/board_verification")
+    assert r.status_code == 200 and r.json() is None
+    assert client.get("/api/runs/nope-20260101-000000-000000/board_verification").status_code == 404
+
+
+def test_board_verification_served_verbatim_with_nan_as_null(root: Path, client: TestClient) -> None:
+    bv = {"trials": [{"label": "v1", "controller_sha256": "a" * 64, "start_T_display": 31.2, "post_mae": 0.12,
+                      "post_in_band": 0.0, "overrides": 0, "hard_violations": 0, "invalid_outputs": 0, "interlock_hit": False,
+                      "trace": {"steps": [{"t": 0.0, "y": 0.27, "h_true": 0.27, "u_requested": 0.5, "u_applied": 0.5,
+                                           "override": False, "reason": "ok"}], "dt": 1.0, "target": 0.5,
+                                "disturbance_at": 300.0, "meta": {}}}],
+          "order": ["v1", "v2"], "pre_s": 300.0, "post_s": 600.0,
+          "disturbance": {"family": "heater_derate", "magnitude": 0.6, "applied_by": "trusted_actuator"},
+          "comparison": {"post_mae_v1": 0.12, "post_mae_v2": None, "reduction": None},
+          "twin_prediction": None, "prediction_vs_board": None, "prediction_basis": "none", "fake_board": True}
+    (root / RUN_ID / "board_verification.json").write_text(json.dumps(bv).replace('"reduction": null', '"reduction": NaN'))
+    got = client.get(f"/api/runs/{RUN_ID}/board_verification").json()
+    assert got == bv

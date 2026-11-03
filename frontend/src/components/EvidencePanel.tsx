@@ -11,8 +11,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CHANGED_MACHINE_SUITE, isCelsius, suiteLabel, toDisplay, TANK_DISPLAY, type DisplayProfile, type EvalFile, type Evaluations, type Json, type RepairVerdict, type RunDetail, type RunEvent } from "../api";
+import { CHANGED_MACHINE_SUITE, isCelsius, suiteLabel, toDisplay, TANK_DISPLAY, type BoardVerification, type DisplayProfile, type EvalFile, type Evaluations, type Json, type RepairVerdict, type RunDetail, type RunEvent } from "../api";
 import { downsample, fmtNum, fmtPct } from "../format";
+import BoardVerificationPanel from "./BoardVerificationPanel";
 
 const SERIES_COLORS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
 
@@ -327,12 +328,12 @@ function TraceCompare({ files, profile }: { files: EvalFile[]; profile: DisplayP
   );
 }
 
-export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stage, events }: { profile?: DisplayProfile; evals: Evaluations | null; run: RunDetail | null; stage: string; events: RunEvent[] }) {
+export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stage, events, board = null }: { profile?: DisplayProfile; evals: Evaluations | null; run: RunDetail | null; stage: string; events: RunEvent[]; board?: BoardVerification | null }) {
   const tf: Json | null = evals?.twin_fit ?? null;
   const changedSuite = !!evals?.disturbance.some((f) => f.data.suite === CHANGED_MACHINE_SUITE);
   const mon = evals?.monitoring;
   const lastStage = [...events].reverse().find((e) => e.kind === "stage");
-  const any = evals && (evals.heldout.length || evals.disturbance.length || evals.adaptation.length || mon);
+  const any = evals && (evals.heldout.length || evals.disturbance.length || evals.adaptation.length || mon || board);
   const usage: Json | null = run?.model_usage ?? null;
   const proto = evals?.protocol?.prompt_version ?? run?.prompt_version ?? null;
   return (
@@ -391,6 +392,7 @@ export default function EvidencePanel({ profile = TANK_DISPLAY, evals, run, stag
               </div>
             </div>
           ) : null}
+          {board && <BoardVerificationPanel bv={board} profile={profile} />}
           <TraceCompare files={evals!.disturbance} profile={profile} />
           {usage && ["DEPLOYABLE", "COMPLETE", "FAILED", "STOPPED"].includes(stage) && (
             <div className="muted small">

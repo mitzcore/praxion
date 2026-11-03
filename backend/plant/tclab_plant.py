@@ -289,6 +289,9 @@ class TCLabHardware(PlantAdapter):
 
     COOL_BELOW_C = 35.0
     COOL_TIMEOUT_S = 120.0
+    # Trusted actuator derate (family "pump_derate" only): from t >= at_t every step sends
+    # Q1 = 100 * u * (1 - m). Fixed and disclosed: hardware has no hidden seed to draw a default from.
+    TRUSTED_DERATE_DEFAULT = 0.35
 
     def __init__(
         self,
@@ -307,6 +310,7 @@ class TCLabHardware(PlantAdapter):
         self._next_tick: float | None = None
         self.overruns = 0
         self.serial_retries = 0
+        self._disturbances: list[DisturbanceSpec] = []
         _LIVE_BOARDS.add(self)
 
     @property
@@ -342,6 +346,7 @@ class TCLabHardware(PlantAdapter):
         self._k = 0
         self._next_tick = None
         self._T1 = T
+        self._disturbances = []
         return self.observe()
 
     is_physical = True
@@ -393,7 +398,7 @@ class TCLabHardware(PlantAdapter):
         if self._lab is None:
             raise RuntimeError("TCLabHardware.reset() must be called first")
         u = _validate_u(u_applied)
-        self._send_Q1(100.0 * u)
+        self._send_Q1(100.0 * u * self._derate_gain(self._t))
         self._wait_for_tick()
         self._k += 1
         return self.observe()
@@ -416,17 +421,42 @@ class TCLabHardware(PlantAdapter):
             self._next_tick += DT
 
     def true_state(self) -> dict:
-        """No hidden truth on hardware: the latest reading, normalized and unclamped."""
-        return {"h_true": (self._T1 - T_ZERO_C) / T_SPAN_C, "t": self._t}
+        """No hidden truth on hardware: the latest reading, normalized and unclamped. TRUSTED ONLY:
+        while a trusted actuator derate is in effect it is also reported as "trusted_disturbance"."""
+        out: dict[str, Any] = {"h_true": (self._T1 - T_ZERO_C) / T_SPAN_C, "t": self._t}
+        active = [d for d in self.applied_disturbances if self._t + 1e-9 >= d["at_t"]]
+        if active:
+            out["trusted_disturbance"] = active
+        return out
 
     def public_description(self) -> str:
         return PUBLIC_DESCRIPTION
 
     def schedule_disturbance(self, spec: DisturbanceSpec) -> None:
-        raise NotImplementedError(
-            "TCLabHardware: physical disturbances (fan, foam, weaker supply) are applied by the "
-            f"operator by hand; declare {spec.family!r} at t={spec.at_t} in the run log instead."
-        )
+        """Only "pump_derate" can be applied by trusted code on the board (the heater command is scaled
+        by 1 - magnitude from t >= at_t until the next reset). Every other family is physical (fan,
+        foam) and must be applied by the operator by hand."""
+        if spec.family != "pump_derate":
+            raise NotImplementedError(
+                "TCLabHardware: physical disturbances (fan, foam, weaker supply) are applied by the "
+                f"operator by hand; declare {spec.family!r} at t={spec.at_t} in the run log instead."
+            )
+        m = self.TRUSTED_DERATE_DEFAULT if spec.magnitude is None else float(spec.magnitude)
+        if not math.isfinite(m) or m < 0.0 or m > 1.0:
+            raise ValueError(f"pump_derate magnitude must be in [0, 1], got {m!r}")
+        self._disturbances.append(DisturbanceSpec(family="pump_derate", at_t=float(spec.at_t), magnitude=m))
+
+    @property
+    def applied_disturbances(self) -> list[dict]:
+        """Scheduled trusted disturbances since the last reset (read-only copy)."""
+        return [{"family": d.family, "at_t": d.at_t, "magnitude": d.magnitude} for d in self._disturbances]
+
+    def _derate_gain(self, t: float) -> float:
+        gain = 1.0
+        for d in self._disturbances:
+            if t + 1e-9 >= d.at_t:
+                gain *= max(0.0, 1.0 - float(d.magnitude or 0.0))
+        return gain
 
     def emergency_stop(self) -> None:
         self._heaters_off()

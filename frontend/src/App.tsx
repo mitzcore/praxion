@@ -3,6 +3,7 @@ import {
   api,
   type ControllerInfo,
   type Evaluations,
+  type BoardVerification,
   type ExperimentFacts,
   type Health,
   type RunDetail,
@@ -61,6 +62,7 @@ export default function App() {
   const [controllers, setControllers] = useState<ControllerInfo[]>([]);
   const [evals, setEvals] = useState<Evaluations | null>(null);
   const [expFacts, setExpFacts] = useState<ExperimentFacts[]>([]);
+  const [board, setBoard] = useState<BoardVerification | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(Date.now() / 1000);
 
@@ -99,6 +101,7 @@ export default function App() {
         api.controllers(id).then(setControllers).catch((e) => setError(`controllers: ${e.message}`));
         api.evaluations(id).then(setEvals).catch((e) => setError(`evaluations: ${e.message}`));
         api.experiments(id).then(setExpFacts).catch(() => setExpFacts([]));
+        api.boardVerification(id).then(setBoard).catch(() => setBoard(null));
       }, 400);
     },
     [],
@@ -123,6 +126,7 @@ export default function App() {
     setControllers([]);
     setEvals(null);
     setExpFacts([]);
+    setBoard(null);
     setError(null);
     refreshArtifacts(id);
 
@@ -211,8 +215,12 @@ export default function App() {
           twin_fit_after_change: events.some((e) => e.kind === "changed_twin_fitted") ? evals.twin_fit_after_change : null,
         }
       : null;
-    return { ctrls, ev };
-  }, [events, controllers, evals]);
+    // board_verification.json is written after the hardware run: in replay it appears once its
+    // board_verification event has been replayed (or, for bundles without that event, when the replay ends).
+    const boardSeen =
+      mode.kind === "normal" || events.some((e) => e.kind === "board_verification") || (mode.kind === "replay" && mode.done);
+    return { ctrls, ev, board: boardSeen ? board : null };
+  }, [events, controllers, evals, board, mode]);
 
   const stage = useMemo(() => {
     for (let i = events.length - 1; i >= 0; i--) if (events[i].kind === "stage") return events[i].to as string;
@@ -288,7 +296,7 @@ export default function App() {
           <PlantPanel profile={profile} events={events} monitoring={gated.ev?.monitoring ?? null} replay={mode.kind === "replay"} />
           <TimelinePanel events={events} facts={expFacts} profile={profile} />
           <CodePanel controllers={gated.ctrls} />
-          <EvidencePanel profile={profile} evals={gated.ev} run={run} stage={stage} events={events} />
+          <EvidencePanel profile={profile} evals={gated.ev} run={run} stage={stage} events={events} board={gated.board} />
         </main>
       )}
       <footer className="foot">
