@@ -1,0 +1,176 @@
+--- a/hwb4-20261103-164305-807be7/controller_v2.py
++++ b/hwb4-20261103-164305-807be7/controller_v3.py
+@@ -16,25 +16,30 @@
+     return 0.3 + (t - 0.547) / 0.78
+ 
+ def control(obs: dict, state: dict) -> tuple[float, dict]:
+-    Kp = 0.85
+-    Ki = 0.009
+-    Tf = 14.0
++    Kp = 0.75
++    Ki = 0.014
++    Tf = 12.0
+     UMAX = 0.95
+     UMIN = 0.0
+-    RLIM = 0.05
+-    I_AUTH = 0.15
+-    Kb = 0.035
+-    TSLOW = 45.0
+-    SET_THR = 0.035
+-    SET_HOLD = 30.0
+-    B_MIN = -0.15
+-    B_MAX = 0.65
++    RLIM = 0.06
++    I_AUTH = 0.35
++    Kb = 0.008
++    TSLOW = 50.0
++    SET_THR = 0.05
++    SET_HOLD = 15.0
++    B_MIN = -0.10
++    B_MAX = 0.25
++    K_NOM = 1.352
++    AMB = 0.17
++    K_MIN = 0.35
++    K_MAX = 1.80
++    K_TAU = 80.0
+     try:
+         y_raw = obs.get("y", 0.5)
+         tgt = obs.get("target", 0.5)
+         dt_in = obs.get("dt", 1.0)
+     except Exception:
+-        return 0.24, {"yf": 0.5, "ys": 0.5, "us": 0.24, "I": 0.0, "bias": 0.0, "st": 0.0, "u": 0.24}
++        return 0.24, {"yf": 0.5, "ys": 0.5, "us": 0.24, "I": 0.0, "bias": 0.0, "st": 0.0, "u": 0.24, "Kest": 1.352}
+     if not isinstance(state, dict):
+         state = {}
+     try:
+@@ -68,11 +73,6 @@
+         y = -0.2
+     if y > 1.2:
+         y = 1.2
+-    ff = _ff_for_target(target)
+-    if ff < UMIN:
+-        ff = UMIN
+-    if ff > UMAX:
+-        ff = UMAX
+     first = ("yf" not in state) or ("u" not in state)
+     try:
+         yf_prev = float(state.get("yf", y))
+@@ -95,11 +95,11 @@
+     if ys_prev > 1.0:
+         ys_prev = 1.0
+     try:
+-        us_prev = float(state.get("us", ff))
+-    except Exception:
+-        us_prev = ff
++        us_prev = float(state.get("us", 0.24))
++    except Exception:
++        us_prev = 0.24
+     if not math.isfinite(us_prev):
+-        us_prev = ff
++        us_prev = 0.24
+     if us_prev < UMIN:
+         us_prev = UMIN
+     if us_prev > UMAX:
+@@ -129,15 +129,25 @@
+     if st_old > 500.0:
+         st_old = 500.0
+     try:
+-        u_prev = float(state.get("u", ff))
+-    except Exception:
+-        u_prev = ff
++        u_prev = float(state.get("u", 0.24))
++    except Exception:
++        u_prev = 0.24
+     if not math.isfinite(u_prev):
+-        u_prev = ff
++        u_prev = 0.24
+     if u_prev < UMIN:
+         u_prev = UMIN
+     if u_prev > UMAX:
+         u_prev = UMAX
++    try:
++        Kest = float(state.get("Kest", K_NOM))
++    except Exception:
++        Kest = K_NOM
++    if not math.isfinite(Kest):
++        Kest = K_NOM
++    if Kest < K_MIN:
++        Kest = K_MIN
++    if Kest > K_MAX:
++        Kest = K_MAX
+     alpha = dt / (Tf + dt)
+     lim = 0.035 + 0.004 * dt
+     innov = y - yf_prev
+@@ -173,6 +183,33 @@
+         st_new = 0.0
+     if st_new > 500.0:
+         st_new = 500.0
++    Kest_new = Kest
++    if (not first) and st_new > SET_HOLD and us > 0.12 and ys > 0.25 and ys < 0.85 and us < 0.9:
++        denom = us if us > 0.08 else 0.08
++        Kraw = (ys - AMB) / denom
++        if Kraw < K_MIN:
++            Kraw = K_MIN
++        if Kraw > K_MAX:
++            Kraw = K_MAX
++        ak = dt / (K_TAU + dt)
++        Kest_new = Kest + ak * (Kraw - Kest)
++        if not math.isfinite(Kest_new):
++            Kest_new = Kest
++        if Kest_new < K_MIN:
++            Kest_new = K_MIN
++        if Kest_new > K_MAX:
++            Kest_new = K_MAX
++    ff_nom = _ff_for_target(target)
++    scale = K_NOM / Kest_new if Kest_new > 0.1 else 1.0
++    if scale < 0.6:
++        scale = 0.6
++    if scale > 3.0:
++        scale = 3.0
++    ff = ff_nom * scale
++    if ff < UMIN:
++        ff = UMIN
++    if ff > UMAX:
++        ff = UMAX
+     e = target - yf
+     I_lim = I_AUTH / Ki if Ki != 0 else 1e6
+     I_cand = I_old + e * dt
+@@ -189,19 +226,18 @@
+         if (u_test_fast > UMAX and e > 0.0) or (u_test_fast < UMIN and e < 0.0):
+             I_new = I_old
+     bias_new = bias_old
+-    if (not first) and st_new > SET_HOLD and us > 0.12:
+-        bc = bias_old + Kb * e * dt
+-        if bc > B_MAX:
+-            bc = B_MAX
+-        elif bc < B_MIN:
+-            bc = B_MIN
+-        u_test2 = ff + P + Ki * I_new + bc
+-        if (u_test2 > UMAX and e > 0.0) or (u_test2 < B_MIN and e < 0.0):
+-            pass
+-        elif (u_test2 > UMAX and e > 0.0) or (u_test2 < UMIN and e < 0.0):
+-            bias_new = bias_old
+-        else:
+-            bias_new = bc
++    if (not first) and st_new > SET_HOLD and us > 0.08 and abs(e) < 0.12:
++        if abs(e) > 0.008:
++            bc = bias_old + Kb * e * dt
++            if bc > B_MAX:
++                bc = B_MAX
++            elif bc < B_MIN:
++                bc = B_MIN
++            u_test2 = ff + P + Ki * I_new + bc
++            if (u_test2 > UMAX and e > 0.0) or (u_test2 < UMIN and e < 0.0):
++                bias_new = bias_old
++            else:
++                bias_new = bc
+     elif first:
+         bias_new = bias_old
+     u_raw = ff + P + Ki * I_new + bias_new
+@@ -235,5 +271,5 @@
+         u = 1.0
+     if u < 0.0:
+         u = 0.0
+-    new_state = {"yf": float(yf), "ys": float(ys), "us": float(us), "I": float(I_new), "bias": float(bias_new), "st": float(st_new), "u": float(u)}
++    new_state = {"yf": float(yf), "ys": float(ys), "us": float(us), "I": float(I_new), "bias": float(bias_new), "st": float(st_new), "u": float(u), "Kest": float(Kest_new)}
+     return float(u), new_state

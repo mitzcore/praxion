@@ -1,0 +1,159 @@
+--- a/hwb4-20261103-164305-807be7/controller_v3.py
++++ b/hwb4-20261103-164305-807be7/controller_v4.py
+@@ -1,51 +1,65 @@
+ import math
+ 
+-def _ff_for_target(t):
++AMB = 0.17
++K_NOM = 1.352
++K_MIN = 0.48
++K_MAX = 1.80
++UMAX = 0.95
++UMIN = 0.0
++
++def _ff_from_K(target, Kest):
++    t = target
+     if not math.isfinite(t):
+         t = 0.5
+     if t < 0.0:
+         t = 0.0
+     if t > 1.0:
+         t = 1.0
+-    if t <= 0.17:
++    if t <= AMB:
+         return 0.0
+-    if t <= 0.508:
+-        return (t - 0.17) / 1.352
+-    if t <= 0.547:
+-        return 0.25 + (t - 0.508) / 0.78
+-    return 0.3 + (t - 0.547) / 0.78
++    K = Kest
++    if not math.isfinite(K):
++        K = K_NOM
++    if K < K_MIN:
++        K = K_MIN
++    if K > K_MAX:
++        K = K_MAX
++    ff = (t - AMB) / K
++    if ff < UMIN:
++        ff = UMIN
++    if ff > UMAX:
++        ff = UMAX
++    return float(ff)
+ 
+ def control(obs: dict, state: dict) -> tuple[float, dict]:
+-    Kp = 0.75
+-    Ki = 0.014
+-    Tf = 12.0
+-    UMAX = 0.95
+-    UMIN = 0.0
+-    RLIM = 0.06
+-    I_AUTH = 0.35
+-    Kb = 0.008
+-    TSLOW = 50.0
+-    SET_THR = 0.05
+-    SET_HOLD = 15.0
++    Kp = 1.0
++    Ki = 0.025
++    Tf = 10.0
++    RLIM = 0.08
++    I_AUTH = 0.50
++    Kb = 0.015
+     B_MIN = -0.10
+-    B_MAX = 0.25
+-    K_NOM = 1.352
+-    AMB = 0.17
+-    K_MIN = 0.35
+-    K_MAX = 1.80
+-    K_TAU = 80.0
++    B_MAX = 0.30
++    TSLOW = 40.0
++    SET_THR = 0.06
++    SET_HOLD = 10.0
++    K_TAU = 35.0
++    E_FREEZE = 0.20
+     try:
+         y_raw = obs.get("y", 0.5)
+         tgt = obs.get("target", 0.5)
+         dt_in = obs.get("dt", 1.0)
+     except Exception:
+-        return 0.24, {"yf": 0.5, "ys": 0.5, "us": 0.24, "I": 0.0, "bias": 0.0, "st": 0.0, "u": 0.24, "Kest": 1.352}
++        return 0.24, {"yf": 0.5, "ys": 0.5, "us": 0.24, "I": 0.0, "bias": 0.0, "st": 0.0, "u": 0.24, "Kest": K_NOM}
+     if not isinstance(state, dict):
+         state = {}
+     try:
+         y_in = float(y_raw)
+     except Exception:
+-        y_in = float(state.get("yf", 0.5))
++        try:
++            y_in = float(state.get("yf", 0.5))
++        except Exception:
++            y_in = 0.5
+     try:
+         target = float(tgt)
+     except Exception:
+@@ -55,7 +69,7 @@
+     except Exception:
+         dt = 1.0
+     if not math.isfinite(y_in):
+-        y_in = float(state.get("yf", 0.5))
++        y_in = float(state.get("yf", 0.5)) if isinstance(state.get("yf", 0.5), (int, float)) else 0.5
+         if not math.isfinite(y_in):
+             y_in = 0.5
+     if not math.isfinite(target):
+@@ -184,7 +198,7 @@
+     if st_new > 500.0:
+         st_new = 500.0
+     Kest_new = Kest
+-    if (not first) and st_new > SET_HOLD and us > 0.12 and ys > 0.25 and ys < 0.85 and us < 0.9:
++    if (not first) and st_new > SET_HOLD and us > 0.10 and ys > 0.22 and ys < 0.85 and us < 0.92:
+         denom = us if us > 0.08 else 0.08
+         Kraw = (ys - AMB) / denom
+         if Kraw < K_MIN:
+@@ -199,17 +213,7 @@
+             Kest_new = K_MIN
+         if Kest_new > K_MAX:
+             Kest_new = K_MAX
+-    ff_nom = _ff_for_target(target)
+-    scale = K_NOM / Kest_new if Kest_new > 0.1 else 1.0
+-    if scale < 0.6:
+-        scale = 0.6
+-    if scale > 3.0:
+-        scale = 3.0
+-    ff = ff_nom * scale
+-    if ff < UMIN:
+-        ff = UMIN
+-    if ff > UMAX:
+-        ff = UMAX
++    ff = _ff_from_K(target, Kest_new)
+     e = target - yf
+     I_lim = I_AUTH / Ki if Ki != 0 else 1e6
+     I_cand = I_old + e * dt
+@@ -219,14 +223,14 @@
+         I_cand = -I_lim
+     P = Kp * e
+     I_new = I_cand
+-    u_test_fast = ff + P + Ki * I_cand + bias_old
+-    if abs(e) > 0.15:
++    u_test = ff + P + Ki * I_cand + bias_old
++    if abs(e) > E_FREEZE:
+         I_new = I_old
+     else:
+-        if (u_test_fast > UMAX and e > 0.0) or (u_test_fast < UMIN and e < 0.0):
++        if (u_test > UMAX and e > 0.0) or (u_test < UMIN and e < 0.0):
+             I_new = I_old
+     bias_new = bias_old
+-    if (not first) and st_new > SET_HOLD and us > 0.08 and abs(e) < 0.12:
++    if (not first) and st_new > SET_HOLD and us > 0.08 and abs(e) < 0.15:
+         if abs(e) > 0.008:
+             bc = bias_old + Kb * e * dt
+             if bc > B_MAX:
+@@ -238,8 +242,6 @@
+                 bias_new = bias_old
+             else:
+                 bias_new = bc
+-    elif first:
+-        bias_new = bias_old
+     u_raw = ff + P + Ki * I_new + bias_new
+     if not math.isfinite(u_raw):
+         u_raw = ff

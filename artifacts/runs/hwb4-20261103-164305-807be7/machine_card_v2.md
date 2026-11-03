@@ -1,0 +1,1 @@
+First-order heater tau~150-200s delay~20s ambient~0.17. Nominal K~1.1 hold for 0.5 ~0.24-0.29. Degraded K~0.50 hold for 0.5 ~0.62-0.68, same tau/ambient/delay, u in [0,1] safe below 0.85. Controller needs UMAX>=0.9 and extra ~0.38 steady authority with persistent-error learning; transient push via P+ff to yinf~0.67 to reach band in ~170s.

@@ -1,0 +1,1 @@
+First-order heater y in [0,1], u in [0,1], ambient ~0.17, pre K~1.35 tau~150-200s delay ~20s hold for 0.5 ~0.24-0.29, post K~0.5 tau/delay/ambient unchanged hold for 0.5 ~0.60-0.69. Noise large +/-0.03 with -0.08 dips. Target 0.5 band 0.475-0.525, soft 0.85 hard 0.9.

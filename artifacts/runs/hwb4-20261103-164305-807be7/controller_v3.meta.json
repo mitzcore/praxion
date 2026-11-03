@@ -1,0 +1,20 @@
+{
+  "id": "hwb4-20261103-164305-807be7-v3",
+  "run_id": "hwb4-20261103-164305-807be7",
+  "version": 3,
+  "path": "artifacts/runs/hwb4-20261103-164305-807be7/controller_v3.py",
+  "sha256": "6fc9d44b4c75bc32913245806d8e3be99d8e25e65e5c385740d97062497b4e2e",
+  "parent_id": "hwb4-20261103-164305-807be7-v2",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T22:54:12.111937+00:00",
+  "byte_length": 7082,
+  "rationale": "Kept proven filtering/outlier-rejection and safety but fixed under-actuation for halved gain: (1) added slow online gain estimate Kest that rescales feedforward as ff_nom*(1.352/Kest), (2) enlarged integral authority 0.15->0.35 and Ki 0.009->0.014 for interim drive before Kest converges, (3) relaxed settle gating 0.035/30s -> 0.05/15s and lowered us gate so bias/Kest can learn despite noise, (4) reduced Kp 0.85->0.75 and RLIM 0.05->0.06 to keep nominal transient without overshoot while allowing rise to ~0.62. This targets actuator_weaker directly instead of just pushing integral.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "y in [0,1] (0=15C,1=75C), u in [0,1] heater. Post-change model: y_ss ~ 0.17 + K*u with K~0.53 (was ~1.35), ambient ~0.17 unchanged, first-order tau ~200s unchanged, deadtime ~20s unchanged, sensor noise large (+/-0.03 with -0.07 dips) unchanged. Hold for target 0.5 is (0.5-0.17)/0.53 ~0.62 (was ~0.24). u=0.5 settles ~0.44, u=0.8 settles ~0.59, u=1.0 would settle ~0.70, so 0.5 remains reachable with u<0.95. No extra leak, no extra lag, no bias.",
+    "predicted_behavior": "Nominal plant: Kest stays ~1.35, ff~0.24, MAE ~0.005-0.01, in-band ~1.0 after 300s, energy ~90, no overrides, no overshoot past 0.60. Changed plant (K~0.53): initial same 0.51 kick, then I+Kest ramp u to ~0.60-0.65 within 200-280s, y reaches 0.45-0.48 by 150s and 0.48-0.52 by 300s, MAE after settling ~0.015-0.025, in-band >0.75, energy ~170-200, zero hard violations. If diagnosis wrong (e.g., faster loss), Kest would still raise ff but tau mismatch would leave small droop, still safe.",
+    "diagnosis": "Actuator weaker, not more loss / slower / sensor. Evidence: (a) u=0 cooling E2 pre (0.587->0.172 in 480s, ambient 0.12-0.20) vs E9 post (0.31->0.171 in 480s, ambient 0.171) shows same proportional decay rate and same ambient; faster-loss would be faster normalized decay and lower ambient. (b) Same-step u=0.5 E1 pre rise 0.379 in 200s to 0.553 still rising slope 0.0007 vs E10 post rise 0.171 to 0.339 still rising slope 0.0019: proportionally smaller rise with same curvature/delay (~20s flat in both), no 50-60s extra deadtime, no persistent -0.08 bias. (c) u=0.8 E12 rise 0.071 in 90s without early plateau, consistent with same tau ~200s but lower asymptote. Quantified: K_pre=(0.547-0.17)/0.3~1.26 and (0.508-0.17)/0.25~1.35, use 1.35; K_post from E10 (0.44-0.17)/0.5~0.54 and E12 (0.589-0.17)/0.8~0.52, use ~0.52-0.54 (~39% of old, -61%). Ambient ~0.17 unchanged, tau ~200-240s unchanged, delay ~20s unchanged.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

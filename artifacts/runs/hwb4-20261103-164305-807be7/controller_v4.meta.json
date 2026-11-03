@@ -1,0 +1,20 @@
+{
+  "id": "hwb4-20261103-164305-807be7-v4",
+  "run_id": "hwb4-20261103-164305-807be7",
+  "version": 4,
+  "path": "artifacts/runs/hwb4-20261103-164305-807be7/controller_v4.py",
+  "sha256": "ad1bbb3f6022ee1088c1261b66685b1f99e3bfdb07aff86f41683186810fcfbc",
+  "parent_id": "hwb4-20261103-164305-807be7-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T22:56:46.070789+00:00",
+  "byte_length": 7039,
+  "rationale": "Raised integral authority and sped up steady-state gain re-estimation so the hold power can move from ~0.24 to ~0.60-0.70. Kept the same filtered PI structure but: Ki 0.014->0.025 with I contribution 0.35->0.50, bias rate 0.008->0.015 with range to 0.30, Kest tau 80s->35s with settle hold 15s->10s and threshold 0.05->0.06, K_MIN 0.35->0.48 to cap ff at ~0.69, slow average 50s->40s, rate limit 0.06->0.08. This directly targets a weaker actuator while leaving nominal ff ~0.244 unchanged when Kest stays near 1.35.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater y in [0,1], u in [0,1], ambient ~0.17, pre K~1.35 tau~150-200s delay ~20s hold for 0.5 ~0.24-0.29, post K~0.5 tau/delay/ambient unchanged hold for 0.5 ~0.60-0.69. Noise large +/-0.03 with -0.08 dips. Target 0.5 band 0.475-0.525, soft 0.85 hard 0.9.",
+    "predicted_behavior": "Nominal: Kest stays ~1.3, ff~0.24, MAE ~0.005-0.007, in-band ~1.0, energy ~89, zero overrides. Degraded (K~0.5): Kest converges to ~0.5-0.8 in ~150-250s, ff rises to ~0.41-0.66, integral supplies remainder, y climbs from ~0.34 to 0.5 without overshoot >0.65, MAE ~0.015-0.025 after 300s, in-band >0.70, energy ~140-180, zero overrides/hard violations. If diagnosis wrong (faster loss) the same extra integral still reduces bias but tau mismatch would show as slower approach.",
+    "diagnosis": "Actuator weaker, not loss/delay/sensor. E1 u=0.5 rise 0.174->0.553 (+0.379 in 199s, still rising) vs E10 same u/start 0.168->0.339 (+0.171, slope still +0.0019): ratio ~0.45. E12 u=0.8 only +0.071 in 90s to 0.464, implying equilibrium ~0.53-0.61 vs pre-change ~0.8+. With tau ~170s, K_post=(yinf-0.17)/u ~0.49-0.55 vs K_pre~1.352 (E8 u=0.25 holds 0.508 => (0.508-0.17)/0.25=1.35). New gain ~37-42% of old, ~55-65% loss. E9 u=0 decay 0.294->0.171 ambient ~0.171 identical to E2 ambient ~0.172 with comparable slow slope, no faster fall, no 50s+ flat delay, no persistent bias: rules out outflow_increased, response_slower, sensor_changed.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

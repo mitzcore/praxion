@@ -1,0 +1,2963 @@
+{
+ "run_id": "hwb4-20261103-164305-807be7",
+ "stage": "FAILED",
+ "model_id": "muse-spark-1.3",
+ "agent_mode": "live",
+ "prompt_version": "v1.5",
+ "prompt_hash": "800a3f74457b2c8e",
+ "sandbox_mode": "docker",
+ "profile": {
+  "name": "tclab",
+  "dt": 1.0,
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "y_unit": "\u00b0C",
+  "y_scale": 60.0,
+  "y_offset": 15.0,
+  "episode_s": 900.0,
+  "settle_s": 300.0,
+  "eval_plant": "twin",
+  "operator_disturbance": false
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.75,
+      "evidence_refs": []
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0-0.1 due to heat loss.",
+      "confidence": 0.75,
+      "evidence_refs": []
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.4,
+      "evidence_refs": []
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.3,
+      "evidence_refs": []
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.5,
+      "evidence_refs": []
+     }
+    ],
+    "uncertainty_targeted": "Direction/magnitude of gain and lag: a first mid-level hold discriminates heating vs no response and measures rise rate and curvature needed for all later control design.",
+    "command_u": 0.5,
+    "duration_s": 200.0,
+    "safety_argument": "Worst-case level = 0.1681 + 0.006*0.5*200 = 0.7681, which stays below soft limit 0.85 with margin, using current y=0.1681 and no decay or lag credit.",
+    "expected_observation": "If positive-gain heater with lag is correct, y will rise monotonically from ~0.17 toward ~0.3-0.5 over 200 s with initially small slope that grows then flattens; end value clearly above start value and final slope still positive if not fully settled.",
+    "ready_to_generate": false,
+    "readiness_justification": "No experiments completed yet, so gain, lag, decay at u=0, linearity, steady-state input for 0.5, and noise are all unresolved; at least three experiments are required before a controller can be justified.",
+    "operator_note": "First probe: hold mid power 0.5 for 200 s to measure heating direction, rate and lag."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.775",
+    "u": 0.5,
+    "duration_s": 200.0
+   },
+   "status": "completed",
+   "t_start": 0.0
+  },
+  {
+   "id": "E2",
+   "phase": "discovery",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.75,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0-0.1 due to heat loss.",
+      "confidence": 0.6,
+      "evidence_refs": []
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.35,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.25,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.3,
+      "evidence_refs": [
+       "E1"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Decay behavior at u=0, ambient level, and cooling time constant / lag symmetry, which determines steady-state gain, hold power for 0.5, and controller integral time.",
+    "command_u": 0.0,
+    "duration_s": 480.0,
+    "safety_argument": "Worst-case trusted bound: current y 0.5559 + 0.006*0.0*480 = 0.5559, well below soft limit 0.85 with ~0.29 margin; at u=0 output cannot rise by this bound.",
+    "expected_observation": "If self-cooling first-order hypothesis is right, y will decay monotonically from ~0.56 toward ~0.15-0.25 over 480 s with most negative slope early (~-0.001 to -0.003 per s) flattening toward zero, crossing target 0.5 within tens of seconds; final 5-s slope near zero if settled, noise visible as +/-0.01-0.02 with possible larger dips as in E1.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 1 of required 3 experiments done. E1 confirms positive gain and ~100+s lag but leaves equilibrium for u=0.5 unresolved (still rising at 0.553, slope 0.0007, implying equilibrium >0.55). Linearity, u-needed-for-0.5, u=0 decay rate/ambient, and noise level remain unmeasured, so a controller cannot be justified yet.",
+    "operator_note": "Turning heater off for 480 s to measure natural cooldown from 0.56 and estimate ambient and time constant."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.589",
+    "u": 0.0,
+    "duration_s": 480.0
+   },
+   "status": "completed",
+   "t_start": 200.0
+  },
+  {
+   "id": "E3",
+   "phase": "discovery",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E2"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.45,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state input needed to hold target 0.5 and linearity: second amplitude at 0.4 discriminates whether 0.5 overshoots and estimates gain/intercept for control.",
+    "command_u": 0.4,
+    "duration_s": 270.0,
+    "safety_argument": "Worst-case bound from current y 0.1563 is 0.1563+0.006*0.4*270=0.804, below soft limit 0.85 with margin for noise, and u=0 cooling means actual rise will be much smaller.",
+    "expected_observation": "If linear first-order heater with hold power ~0.42 is right, y will rise monotonically from ~0.16 toward ~0.42-0.50 over 270 s with steepest slope early ~0.001-0.002/s flattening late; end value clearly above start but below E1 equilibrium (~0.55), final 5-s slope small positive if near settling. Overshoot above 0.55 or no rise would falsify gain/linearity estimate.",
+    "ready_to_generate": false,
+    "readiness_justification": "Only 2 experiments completed so 3-experiment minimum not met; direction and lag/cooling are resolved, but hold-power for 0.5, linearity at intermediate u, and noise magnitude remain unresolved and are needed for controller design, so another bounded hold is required.",
+    "operator_note": "Testing 0.4 power hold to pinpoint the steady level that holds target temperature."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.828",
+    "u": 0.4,
+    "duration_s": 270.0
+   },
+   "status": "completed",
+   "t_start": 680.0
+  },
+  {
+   "id": "E4",
+   "phase": "discovery",
+   "u_before": 0.4,
+   "t_since_last_command_change_s": null,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.08,
+      "evidence_refs": [
+       "E1",
+       "E3"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.55,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state input to hold target 0.5 and linearity at a third amplitude: 0.3 discriminates whether y holds near band versus decays well below, fixing feedforward and gain for control.",
+    "command_u": 0.3,
+    "duration_s": 150.0,
+    "safety_argument": "Worst-case bound 0.5447 + 0.006*0.3*150 = 0.8147 stays below soft limit 0.85 and hard cutoff 0.9, using no-decay no-lag assumption.",
+    "expected_observation": "If gain ~1.0 with ambient ~0.17 and hold ~0.33 is right, y starting ~0.54 will stay flat or drift slowly down toward ~0.48-0.52 over 150 s with small negative slope flattening toward zero, staying near band; noise +/-0.03 with occasional larger negative dips. Clear decay below 0.45 would imply lower gain/higher hold, rise above 0.58 would imply even 0.3 overshoots.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, self-cooling to ~0.17, lag of 100-200s time constant, large noise ~0.03-0.05, and falsification of 0.5 as hold are resolved. True settled equilibrium and exact hold power 0.30-0.35 remain extrapolated because E1 slope 0.0007 and E3 slope 0.0041 show neither settled, so a controller feedforward cannot yet be fixed; one discriminating mid-level hold near target is needed first.",
+    "operator_note": "Testing 0.3 power for 150 s to pin down the hold value for 0.5 temperature without tripping limits."
+   },
+   "verdict": {
+    "ok": false,
+    "reason": "worst-case bound 0.851 >= soft limit 0.85",
+    "u": null,
+    "duration_s": null
+   },
+   "status": "rejected",
+   "t_start": null
+  },
+  {
+   "id": "E5",
+   "phase": "discovery",
+   "u_before": 0.4,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.94,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.88,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.55,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E1",
+       "E3"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Steady-state hold power for y=0.5 and linearity at a third amplitude: 0.3 from above discriminates whether equilibrium is near band versus far below, fixing feedforward gain for control.",
+    "command_u": 0.3,
+    "duration_s": 140.0,
+    "safety_argument": "Worst-case bound 0.5817 + 0.006*0.3*140 = 0.8337 stays below soft limit 0.85 with no decay or lag credit.",
+    "expected_observation": "Starting ~0.58 above expected equilibrium for u=0.3, y will decay gradually toward ~0.43-0.50 over 140 s with small negative slope early (~-0.001 to -0.002/s) flattening late, staying near/just above band; noise +/-0.03 with occasional larger negative dips as in E1-E3. Flat hold near 0.58 or rise would falsify positive-loss model; fast drop below 0.40 would imply hold power higher than 0.30-0.35.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, self-cooling to ~0.17, large lag, large noise, and that 0.4-0.5 overshoot target are resolved. Not ready because hold power 0.30-0.35 has never been held to near-settling, linearity has only two non-zero amplitudes with unsettled slopes, and time constant/noise averaging for integral design remain uncertain; one mid-low hold from above is needed before control design.",
+    "operator_note": "Retrying the rejected 0.3 hold with a safe 140 s duration to test decay from above toward the target band."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.847",
+    "u": 0.3,
+    "duration_s": 140.0
+   },
+   "status": "completed",
+   "t_start": 950.0
+  },
+  {
+   "id": "E6",
+   "phase": "discovery",
+   "u_before": 0.3,
+   "t_since_last_command_change_s": null,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+      "confidence": 0.96,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+      "confidence": 0.93,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.62,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.55,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Whether u=0.3 equilibrium is at/above/below target 0.5 after settling, which fixes feedforward hold power and gain intercept needed for controller.",
+    "command_u": 0.3,
+    "duration_s": 160.0,
+    "safety_argument": "Worst-case bound 0.5505 + 0.006*0.3*160 = 0.8385 stays below soft limit 0.85 with no decay or lag credit.",
+    "expected_observation": "Starting ~0.55 at u=0.3 from above, y will decay only slowly toward ~0.45-0.55 over 160 s with small negative slope flattening late, staying near/just above band; noise +/-0.03 with occasional larger negative dips as in E1-E5. Flat hold near 0.55 would imply equilibrium for 0.3 is at/above 0.55 and hold <0.3; fast drop below 0.45 would imply hold >0.3.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, lag, ambient, large noise, and that 0.5 overshoots are resolved, but no hold has settled to zero slope so equilibrium for 0.3 vs 0.4 and exact feedforward for 0.5 remain uncertain, so one more settling hold is needed before control design.",
+    "operator_note": "Holding at 0.3 power to see where temperature settles from above and pin down power needed for 0.5."
+   },
+   "verdict": {
+    "ok": false,
+    "reason": "worst-case bound 0.853 >= soft limit 0.85",
+    "u": null,
+    "duration_s": null
+   },
+   "status": "rejected",
+   "t_start": null
+  },
+  {
+   "id": "E7",
+   "phase": "discovery",
+   "u_before": 0.3,
+   "t_since_last_command_change_s": 140.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: y takes tens to hundreds of seconds to approach equilibrium, time constant order 150-250 s.",
+      "confidence": 0.97,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.93,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.38, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising and u=0.3 decays only slowly from above.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Whether u=0.3 equilibrium is at/above/below target 0.5 after further settling, which fixes feedforward hold power and gain intercept and measures cooling time constant needed for controller integral time.",
+    "command_u": 0.3,
+    "duration_s": 150.0,
+    "safety_argument": "Conservative worst-case with no decay or lag: 0.5656 + 0.006*0.3*150 = 0.8356 stays below soft limit 0.85 with margin.",
+    "expected_observation": "Starting ~0.57 above expected equilibrium for u=0.3, y will decay slowly toward ~0.45-0.54 over 150 s with small negative slope early (~-0.001 to -0.002/s) flattening late, staying near/just above band; noise +/-0.03 with occasional larger negative dips to ~0.50 as in E1-E5. Flat hold near 0.56 would imply equilibrium >=0.56 and hold <0.3; fast drop below 0.44 would imply hold well above 0.3.",
+    "ready_to_generate": false,
+    "readiness_justification": "H1 direction, H2 long lag, H3 no deadzone, H4 ambient decay are resolved. H5 linearity, H8 exact hold power 0.30-0.38, settling time, and large noise (+/-0.03-0.08) remain unresolved because no hold has reached zero slope; one more settled hold at 0.3 is needed before feedforward plus PI can be sized, which is acceptable with 2 experiments left.",
+    "operator_note": "Continuing 0.3 hold to watch settling toward equilibrium for feedforward."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.829",
+    "u": 0.3,
+    "duration_s": 150.0
+   },
+   "status": "completed",
+   "t_start": 1090.0
+  },
+  {
+   "id": "E8",
+   "phase": "discovery",
+   "u_before": 0.3,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.99,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+      "confidence": 0.98,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 is ~0.24-0.29, below 0.3, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Precise steady-state hold power for y=0.5 and near-target variance, which fixes feedforward and determines whether integral/filtering can keep time-in-band despite large noise.",
+    "command_u": 0.25,
+    "duration_s": 180.0,
+    "safety_argument": "Worst-case bound 0.5441 + 0.006*0.25*180 = 0.8141 stays below soft limit 0.85 with margin, using no-decay no-lag assumption.",
+    "expected_observation": "Starting ~0.54 above expected equilibrium for u=0.25, y will decay slowly toward ~0.48-0.52 over 180 s with small negative slope early (~-0.001/s) flattening late, staying near/just above band 0.475-0.525; noise +/-0.03 with occasional larger negative dips to ~0.48 as in E1-E3/E5/E7. Flat hold near 0.55 would imply equilibrium >=0.55 and hold <0.25; fast drop below 0.44 would imply hold well above 0.25.",
+    "ready_to_generate": false,
+    "readiness_justification": "Direction, lag (~200s), ambient (~0.17), absence of deadzone, and large noise are resolved; precise hold power for 0.5 (0.25 vs 0.30) is not yet resolved to within the 0.025 band and matters for feedforward, so one more bounded hold near target is needed before a controller can be justified.",
+    "operator_note": "Holding at 0.25 power to pin down the energy needed to stay at target."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.818",
+    "u": 0.25,
+    "duration_s": 180.0
+   },
+   "status": "completed",
+   "t_start": 1240.0
+  },
+  {
+   "id": "E9",
+   "phase": "after_change",
+   "u_before": 0.46799737222498095,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E2",
+       "E3"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Steady-state gain is approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+      "confidence": 0.4,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Steady-state input needed to hold y=0.5 was ~0.24-0.29 before change, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.3,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~15-30 s) unchanged.",
+      "confidence": 0.3,
+      "evidence_refs": [
+       "E2"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower.",
+      "confidence": 0.35,
+      "evidence_refs": [
+       "E2"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E1",
+       "E2"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+      "confidence": 0.2,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Whether u=0 cooling rate/ambient and initial delay are unchanged, which discriminates increased loss vs weakened heater vs longer delay vs sensor bias and fixes new feedforward hold power and integral time.",
+    "command_u": 0.0,
+    "duration_s": 480.0,
+    "safety_argument": "Worst-case bound is current y 0.4109 + 0.006*0*480 = 0.4109, well below soft limit 0.85; u=0 cannot heat, only cools, with large margin to hard cutoff.",
+    "expected_observation": "If increased-loss (C2) is leading, y will hold/flat or creep up for ~15-30 s responding to in-transit prior ~0.47 command, then fall monotonically and faster than E2, dropping >0.10 in first 100 s from ~0.41 toward <0.20 by 300-400 s with slope ~-0.002 to -0.003/s early flattening late. If actuator-only weakening (C1) is true, fall rate and ambient will match E2 (~-0.001 to -0.002/s early, ambient 0.12-0.20). Flat >60 s before falling would indicate longer delay (C3); no fall with persistent ~-0.08 bias would favor sensor offset (C4).",
+    "ready_to_generate": false,
+    "readiness_justification": "No after-change experiments completed yet; closed-loop rise of u from 0.28 to 0.47 with y stuck at 0.46 to 0.41 confounds gain loss vs outflow vs delay vs sensor bias, so not ready; this u=0 hold will resolve delay, cooling rate and ambient before testing heating gain.",
+    "operator_note": "Draining at zero power to measure cooling rate and delay on changed plant."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.308",
+    "u": 0.0,
+    "duration_s": 480.0
+   },
+   "status": "completed",
+   "t_start": 904.0
+  },
+  {
+   "id": "E10",
+   "phase": "after_change",
+   "u_before": 0.0,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E9"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+      "confidence": 0.8,
+      "evidence_refs": [
+       "E2",
+       "E3",
+       "E9"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+      "confidence": 0.4,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.35,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+      "confidence": 0.45,
+      "evidence_refs": [
+       "E2",
+       "E9"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+      "confidence": 0.25,
+      "evidence_refs": [
+       "E2",
+       "E9"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E9"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+      "confidence": 0.1,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E9"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "Distinguishes weaker actuator (same time constant, proportionally smaller rise) from faster outflow (faster approach, lower plateau) by repeating E1 conditions exactly, which fixes new steady-state gain and hold power needed for control.",
+    "command_u": 0.5,
+    "duration_s": 200.0,
+    "safety_argument": "Current y 0.1746 with u=0 for 480 s so no high command in transit; worst-case rise 0.1746+0.006*0.5*200=0.7746 stays below soft limit 0.85 with ~0.075 margin and below hard cutoff 0.9.",
+    "expected_observation": "If leading C1 weaker-actuator is right, y will rise monotonically from ~0.17 toward ~0.30-0.36 over 200 s with small initial slope growing then flattening, ending far below E1's 0.55 from same start and still slowly rising; if C2 faster-loss is true, rise will plateau earlier/flatter and lower with relatively faster early approach; continued rise past 0.50 toward 0.55 like E1 would falsify both gain-reduction hypotheses.",
+    "ready_to_generate": false,
+    "readiness_justification": "E9 resolved that ambient (~0.17) and noise magnitude are unchanged and initial turn occurred within ~8-24 s, weakening C3 and C4, and showed much smaller effect of prior ~0.47 command plus depressed after-change trace, confirming gain reduction; remaining ambiguity is C1 vs C2 magnitude and speed, which requires a matched heating rise before controller redesign, so not ready.",
+    "operator_note": "Repeat original 0.5 heat step from low level to measure reduced gain and speed."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.758",
+    "u": 0.5,
+    "duration_s": 200.0
+   },
+   "status": "completed",
+   "t_start": 1384.0
+  },
+  {
+   "id": "E11",
+   "phase": "after_change",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": null,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.95,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E2",
+       "E3",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E10"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E10"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+      "confidence": 0.75,
+      "evidence_refs": [
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+      "confidence": 0.15,
+      "evidence_refs": [
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+      "confidence": 0.05,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E9",
+       "E10"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "New steady-state gain and hold power for y=0.5 after gain drop, which fixes feedforward and whether 0.5 is reachable with u<=1.",
+    "command_u": 0.8,
+    "duration_s": 100.0,
+    "safety_argument": "Worst-case bound 0.34 + 0.006*0.8*100 = 0.82 stays below soft limit 0.85 with margin for in-transit 0.5 command; no lag or cooling credited.",
+    "expected_observation": "If leading C1 weaker-actuator (~45-55% gain, same tau ~170s, same ambient/delay) is right, y will rise monotonically from ~0.34 toward ~0.60-0.65 equilibrium, gaining ~0.08-0.12 in 100 s to ~0.42-0.48 with slope ~0.0008-0.0015/s still positive at end and no flattening. If C2 faster-loss is true, rise will be smaller and flatten earlier toward ~0.40-0.45 plateau. Fall/no rise would falsify positive-gain; jump above 0.55 would falsify halved-gain estimate.",
+    "ready_to_generate": false,
+    "readiness_justification": "E10 shows halved rise (0.17 vs 0.38) with same start, ambient and ~20-30 s delay, strongly favoring weaker actuator over faster loss, slower response, or sensor bias; but new equilibrium/hold power for 0.5 is still poorly constrained because 0.5 is still rising at 0.34, so one higher-u probe is needed before designing controller.",
+    "operator_note": "Stepping to high heat briefly to measure new gain for retuning."
+   },
+   "verdict": {
+    "ok": false,
+    "reason": "worst-case bound 0.852 >= soft limit 0.85",
+    "u": null,
+    "duration_s": null
+   },
+   "status": "rejected",
+   "t_start": null
+  },
+  {
+   "id": "E12",
+   "phase": "after_change",
+   "u_before": 0.5,
+   "t_since_last_command_change_s": 0.0,
+   "proposal": {
+    "hypotheses": [
+     {
+      "id": "H1",
+      "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+      "confidence": 0.96,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H2",
+      "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+      "confidence": 0.7,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H3",
+      "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+      "confidence": 0.92,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H4",
+      "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+      "confidence": 0.9,
+      "evidence_refs": [
+       "E2",
+       "E3",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H5",
+      "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+      "confidence": 0.6,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E10"
+      ]
+     },
+     {
+      "id": "H6",
+      "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+      "confidence": 0.02,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E10"
+      ]
+     },
+     {
+      "id": "H7",
+      "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+      "confidence": 0.01,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E5",
+       "E7",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "H8",
+      "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+      "confidence": 0.65,
+      "evidence_refs": [
+       "E1",
+       "E3",
+       "E5",
+       "E7",
+       "E8"
+      ]
+     },
+     {
+      "id": "C1",
+      "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+      "confidence": 0.85,
+      "evidence_refs": [
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C2",
+      "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+      "confidence": 0.08,
+      "evidence_refs": [
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C3",
+      "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+      "confidence": 0.04,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E9",
+       "E10"
+      ]
+     },
+     {
+      "id": "C4",
+      "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+      "confidence": 0.03,
+      "evidence_refs": [
+       "E1",
+       "E2",
+       "E3",
+       "E9",
+       "E10"
+      ]
+     }
+    ],
+    "uncertainty_targeted": "New steady-state gain and hold power for y=0.5 after gain drop, discriminating weaker actuator (continued rise toward ~0.62) vs faster loss (early plateau ~0.40-0.45) and measuring delay from 0.5->0.8 step; this fixes feedforward and confirms 0.5 is reachable with u<=1.",
+    "command_u": 0.8,
+    "duration_s": 90.0,
+    "safety_argument": "Worst-case bound 0.3594 + 0.006*0.8*90 = 0.7914 < soft limit 0.85; in-transit command is only 0.5, leaving ~0.06 margin for lagged response and no high command in transit.",
+    "expected_observation": "If C1 weaker-actuator (~45% gain, same tau ~170s, same ambient/delay) is right, y will hold/flat for ~20-30s responding to prior u=0.5 in transit, then rise monotonically from ~0.36 toward ~0.60-0.63 equilibrium, gaining ~0.09-0.12 in 90s to ~0.45-0.48 with slope still positive ~0.0008-0.0015/s at end and no flattening. If C2 faster-loss is true, rise will be smaller and flatten early toward ~0.40-0.45 plateau. Flat >50s before rising would indicate C3 long delay; no rise or persistent -0.08 bias would favor C4.",
+    "ready_to_generate": false,
+    "readiness_justification": "C1 is leading (E9 ambient/delay match pre-change, E10 rise ~45% of E1 with same shape and still rising), but new steady-state gain and u needed to hold 0.5 (~0.55-0.65 predicted) remain uncertain and are required for feedforward; this final high-u hold resolves reachability and gain while testing delay, after which budget is zero so controller can be built with integral to cover residual gain error.",
+    "operator_note": "Holding high heat briefly to measure new gain and confirm target is still reachable."
+   },
+   "verdict": {
+    "ok": true,
+    "reason": "approved; worst-case bound 0.825",
+    "u": 0.8,
+    "duration_s": 90.0
+   },
+   "status": "completed",
+   "t_start": 1584.0
+  }
+ ],
+ "ledger_history": [
+  {
+   "after_experiment": null,
+   "ts": 1793742225.045729,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.75,
+     "evidence_refs": []
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0-0.1 due to heat loss.",
+     "confidence": 0.75,
+     "evidence_refs": []
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.4,
+     "evidence_refs": []
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.3,
+     "evidence_refs": []
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.5,
+     "evidence_refs": []
+    }
+   ]
+  },
+  {
+   "after_experiment": "E1",
+   "ts": 1793742453.736128,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0-0.1 due to heat loss.",
+     "confidence": 0.6,
+     "evidence_refs": []
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.35,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.25,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.3,
+     "evidence_refs": [
+      "E1"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E2",
+   "ts": 1793742973.628211,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E2"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.45,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E3",
+   "ts": 1793743297.845935,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E1",
+      "E3"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E4",
+   "ts": 1793743339.7707489,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.94,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.88,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E3"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E5",
+   "ts": 1793743526.1152709,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag/delay: y takes tens to hundreds of seconds to approach equilibrium.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.62,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.35, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.55,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E6",
+   "ts": 1793743580.443352,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: y takes tens to hundreds of seconds to approach equilibrium, time constant order 150-250 s.",
+     "confidence": 0.97,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.93,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.18 due to heat loss.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 1.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 is ~0.30-0.38, below 0.4, because both u=0.4 and u=0.5 exceeded 0.5 while still rising and u=0.3 decays only slowly from above.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E7",
+   "ts": 1793743785.355594,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.99,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+     "confidence": 0.98,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 is ~0.24-0.29, below 0.3, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E8",
+   "ts": 1793745124.7352278,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E2",
+      "E3"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Steady-state gain is approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+     "confidence": 0.4,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Steady-state input needed to hold y=0.5 was ~0.24-0.29 before change, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.3,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~15-30 s) unchanged.",
+     "confidence": 0.3,
+     "evidence_refs": [
+      "E2"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower.",
+     "confidence": 0.35,
+     "evidence_refs": [
+      "E2"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E1",
+      "E2"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+     "confidence": 0.2,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E9",
+   "ts": 1793745683.42122,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+     "confidence": 0.8,
+     "evidence_refs": [
+      "E2",
+      "E3",
+      "E9"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+     "confidence": 0.4,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.35,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+     "confidence": 0.45,
+     "evidence_refs": [
+      "E2",
+      "E9"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+     "confidence": 0.25,
+     "evidence_refs": [
+      "E2",
+      "E9"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E9"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+     "confidence": 0.1,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E9"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E10",
+   "ts": 1793745942.192149,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.95,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E2",
+      "E3",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E10"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E10"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+     "confidence": 0.75,
+     "evidence_refs": [
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+     "confidence": 0.15,
+     "evidence_refs": [
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+     "confidence": 0.05,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E9",
+      "E10"
+     ]
+    }
+   ]
+  },
+  {
+   "after_experiment": "E11",
+   "ts": 1793746007.701729,
+   "hypotheses": [
+    {
+     "id": "H1",
+     "statement": "Heater has positive steady-state gain: higher constant u yields higher equilibrium y.",
+     "confidence": 0.96,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H2",
+     "statement": "Step response has appreciable lag: time constant order 150-250 s (~200 s) to approach equilibrium.",
+     "confidence": 0.7,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H3",
+     "statement": "No large dead zone: even u=0.3-0.5 produces a clear rise compared to u=0.",
+     "confidence": 0.92,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H4",
+     "statement": "At u=0, y decays on its own toward low ambient near 0.12-0.20 due to heat loss.",
+     "confidence": 0.9,
+     "evidence_refs": [
+      "E2",
+      "E3",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H5",
+     "statement": "Pre-change steady-state gain was approximately linear in u across 0 to 0.5 with slope ~1.0-1.4 per unit u.",
+     "confidence": 0.6,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E10"
+     ]
+    },
+    {
+     "id": "H6",
+     "statement": "Constant u near 0.5 holds y near target 0.5 at equilibrium.",
+     "confidence": 0.02,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E10"
+     ]
+    },
+    {
+     "id": "H7",
+     "statement": "Sensor noise and short-term fluctuations are small (<~0.01) compared to control band width 0.05.",
+     "confidence": 0.01,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "H8",
+     "statement": "Pre-change steady-state input needed to hold y=0.5 was ~0.24-0.29, because u=0.3 settled near ~0.55 with flat slope while u=0.4 and 0.5 exceeded 0.5 while still rising.",
+     "confidence": 0.65,
+     "evidence_refs": [
+      "E1",
+      "E3",
+      "E5",
+      "E7",
+      "E8"
+     ]
+    },
+    {
+     "id": "C1",
+     "statement": "Change is weaker actuator: same u>0 gives smaller rise, but u=0 cooling rate/ambient (~0.12-0.20) and delay (~20-30 s) unchanged.",
+     "confidence": 0.85,
+     "evidence_refs": [
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C2",
+     "statement": "Change is faster outflow / increased heat loss: fall at u=0 is faster than in E2 and equilibrium for same u and ambient are lower, with shorter time constant.",
+     "confidence": 0.08,
+     "evidence_refs": [
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C3",
+     "statement": "Change is slower response: increased deadtime/time constant, delay from command change to first response >50-60 s vs ~20 s in E1/E2.",
+     "confidence": 0.04,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E9",
+      "E10"
+     ]
+    },
+    {
+     "id": "C4",
+     "statement": "Change is sensor offset/noise: true thermal dynamics unchanged but readings show persistent ~-0.07 to -0.10 bias and/or larger negative dips.",
+     "confidence": 0.03,
+     "evidence_refs": [
+      "E1",
+      "E2",
+      "E3",
+      "E9",
+      "E10"
+     ]
+    }
+   ]
+  }
+ ],
+ "candidates": [
+  {
+   "candidate_id": "hwb4-20261103-164305-807be7-v1",
+   "version": 1,
+   "parent_id": null,
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "800a3f74457b2c8e",
+   "submission_kind": "controller",
+   "submission": {
+    "machine_card": "Heater, positive gain, self-draining to room. u in [0,1] power, y in [0,1] temp (0=15C,1=75C). No deadzone: u=0.3-0.5 clearly heats. Ambient at u=0: ~0.12-0.20, mean ~0.17 (E2 decay 0.587 to 0.152 in 480s). Gain: near target ~0.78-0.80 (E8: u=0.25 holds 0.508 flat slope -0.0003; E7: u=0.30 holds 0.547 flat 0.0002; delta 0.039/0.05=0.78). Low-end secant ~1.35 ((0.508-0.17)/0.25). Hold for y=0.5 ~0.24 (interp: (0.5-0.17)/1.352=0.244; between settled points 0.25-0.010=0.24). E1 u=0.5 rises 0.174 to 0.553 in 200s still rising +0.0007/s, equilibrium >0.6. E3 u=0.4 rises to 0.527 still rising. Lag: first-order tau ~150-200s, no pure delay; rise/cool over 200-400s. Speed: typical 0.001-0.002/s, worst-case bound 0.006/s. Noise: base +/-0.015-0.02 plus frequent one-sample negative outliers -0.05 to -0.08 (E1 0.3884, E3 0.1923/0.3406, E7 0.4883, E8 0.4818/0.4839). Must filter, do not chase spikes. True y hidden; overshoot unseen in y still scored.",
+    "design_rationale": "Plant is first-order self-draining heater, tau~150s, positive gain, no deadzone. Near target gain K~0.78 from two settled points (0.25,0.508 in E8 and 0.30,0.547 in E7); low-end secant gain 1.35 from (0,0.17 in E2) to (0.25,0.508). Interpolated hold for 0.5 is 0.244. Use feedforward 0.244 + PI correcting residual. Kp=0.85 gives closed-loop tau~83s for settling <300s without aggressive saturation; Ki=0.009 (Ti~94s) removes offset in ~200s. Tf=14s low-pass + innovation clamp 0.035+0.004*dt rejects single-sample -0.05 to -0.08 negative spikes that cannot be physical (max rate 0.006/s) while adding only 14s lag vs 150s plant. Integral authority +-0.15 covers FF error up to 0.15, far larger than observed 0.05 uncertainty, but clamped to prevent windup; integration frozen when |e|>0.15 and when saturated to avoid cold-start overshoot. Umax=0.65 guarantees equilibrium <0.83 below soft 0.85/hard 0.9; rate limit 0.05/s suppresses chatter without slowing plant.",
+    "source_code": "import math\n\ndef _ff_for_target(t):\n    if not math.isfinite(t):\n        t = 0.5\n    if t < 0.0:\n        t = 0.0\n    if t > 1.0:\n        t = 1.0\n    if t <= 0.17:\n        return 0.0\n    if t <= 0.508:\n        return (t - 0.17) / 1.352\n    if t <= 0.547:\n        return 0.25 + (t - 0.508) / 0.78\n    return 0.3 + (t - 0.547) / 0.78\n\ndef control(obs, state):\n    Kp = 0.85\n    Ki = 0.009\n    Tf = 14.0\n    UMAX = 0.65\n    UMIN = 0.0\n    RLIM = 0.05\n    I_AUTH = 0.15\n    try:\n        y_raw = obs.get(\"y\", 0.5)\n        tgt = obs.get(\"target\", 0.5)\n        dt_in = obs.get(\"dt\", 1.0)\n    except Exception:\n        return 0.24, {\"yf\": 0.5, \"I\": 0.0, \"u\": 0.24}\n    if not isinstance(state, dict):\n        state = {}\n    try:\n        y = float(y_raw)\n    except Exception:\n        y = float(state.get(\"yf\", 0.5))\n    try:\n        target = float(tgt)\n    except Exception:\n        target = 0.5\n    try:\n        dt = float(dt_in)\n    except Exception:\n        dt = 1.0\n    if not math.isfinite(y):\n        y = float(state.get(\"yf\", 0.5))\n        if not math.isfinite(y):\n            y = 0.5\n    if not math.isfinite(target):\n        target = 0.5\n    if target < 0.0:\n        target = 0.0\n    if target > 1.0:\n        target = 1.0\n    if not math.isfinite(dt) or dt < 0.05:\n        dt = 0.05\n    if dt > 10.0:\n        dt = 10.0\n    if y < -0.2:\n        y = -0.2\n    if y > 1.2:\n        y = 1.2\n    ff = _ff_for_target(target)\n    if ff < UMIN:\n        ff = UMIN\n    if ff > UMAX:\n        ff = UMAX\n    first = (\"yf\" not in state) or (\"u\" not in state)\n    try:\n        yf_prev = float(state.get(\"yf\", y))\n    except Exception:\n        yf_prev = y\n    if not math.isfinite(yf_prev):\n        yf_prev = y\n    if yf_prev < 0.0:\n        yf_prev = 0.0\n    if yf_prev > 1.0:\n        yf_prev = 1.0\n    try:\n        I_old = float(state.get(\"I\", 0.0))\n    except Exception:\n        I_old = 0.0\n    if not math.isfinite(I_old):\n        I_old = 0.0\n    try:\n        u_prev = float(state.get(\"u\", ff))\n    except Exception:\n        u_prev = ff\n    if not math.isfinite(u_prev):\n        u_prev = ff\n    if u_prev < UMIN:\n        u_prev = UMIN\n    if u_prev > UMAX:\n        u_prev = UMAX\n    alpha = dt / (Tf + dt)\n    lim = 0.035 + 0.004 * dt\n    innov = y - yf_prev\n    if innov > lim:\n        innov = lim\n    elif innov < -lim:\n        innov = -lim\n    yf = yf_prev + alpha * innov\n    if not math.isfinite(yf):\n        yf = yf_prev\n    if yf < 0.0:\n        yf = 0.0\n    if yf > 1.0:\n        yf = 1.0\n    e = target - yf\n    I_lim = I_AUTH / Ki\n    I_cand = I_old + e * dt\n    if I_cand > I_lim:\n        I_cand = I_lim\n    elif I_cand < -I_lim:\n        I_cand = -I_lim\n    P = Kp * e\n    u_raw_cand = ff + P + Ki * I_cand\n    I_new = I_cand\n    u_raw = u_raw_cand\n    if abs(e) > 0.15:\n        I_new = I_old\n        u_raw = ff + P + Ki * I_old\n    else:\n        if (u_raw_cand > UMAX and e > 0.0) or (u_raw_cand < UMIN and e < 0.0):\n            I_new = I_old\n            u_raw = ff + P + Ki * I_old\n    u_sat = u_raw\n    if u_sat > UMAX:\n        u_sat = UMAX\n    elif u_sat < UMIN:\n        u_sat = UMIN\n    if not math.isfinite(u_sat):\n        u_sat = ff\n    if first:\n        u = u_sat\n    else:\n        max_du = RLIM * dt\n        du = u_sat - u_prev\n        if du > max_du:\n            du = max_du\n        elif du < -max_du:\n            du = -max_du\n        u = u_prev + du\n    if not math.isfinite(u):\n        u = ff\n    if u > 1.0:\n        u = 1.0\n    if u < 0.0:\n        u = 0.0\n    new_state = {\"yf\": float(yf), \"I\": float(I_new), \"u\": float(u)}\n    return float(u), new_state\n",
+    "predicted_behavior": "From cold ~0.17, u~0.52 initially, y rises monotonically, enters 0.475-0.525 in ~150-200s, settles by ~220-260s with overshoot <0.02 and no oscillation. Steady u~0.24 (0.22-0.26 depending on room), steady y~0.50+-0.01. After 300s, MAE ~0.008-0.012, time in band >85-95% limited only by filtered noise, energy ~0.06 per second (u^2~0.058). From above, cools similarly without undershoot below 0.45.",
+    "self_test_expectations": [
+     "control returns finite float in [0,1] on first call with empty state and on NaN/inf y, bad dt, missing keys without exception",
+     "with constant y=0.5,target=0.5 repeated calls u stays near 0.24 +-0.05 and does not drift or chatter >0.02 step-to-step",
+     "single-sample spike y=0.43 against filtered 0.50 moves u by <0.015",
+     "cold start y=0.2,target=0.5 gives u 0.45-0.60, not saturated at 0/1 and not exceeding 0.65",
+     "steady pair y=0.508,u=0.25 drives integral slightly negative to reach 0.50, no permanent offset",
+     "state remains JSON-serializable dict with only floats"
+    ],
+    "operator_note": "Keeps temperature at 0.5 automatically. Heats gently at about half power when cold, then settles to about 24% power to hold 0.5. Ignores brief sensor dips. Stays well below overheat limits. No action needed; do not add manual power."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.499083",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.244083; process alive, next valid step u=0.244296",
+    "inf_y: ok y=+inf: returned finite u=0.244083; process alive, next valid step u=0.244296",
+    "zero_dt: ok dt=0: returned finite u=0.414083; process alive, next valid step u=0.414083",
+    "negative_dt: ok dt=-0.1: returned finite u=0.414083; process alive, next valid step u=0.414083",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.400s (budget 10s)"
+   ],
+   "status": "approved"
+  },
+  {
+   "candidate_id": "hwb4-20261103-164305-807be7-v2",
+   "version": 2,
+   "parent_id": "hwb4-20261103-164305-807be7-v1",
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "800a3f74457b2c8e",
+   "submission_kind": "revision",
+   "submission": {
+    "diagnosis": "Actuator weaker to ~45% (gain 0.45-0.55x, Kpost~0.49-0.55 vs Kpre~1.1-1.27). Evidence: E10 u=0.5 from 0.168 reaches only 0.335 still rising slope 0.0019 vs E1 0.174->0.553; ratio 0.171/0.379=0.45. E12 u=0.8 from 0.393 gains 0.071 in 90s, with tau~170 implies yinf~0.57 =>K~0.50. E9 u=0 decay ambient 0.171 vs E2 0.172 with comparable early slope (~0.0005/s) and delay ~20s unchanged, so not outflow/faster, not sensor (no persistent -0.08 bias, rise still positive-gain). Old ff~0.24+auth 0.15 max ~0.39 cannot hold 0.5 needing ~0.67, explaining MAE 0.01->0.089 and in_band 0.50.",
+    "diagnosis_category": "actuator_weaker",
+    "change_summary": "Raised hard authority UMAX 0.65->0.95 and kept nominal fast PI (Kp 0.85/Ki 0.009/auth 0.15) unchanged for nominal transients. Added slow settled-gated bias integrator (Kb 0.035, range [-0.15,0.65], Tslow 45s, |yf-yslow|<0.035 persistent 30s, u_slow>0.12) that stays 0 during fast rise and during nominal hold but climbs ~0.38 extra when y stalls low with persistent error. Added anti-windup on saturation for both integrators and safety cut at yf>0.82. This targets 45% actuator gain with same tau/ambient/delay.",
+    "machine_card": "First-order heater tau~150-200s delay~20s ambient~0.17. Nominal K~1.1 hold for 0.5 ~0.24-0.29. Degraded K~0.50 hold for 0.5 ~0.62-0.68, same tau/ambient/delay, u in [0,1] safe below 0.85. Controller needs UMAX>=0.9 and extra ~0.38 steady authority with persistent-error learning; transient push via P+ff to yinf~0.67 to reach band in ~170s.",
+    "design_rationale": "E2 vs E9 u=0 decays reach same ambient ~0.17 at same speed, ruling out increased outflow. E1 delta 0.379 in 200s vs E10 delta 0.171 ratio 0.45 with same delay and still-rising slope rules out faster loss (which would settle early) and sensor bias. E12 u=0.8 equilibrium ~0.56 implies Kpost=(0.56-0.17)/0.8~0.49 vs Kpre~1.1 ratio ~0.45, hold for 0.5 moves 0.26->0.67 beyond old UMAX/auth. Fast PI alone cannot reach it and large-error freeze blocks learning. Slow bias gated by settled persistence learns the new hold only when stable offset persists, preserving nominal behavior.",
+    "source_code": "import math\n\ndef _ff_for_target(t):\n    if not math.isfinite(t):\n        t = 0.5\n    if t < 0.0:\n        t = 0.0\n    if t > 1.0:\n        t = 1.0\n    if t <= 0.17:\n        return 0.0\n    if t <= 0.508:\n        return (t - 0.17) / 1.352\n    if t <= 0.547:\n        return 0.25 + (t - 0.508) / 0.78\n    return 0.3 + (t - 0.547) / 0.78\n\ndef control(obs: dict, state: dict) -> tuple[float, dict]:\n    Kp = 0.85\n    Ki = 0.009\n    Tf = 14.0\n    UMAX = 0.95\n    UMIN = 0.0\n    RLIM = 0.05\n    I_AUTH = 0.15\n    Kb = 0.035\n    TSLOW = 45.0\n    SET_THR = 0.035\n    SET_HOLD = 30.0\n    B_MIN = -0.15\n    B_MAX = 0.65\n    try:\n        y_raw = obs.get(\"y\", 0.5)\n        tgt = obs.get(\"target\", 0.5)\n        dt_in = obs.get(\"dt\", 1.0)\n    except Exception:\n        return 0.24, {\"yf\": 0.5, \"ys\": 0.5, \"us\": 0.24, \"I\": 0.0, \"bias\": 0.0, \"st\": 0.0, \"u\": 0.24}\n    if not isinstance(state, dict):\n        state = {}\n    try:\n        y_in = float(y_raw)\n    except Exception:\n        y_in = float(state.get(\"yf\", 0.5))\n    try:\n        target = float(tgt)\n    except Exception:\n        target = 0.5\n    try:\n        dt = float(dt_in)\n    except Exception:\n        dt = 1.0\n    if not math.isfinite(y_in):\n        y_in = float(state.get(\"yf\", 0.5))\n        if not math.isfinite(y_in):\n            y_in = 0.5\n    if not math.isfinite(target):\n        target = 0.5\n    if target < 0.0:\n        target = 0.0\n    if target > 1.0:\n        target = 1.0\n    if not math.isfinite(dt) or dt < 0.05:\n        dt = 0.05\n    if dt > 10.0:\n        dt = 10.0\n    y = y_in\n    if y < -0.2:\n        y = -0.2\n    if y > 1.2:\n        y = 1.2\n    ff = _ff_for_target(target)\n    if ff < UMIN:\n        ff = UMIN\n    if ff > UMAX:\n        ff = UMAX\n    first = (\"yf\" not in state) or (\"u\" not in state)\n    try:\n        yf_prev = float(state.get(\"yf\", y))\n    except Exception:\n        yf_prev = y\n    if not math.isfinite(yf_prev):\n        yf_prev = y\n    if yf_prev < 0.0:\n        yf_prev = 0.0\n    if yf_prev > 1.0:\n        yf_prev = 1.0\n    try:\n        ys_prev = float(state.get(\"ys\", yf_prev))\n    except Exception:\n        ys_prev = yf_prev\n    if not math.isfinite(ys_prev):\n        ys_prev = yf_prev\n    if ys_prev < 0.0:\n        ys_prev = 0.0\n    if ys_prev > 1.0:\n        ys_prev = 1.0\n    try:\n        us_prev = float(state.get(\"us\", ff))\n    except Exception:\n        us_prev = ff\n    if not math.isfinite(us_prev):\n        us_prev = ff\n    if us_prev < UMIN:\n        us_prev = UMIN\n    if us_prev > UMAX:\n        us_prev = UMAX\n    try:\n        I_old = float(state.get(\"I\", 0.0))\n    except Exception:\n        I_old = 0.0\n    if not math.isfinite(I_old):\n        I_old = 0.0\n    try:\n        bias_old = float(state.get(\"bias\", 0.0))\n    except Exception:\n        bias_old = 0.0\n    if not math.isfinite(bias_old):\n        bias_old = 0.0\n    if bias_old < B_MIN:\n        bias_old = B_MIN\n    if bias_old > B_MAX:\n        bias_old = B_MAX\n    try:\n        st_old = float(state.get(\"st\", 0.0))\n    except Exception:\n        st_old = 0.0\n    if not math.isfinite(st_old) or st_old < 0.0:\n        st_old = 0.0\n    if st_old > 500.0:\n        st_old = 500.0\n    try:\n        u_prev = float(state.get(\"u\", ff))\n    except Exception:\n        u_prev = ff\n    if not math.isfinite(u_prev):\n        u_prev = ff\n    if u_prev < UMIN:\n        u_prev = UMIN\n    if u_prev > UMAX:\n        u_prev = UMAX\n    alpha = dt / (Tf + dt)\n    lim = 0.035 + 0.004 * dt\n    innov = y - yf_prev\n    if innov > lim:\n        innov = lim\n    elif innov < -lim:\n        innov = -lim\n    yf = yf_prev + alpha * innov\n    if not math.isfinite(yf):\n        yf = yf_prev\n    if yf < 0.0:\n        yf = 0.0\n    if yf > 1.0:\n        yf = 1.0\n    a_s = dt / (TSLOW + dt)\n    ys = ys_prev + a_s * (yf - ys_prev)\n    if not math.isfinite(ys):\n        ys = ys_prev\n    us = us_prev + a_s * (u_prev - us_prev)\n    if not math.isfinite(us):\n        us = us_prev\n    if ys < 0.0:\n        ys = 0.0\n    if ys > 1.0:\n        ys = 1.0\n    if us < UMIN:\n        us = UMIN\n    if us > UMAX:\n        us = UMAX\n    if abs(yf - ys) < SET_THR:\n        st_new = st_old + dt\n    else:\n        st_new = 0.0\n    if st_new > 500.0:\n        st_new = 500.0\n    e = target - yf\n    I_lim = I_AUTH / Ki if Ki != 0 else 1e6\n    I_cand = I_old + e * dt\n    if I_cand > I_lim:\n        I_cand = I_lim\n    elif I_cand < -I_lim:\n        I_cand = -I_lim\n    P = Kp * e\n    I_new = I_cand\n    u_test_fast = ff + P + Ki * I_cand + bias_old\n    if abs(e) > 0.15:\n        I_new = I_old\n    else:\n        if (u_test_fast > UMAX and e > 0.0) or (u_test_fast < UMIN and e < 0.0):\n            I_new = I_old\n    bias_new = bias_old\n    if (not first) and st_new > SET_HOLD and us > 0.12:\n        bc = bias_old + Kb * e * dt\n        if bc > B_MAX:\n            bc = B_MAX\n        elif bc < B_MIN:\n            bc = B_MIN\n        u_test2 = ff + P + Ki * I_new + bc\n        if (u_test2 > UMAX and e > 0.0) or (u_test2 < B_MIN and e < 0.0):\n            pass\n        elif (u_test2 > UMAX and e > 0.0) or (u_test2 < UMIN and e < 0.0):\n            bias_new = bias_old\n        else:\n            bias_new = bc\n    elif first:\n        bias_new = bias_old\n    u_raw = ff + P + Ki * I_new + bias_new\n    if not math.isfinite(u_raw):\n        u_raw = ff\n        I_new = I_old\n        bias_new = bias_old\n    u_sat = u_raw\n    if u_sat > UMAX:\n        u_sat = UMAX\n    elif u_sat < UMIN:\n        u_sat = UMIN\n    if yf > 0.82:\n        u_sat = UMIN\n        I_new = I_old\n        bias_new = bias_old\n        st_new = 0.0\n    if first:\n        u = u_sat\n    else:\n        max_du = RLIM * dt\n        du = u_sat - u_prev\n        if du > max_du:\n            du = max_du\n        elif du < -max_du:\n            du = -max_du\n        u = u_prev + du\n    if not math.isfinite(u):\n        u = ff\n    if u > 1.0:\n        u = 1.0\n    if u < 0.0:\n        u = 0.0\n    new_state = {\"yf\": float(yf), \"ys\": float(ys), \"us\": float(us), \"I\": float(I_new), \"bias\": float(bias_new), \"st\": float(st_new), \"u\": float(u)}\n    return float(u), new_state\n",
+    "predicted_behavior": "Nominal: bias stays 0+-0.03, u~0.26, MAE~0.005-0.01 in_band~1.0 unchanged. Degraded (K~0.45x): initial u~0.54 stalls near 0.32, settled detector enables after ~150s, bias ramps ~0.0025-0.003/s to ~0.38 in ~150s, total u~0.65, y reaches 0.475-0.525 by ~350s and stays, post-300s in_band>0.85 MAE~0.01-0.015 no overrides/violations.",
+    "self_test_expectations": [
+     "cold start y=0.15 target 0.5 first u 0.50-0.60 finite in [0,1]",
+     "50 steps with dt 1-6s stays finite no NaN/inf and |du|<=0.05*dt+eps",
+     "NaN/inf y returns finite u using last yf and state updates",
+     "dt 0 or negative clamps to 0.05 and stays finite deterministic",
+     "settled low y=0.35 u_slow=0.35 for 60s with target 0.5 increases bias by 0.05-0.15 and u rises",
+     "settled at target y=0.50 bias drift <0.02 over 100s",
+     "yf>0.83 forces u near 0"
+    ],
+    "operator_note": "No action needed nominally. After change expect u mean ~0.62-0.68 to hold 0.5 (vs 0.26 before) and higher energy ~2x. Do not limit u to 0.65. Allow 300-400s to relearn after cold start; bias adapts only when settled 30s to reject noise dips. Safety cut at 0.82 prevents hard cutoff at 0.9."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.499083",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.244083; process alive, next valid step u=0.244296",
+    "inf_y: ok y=+inf: returned finite u=0.244083; process alive, next valid step u=0.244296",
+    "zero_dt: ok dt=0: returned finite u=0.414083; process alive, next valid step u=0.414083",
+    "negative_dt: ok dt=-0.1: returned finite u=0.414083; process alive, next valid step u=0.414083",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.350s (budget 10s)"
+   ],
+   "status": "failed_gate"
+  },
+  {
+   "candidate_id": "hwb4-20261103-164305-807be7-v3",
+   "version": 3,
+   "parent_id": "hwb4-20261103-164305-807be7-v2",
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "800a3f74457b2c8e",
+   "submission_kind": "revision",
+   "submission": {
+    "diagnosis": "Actuator weaker, not more loss / slower / sensor. Evidence: (a) u=0 cooling E2 pre (0.587->0.172 in 480s, ambient 0.12-0.20) vs E9 post (0.31->0.171 in 480s, ambient 0.171) shows same proportional decay rate and same ambient; faster-loss would be faster normalized decay and lower ambient. (b) Same-step u=0.5 E1 pre rise 0.379 in 200s to 0.553 still rising slope 0.0007 vs E10 post rise 0.171 to 0.339 still rising slope 0.0019: proportionally smaller rise with same curvature/delay (~20s flat in both), no 50-60s extra deadtime, no persistent -0.08 bias. (c) u=0.8 E12 rise 0.071 in 90s without early plateau, consistent with same tau ~200s but lower asymptote. Quantified: K_pre=(0.547-0.17)/0.3~1.26 and (0.508-0.17)/0.25~1.35, use 1.35; K_post from E10 (0.44-0.17)/0.5~0.54 and E12 (0.589-0.17)/0.8~0.52, use ~0.52-0.54 (~39% of old, -61%). Ambient ~0.17 unchanged, tau ~200-240s unchanged, delay ~20s unchanged.",
+    "diagnosis_category": "actuator_weaker",
+    "change_summary": "Kept proven filtering/outlier-rejection and safety but fixed under-actuation for halved gain: (1) added slow online gain estimate Kest that rescales feedforward as ff_nom*(1.352/Kest), (2) enlarged integral authority 0.15->0.35 and Ki 0.009->0.014 for interim drive before Kest converges, (3) relaxed settle gating 0.035/30s -> 0.05/15s and lowered us gate so bias/Kest can learn despite noise, (4) reduced Kp 0.85->0.75 and RLIM 0.05->0.06 to keep nominal transient without overshoot while allowing rise to ~0.62. This targets actuator_weaker directly instead of just pushing integral.",
+    "machine_card": "y in [0,1] (0=15C,1=75C), u in [0,1] heater. Post-change model: y_ss ~ 0.17 + K*u with K~0.53 (was ~1.35), ambient ~0.17 unchanged, first-order tau ~200s unchanged, deadtime ~20s unchanged, sensor noise large (+/-0.03 with -0.07 dips) unchanged. Hold for target 0.5 is (0.5-0.17)/0.53 ~0.62 (was ~0.24). u=0.5 settles ~0.44, u=0.8 settles ~0.59, u=1.0 would settle ~0.70, so 0.5 remains reachable with u<0.95. No extra leak, no extra lag, no bias.",
+    "design_rationale": "Zero-input decays prove outflow/tau unchanged, so fix must rescale steady-state input, not add damping or delay compensation. E2 vs E9: ambient ~0.17 both, normalized decay (y-0.17) decays ~3x slower in absolute but from 3x smaller initial delta, consistent with same tau ~200s. E1 vs E10 repeat of u=0.5: 0.174->0.553 vs 0.168->0.339 in 200s, still rising, implies y_inf ~0.84 vs ~0.44, K ~1.35 vs ~0.53. E12 u=0.8 0.393->0.464 in 90s implies y_inf ~0.59, K~0.52, confirming ~0.39x gain. Old ff 0.24 holds 0.5 nominally but needs 0.62 after change; old I_AUTH 0.15 + settled-gated bias could not build 0.38 in time. Gain-scaling ff generalizes to any target (u*=(t-a)/K), while larger/faster integral bridges the 100-200s before Kest converges. Keeping Kp modest and freezing integrators on saturation/large error preserves nominal no-overshoot.",
+    "source_code": "import math\n\ndef _ff_for_target(t):\n    if not math.isfinite(t):\n        t = 0.5\n    if t < 0.0:\n        t = 0.0\n    if t > 1.0:\n        t = 1.0\n    if t <= 0.17:\n        return 0.0\n    if t <= 0.508:\n        return (t - 0.17) / 1.352\n    if t <= 0.547:\n        return 0.25 + (t - 0.508) / 0.78\n    return 0.3 + (t - 0.547) / 0.78\n\ndef control(obs: dict, state: dict) -> tuple[float, dict]:\n    Kp = 0.75\n    Ki = 0.014\n    Tf = 12.0\n    UMAX = 0.95\n    UMIN = 0.0\n    RLIM = 0.06\n    I_AUTH = 0.35\n    Kb = 0.008\n    TSLOW = 50.0\n    SET_THR = 0.05\n    SET_HOLD = 15.0\n    B_MIN = -0.10\n    B_MAX = 0.25\n    K_NOM = 1.352\n    AMB = 0.17\n    K_MIN = 0.35\n    K_MAX = 1.80\n    K_TAU = 80.0\n    try:\n        y_raw = obs.get(\"y\", 0.5)\n        tgt = obs.get(\"target\", 0.5)\n        dt_in = obs.get(\"dt\", 1.0)\n    except Exception:\n        return 0.24, {\"yf\": 0.5, \"ys\": 0.5, \"us\": 0.24, \"I\": 0.0, \"bias\": 0.0, \"st\": 0.0, \"u\": 0.24, \"Kest\": 1.352}\n    if not isinstance(state, dict):\n        state = {}\n    try:\n        y_in = float(y_raw)\n    except Exception:\n        y_in = float(state.get(\"yf\", 0.5))\n    try:\n        target = float(tgt)\n    except Exception:\n        target = 0.5\n    try:\n        dt = float(dt_in)\n    except Exception:\n        dt = 1.0\n    if not math.isfinite(y_in):\n        y_in = float(state.get(\"yf\", 0.5))\n        if not math.isfinite(y_in):\n            y_in = 0.5\n    if not math.isfinite(target):\n        target = 0.5\n    if target < 0.0:\n        target = 0.0\n    if target > 1.0:\n        target = 1.0\n    if not math.isfinite(dt) or dt < 0.05:\n        dt = 0.05\n    if dt > 10.0:\n        dt = 10.0\n    y = y_in\n    if y < -0.2:\n        y = -0.2\n    if y > 1.2:\n        y = 1.2\n    first = (\"yf\" not in state) or (\"u\" not in state)\n    try:\n        yf_prev = float(state.get(\"yf\", y))\n    except Exception:\n        yf_prev = y\n    if not math.isfinite(yf_prev):\n        yf_prev = y\n    if yf_prev < 0.0:\n        yf_prev = 0.0\n    if yf_prev > 1.0:\n        yf_prev = 1.0\n    try:\n        ys_prev = float(state.get(\"ys\", yf_prev))\n    except Exception:\n        ys_prev = yf_prev\n    if not math.isfinite(ys_prev):\n        ys_prev = yf_prev\n    if ys_prev < 0.0:\n        ys_prev = 0.0\n    if ys_prev > 1.0:\n        ys_prev = 1.0\n    try:\n        us_prev = float(state.get(\"us\", 0.24))\n    except Exception:\n        us_prev = 0.24\n    if not math.isfinite(us_prev):\n        us_prev = 0.24\n    if us_prev < UMIN:\n        us_prev = UMIN\n    if us_prev > UMAX:\n        us_prev = UMAX\n    try:\n        I_old = float(state.get(\"I\", 0.0))\n    except Exception:\n        I_old = 0.0\n    if not math.isfinite(I_old):\n        I_old = 0.0\n    try:\n        bias_old = float(state.get(\"bias\", 0.0))\n    except Exception:\n        bias_old = 0.0\n    if not math.isfinite(bias_old):\n        bias_old = 0.0\n    if bias_old < B_MIN:\n        bias_old = B_MIN\n    if bias_old > B_MAX:\n        bias_old = B_MAX\n    try:\n        st_old = float(state.get(\"st\", 0.0))\n    except Exception:\n        st_old = 0.0\n    if not math.isfinite(st_old) or st_old < 0.0:\n        st_old = 0.0\n    if st_old > 500.0:\n        st_old = 500.0\n    try:\n        u_prev = float(state.get(\"u\", 0.24))\n    except Exception:\n        u_prev = 0.24\n    if not math.isfinite(u_prev):\n        u_prev = 0.24\n    if u_prev < UMIN:\n        u_prev = UMIN\n    if u_prev > UMAX:\n        u_prev = UMAX\n    try:\n        Kest = float(state.get(\"Kest\", K_NOM))\n    except Exception:\n        Kest = K_NOM\n    if not math.isfinite(Kest):\n        Kest = K_NOM\n    if Kest < K_MIN:\n        Kest = K_MIN\n    if Kest > K_MAX:\n        Kest = K_MAX\n    alpha = dt / (Tf + dt)\n    lim = 0.035 + 0.004 * dt\n    innov = y - yf_prev\n    if innov > lim:\n        innov = lim\n    elif innov < -lim:\n        innov = -lim\n    yf = yf_prev + alpha * innov\n    if not math.isfinite(yf):\n        yf = yf_prev\n    if yf < 0.0:\n        yf = 0.0\n    if yf > 1.0:\n        yf = 1.0\n    a_s = dt / (TSLOW + dt)\n    ys = ys_prev + a_s * (yf - ys_prev)\n    if not math.isfinite(ys):\n        ys = ys_prev\n    us = us_prev + a_s * (u_prev - us_prev)\n    if not math.isfinite(us):\n        us = us_prev\n    if ys < 0.0:\n        ys = 0.0\n    if ys > 1.0:\n        ys = 1.0\n    if us < UMIN:\n        us = UMIN\n    if us > UMAX:\n        us = UMAX\n    if abs(yf - ys) < SET_THR:\n        st_new = st_old + dt\n    else:\n        st_new = 0.0\n    if st_new > 500.0:\n        st_new = 500.0\n    Kest_new = Kest\n    if (not first) and st_new > SET_HOLD and us > 0.12 and ys > 0.25 and ys < 0.85 and us < 0.9:\n        denom = us if us > 0.08 else 0.08\n        Kraw = (ys - AMB) / denom\n        if Kraw < K_MIN:\n            Kraw = K_MIN\n        if Kraw > K_MAX:\n            Kraw = K_MAX\n        ak = dt / (K_TAU + dt)\n        Kest_new = Kest + ak * (Kraw - Kest)\n        if not math.isfinite(Kest_new):\n            Kest_new = Kest\n        if Kest_new < K_MIN:\n            Kest_new = K_MIN\n        if Kest_new > K_MAX:\n            Kest_new = K_MAX\n    ff_nom = _ff_for_target(target)\n    scale = K_NOM / Kest_new if Kest_new > 0.1 else 1.0\n    if scale < 0.6:\n        scale = 0.6\n    if scale > 3.0:\n        scale = 3.0\n    ff = ff_nom * scale\n    if ff < UMIN:\n        ff = UMIN\n    if ff > UMAX:\n        ff = UMAX\n    e = target - yf\n    I_lim = I_AUTH / Ki if Ki != 0 else 1e6\n    I_cand = I_old + e * dt\n    if I_cand > I_lim:\n        I_cand = I_lim\n    elif I_cand < -I_lim:\n        I_cand = -I_lim\n    P = Kp * e\n    I_new = I_cand\n    u_test_fast = ff + P + Ki * I_cand + bias_old\n    if abs(e) > 0.15:\n        I_new = I_old\n    else:\n        if (u_test_fast > UMAX and e > 0.0) or (u_test_fast < UMIN and e < 0.0):\n            I_new = I_old\n    bias_new = bias_old\n    if (not first) and st_new > SET_HOLD and us > 0.08 and abs(e) < 0.12:\n        if abs(e) > 0.008:\n            bc = bias_old + Kb * e * dt\n            if bc > B_MAX:\n                bc = B_MAX\n            elif bc < B_MIN:\n                bc = B_MIN\n            u_test2 = ff + P + Ki * I_new + bc\n            if (u_test2 > UMAX and e > 0.0) or (u_test2 < UMIN and e < 0.0):\n                bias_new = bias_old\n            else:\n                bias_new = bc\n    elif first:\n        bias_new = bias_old\n    u_raw = ff + P + Ki * I_new + bias_new\n    if not math.isfinite(u_raw):\n        u_raw = ff\n        I_new = I_old\n        bias_new = bias_old\n    u_sat = u_raw\n    if u_sat > UMAX:\n        u_sat = UMAX\n    elif u_sat < UMIN:\n        u_sat = UMIN\n    if yf > 0.82:\n        u_sat = UMIN\n        I_new = I_old\n        bias_new = bias_old\n        st_new = 0.0\n    if first:\n        u = u_sat\n    else:\n        max_du = RLIM * dt\n        du = u_sat - u_prev\n        if du > max_du:\n            du = max_du\n        elif du < -max_du:\n            du = -max_du\n        u = u_prev + du\n    if not math.isfinite(u):\n        u = ff\n    if u > 1.0:\n        u = 1.0\n    if u < 0.0:\n        u = 0.0\n    new_state = {\"yf\": float(yf), \"ys\": float(ys), \"us\": float(us), \"I\": float(I_new), \"bias\": float(bias_new), \"st\": float(st_new), \"u\": float(u), \"Kest\": float(Kest_new)}\n    return float(u), new_state\n",
+    "predicted_behavior": "Nominal plant: Kest stays ~1.35, ff~0.24, MAE ~0.005-0.01, in-band ~1.0 after 300s, energy ~90, no overrides, no overshoot past 0.60. Changed plant (K~0.53): initial same 0.51 kick, then I+Kest ramp u to ~0.60-0.65 within 200-280s, y reaches 0.45-0.48 by 150s and 0.48-0.52 by 300s, MAE after settling ~0.015-0.025, in-band >0.75, energy ~170-200, zero hard violations. If diagnosis wrong (e.g., faster loss), Kest would still raise ff but tau mismatch would leave small droop, still safe.",
+    "self_test_expectations": [
+     "cold start y=0.15 target 0.5 returns u ~0.45-0.55 finite, no override",
+     "50-step sequence stays finite in [0,1] and deterministic on repeat",
+     "NaN/inf y returns last filtered finite u and recovers next valid step",
+     "dt=0 or negative clamps to 0.05s and returns finite u without divergence",
+     "nominal settle: starting 0.15 with K=1.35 reaches band in <200s without exceeding 0.65",
+     "changed settle: starting 0.17 with K=0.53 with same code reaches >0.45 by 250s and u>0.55"
+    ],
+    "operator_note": "No action needed. Controller now auto-estimates gain and will use ~0.62 power to hold 0.5 vs ~0.25 before. Expect slower initial warm-up (same 200s lag) then tight hold. Safety cut at 0.82 and 0.9 clamp unchanged. Do not manually boost power; integrator + gain estimator will do it within ~250s."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.469083",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.244083; process alive, next valid step u=0.244303",
+    "inf_y: ok y=+inf: returned finite u=0.244083; process alive, next valid step u=0.244303",
+    "zero_dt: ok dt=0: returned finite u=0.394083; process alive, next valid step u=0.394083",
+    "negative_dt: ok dt=-0.1: returned finite u=0.394083; process alive, next valid step u=0.394083",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.344s (budget 10s)"
+   ],
+   "status": "failed_gate"
+  },
+  {
+   "candidate_id": "hwb4-20261103-164305-807be7-v4",
+   "version": 4,
+   "parent_id": "hwb4-20261103-164305-807be7-v3",
+   "model_id": "muse-spark-1.3",
+   "prompt_hash": "800a3f74457b2c8e",
+   "submission_kind": "revision",
+   "submission": {
+    "diagnosis": "Actuator weaker, not loss/delay/sensor. E1 u=0.5 rise 0.174->0.553 (+0.379 in 199s, still rising) vs E10 same u/start 0.168->0.339 (+0.171, slope still +0.0019): ratio ~0.45. E12 u=0.8 only +0.071 in 90s to 0.464, implying equilibrium ~0.53-0.61 vs pre-change ~0.8+. With tau ~170s, K_post=(yinf-0.17)/u ~0.49-0.55 vs K_pre~1.352 (E8 u=0.25 holds 0.508 => (0.508-0.17)/0.25=1.35). New gain ~37-42% of old, ~55-65% loss. E9 u=0 decay 0.294->0.171 ambient ~0.171 identical to E2 ambient ~0.172 with comparable slow slope, no faster fall, no 50s+ flat delay, no persistent bias: rules out outflow_increased, response_slower, sensor_changed.",
+    "diagnosis_category": "actuator_weaker",
+    "change_summary": "Raised integral authority and sped up steady-state gain re-estimation so the hold power can move from ~0.24 to ~0.60-0.70. Kept the same filtered PI structure but: Ki 0.014->0.025 with I contribution 0.35->0.50, bias rate 0.008->0.015 with range to 0.30, Kest tau 80s->35s with settle hold 15s->10s and threshold 0.05->0.06, K_MIN 0.35->0.48 to cap ff at ~0.69, slow average 50s->40s, rate limit 0.06->0.08. This directly targets a weaker actuator while leaving nominal ff ~0.244 unchanged when Kest stays near 1.35.",
+    "machine_card": "First-order heater y in [0,1], u in [0,1], ambient ~0.17, pre K~1.35 tau~150-200s delay ~20s hold for 0.5 ~0.24-0.29, post K~0.5 tau/delay/ambient unchanged hold for 0.5 ~0.60-0.69. Noise large +/-0.03 with -0.08 dips. Target 0.5 band 0.475-0.525, soft 0.85 hard 0.9.",
+    "design_rationale": "Zero-input traces prove loss/tau unchanged so only B (gain) fell. A fixed ff=0.24 can no longer hold 0.5; need ~0.66. PI alone with 0.35 authority cannot cover 0.42 deficit. Adaptive ff = (target-AMB)/Kest restores the correct hold for both K=1.35 and K~0.5 without retuning. Faster but still settled-gated Kest plus larger bounded integral covers residual ambient/model error and guarantees no windup during heat-up (|e|>0.20 frozen) and no saturation windup, preserving nominal in-band ~1.0 while allowing degraded convergence within 300 s.",
+    "source_code": "import math\n\nAMB = 0.17\nK_NOM = 1.352\nK_MIN = 0.48\nK_MAX = 1.80\nUMAX = 0.95\nUMIN = 0.0\n\ndef _ff_from_K(target, Kest):\n    t = target\n    if not math.isfinite(t):\n        t = 0.5\n    if t < 0.0:\n        t = 0.0\n    if t > 1.0:\n        t = 1.0\n    if t <= AMB:\n        return 0.0\n    K = Kest\n    if not math.isfinite(K):\n        K = K_NOM\n    if K < K_MIN:\n        K = K_MIN\n    if K > K_MAX:\n        K = K_MAX\n    ff = (t - AMB) / K\n    if ff < UMIN:\n        ff = UMIN\n    if ff > UMAX:\n        ff = UMAX\n    return float(ff)\n\ndef control(obs: dict, state: dict) -> tuple[float, dict]:\n    Kp = 1.0\n    Ki = 0.025\n    Tf = 10.0\n    RLIM = 0.08\n    I_AUTH = 0.50\n    Kb = 0.015\n    B_MIN = -0.10\n    B_MAX = 0.30\n    TSLOW = 40.0\n    SET_THR = 0.06\n    SET_HOLD = 10.0\n    K_TAU = 35.0\n    E_FREEZE = 0.20\n    try:\n        y_raw = obs.get(\"y\", 0.5)\n        tgt = obs.get(\"target\", 0.5)\n        dt_in = obs.get(\"dt\", 1.0)\n    except Exception:\n        return 0.24, {\"yf\": 0.5, \"ys\": 0.5, \"us\": 0.24, \"I\": 0.0, \"bias\": 0.0, \"st\": 0.0, \"u\": 0.24, \"Kest\": K_NOM}\n    if not isinstance(state, dict):\n        state = {}\n    try:\n        y_in = float(y_raw)\n    except Exception:\n        try:\n            y_in = float(state.get(\"yf\", 0.5))\n        except Exception:\n            y_in = 0.5\n    try:\n        target = float(tgt)\n    except Exception:\n        target = 0.5\n    try:\n        dt = float(dt_in)\n    except Exception:\n        dt = 1.0\n    if not math.isfinite(y_in):\n        y_in = float(state.get(\"yf\", 0.5)) if isinstance(state.get(\"yf\", 0.5), (int, float)) else 0.5\n        if not math.isfinite(y_in):\n            y_in = 0.5\n    if not math.isfinite(target):\n        target = 0.5\n    if target < 0.0:\n        target = 0.0\n    if target > 1.0:\n        target = 1.0\n    if not math.isfinite(dt) or dt < 0.05:\n        dt = 0.05\n    if dt > 10.0:\n        dt = 10.0\n    y = y_in\n    if y < -0.2:\n        y = -0.2\n    if y > 1.2:\n        y = 1.2\n    first = (\"yf\" not in state) or (\"u\" not in state)\n    try:\n        yf_prev = float(state.get(\"yf\", y))\n    except Exception:\n        yf_prev = y\n    if not math.isfinite(yf_prev):\n        yf_prev = y\n    if yf_prev < 0.0:\n        yf_prev = 0.0\n    if yf_prev > 1.0:\n        yf_prev = 1.0\n    try:\n        ys_prev = float(state.get(\"ys\", yf_prev))\n    except Exception:\n        ys_prev = yf_prev\n    if not math.isfinite(ys_prev):\n        ys_prev = yf_prev\n    if ys_prev < 0.0:\n        ys_prev = 0.0\n    if ys_prev > 1.0:\n        ys_prev = 1.0\n    try:\n        us_prev = float(state.get(\"us\", 0.24))\n    except Exception:\n        us_prev = 0.24\n    if not math.isfinite(us_prev):\n        us_prev = 0.24\n    if us_prev < UMIN:\n        us_prev = UMIN\n    if us_prev > UMAX:\n        us_prev = UMAX\n    try:\n        I_old = float(state.get(\"I\", 0.0))\n    except Exception:\n        I_old = 0.0\n    if not math.isfinite(I_old):\n        I_old = 0.0\n    try:\n        bias_old = float(state.get(\"bias\", 0.0))\n    except Exception:\n        bias_old = 0.0\n    if not math.isfinite(bias_old):\n        bias_old = 0.0\n    if bias_old < B_MIN:\n        bias_old = B_MIN\n    if bias_old > B_MAX:\n        bias_old = B_MAX\n    try:\n        st_old = float(state.get(\"st\", 0.0))\n    except Exception:\n        st_old = 0.0\n    if not math.isfinite(st_old) or st_old < 0.0:\n        st_old = 0.0\n    if st_old > 500.0:\n        st_old = 500.0\n    try:\n        u_prev = float(state.get(\"u\", 0.24))\n    except Exception:\n        u_prev = 0.24\n    if not math.isfinite(u_prev):\n        u_prev = 0.24\n    if u_prev < UMIN:\n        u_prev = UMIN\n    if u_prev > UMAX:\n        u_prev = UMAX\n    try:\n        Kest = float(state.get(\"Kest\", K_NOM))\n    except Exception:\n        Kest = K_NOM\n    if not math.isfinite(Kest):\n        Kest = K_NOM\n    if Kest < K_MIN:\n        Kest = K_MIN\n    if Kest > K_MAX:\n        Kest = K_MAX\n    alpha = dt / (Tf + dt)\n    lim = 0.035 + 0.004 * dt\n    innov = y - yf_prev\n    if innov > lim:\n        innov = lim\n    elif innov < -lim:\n        innov = -lim\n    yf = yf_prev + alpha * innov\n    if not math.isfinite(yf):\n        yf = yf_prev\n    if yf < 0.0:\n        yf = 0.0\n    if yf > 1.0:\n        yf = 1.0\n    a_s = dt / (TSLOW + dt)\n    ys = ys_prev + a_s * (yf - ys_prev)\n    if not math.isfinite(ys):\n        ys = ys_prev\n    us = us_prev + a_s * (u_prev - us_prev)\n    if not math.isfinite(us):\n        us = us_prev\n    if ys < 0.0:\n        ys = 0.0\n    if ys > 1.0:\n        ys = 1.0\n    if us < UMIN:\n        us = UMIN\n    if us > UMAX:\n        us = UMAX\n    if abs(yf - ys) < SET_THR:\n        st_new = st_old + dt\n    else:\n        st_new = 0.0\n    if st_new > 500.0:\n        st_new = 500.0\n    Kest_new = Kest\n    if (not first) and st_new > SET_HOLD and us > 0.10 and ys > 0.22 and ys < 0.85 and us < 0.92:\n        denom = us if us > 0.08 else 0.08\n        Kraw = (ys - AMB) / denom\n        if Kraw < K_MIN:\n            Kraw = K_MIN\n        if Kraw > K_MAX:\n            Kraw = K_MAX\n        ak = dt / (K_TAU + dt)\n        Kest_new = Kest + ak * (Kraw - Kest)\n        if not math.isfinite(Kest_new):\n            Kest_new = Kest\n        if Kest_new < K_MIN:\n            Kest_new = K_MIN\n        if Kest_new > K_MAX:\n            Kest_new = K_MAX\n    ff = _ff_from_K(target, Kest_new)\n    e = target - yf\n    I_lim = I_AUTH / Ki if Ki != 0 else 1e6\n    I_cand = I_old + e * dt\n    if I_cand > I_lim:\n        I_cand = I_lim\n    elif I_cand < -I_lim:\n        I_cand = -I_lim\n    P = Kp * e\n    I_new = I_cand\n    u_test = ff + P + Ki * I_cand + bias_old\n    if abs(e) > E_FREEZE:\n        I_new = I_old\n    else:\n        if (u_test > UMAX and e > 0.0) or (u_test < UMIN and e < 0.0):\n            I_new = I_old\n    bias_new = bias_old\n    if (not first) and st_new > SET_HOLD and us > 0.08 and abs(e) < 0.15:\n        if abs(e) > 0.008:\n            bc = bias_old + Kb * e * dt\n            if bc > B_MAX:\n                bc = B_MAX\n            elif bc < B_MIN:\n                bc = B_MIN\n            u_test2 = ff + P + Ki * I_new + bc\n            if (u_test2 > UMAX and e > 0.0) or (u_test2 < UMIN and e < 0.0):\n                bias_new = bias_old\n            else:\n                bias_new = bc\n    u_raw = ff + P + Ki * I_new + bias_new\n    if not math.isfinite(u_raw):\n        u_raw = ff\n        I_new = I_old\n        bias_new = bias_old\n    u_sat = u_raw\n    if u_sat > UMAX:\n        u_sat = UMAX\n    elif u_sat < UMIN:\n        u_sat = UMIN\n    if yf > 0.82:\n        u_sat = UMIN\n        I_new = I_old\n        bias_new = bias_old\n        st_new = 0.0\n    if first:\n        u = u_sat\n    else:\n        max_du = RLIM * dt\n        du = u_sat - u_prev\n        if du > max_du:\n            du = max_du\n        elif du < -max_du:\n            du = -max_du\n        u = u_prev + du\n    if not math.isfinite(u):\n        u = ff\n    if u > 1.0:\n        u = 1.0\n    if u < 0.0:\n        u = 0.0\n    new_state = {\"yf\": float(yf), \"ys\": float(ys), \"us\": float(us), \"I\": float(I_new), \"bias\": float(bias_new), \"st\": float(st_new), \"u\": float(u), \"Kest\": float(Kest_new)}\n    return float(u), new_state\n",
+    "predicted_behavior": "Nominal: Kest stays ~1.3, ff~0.24, MAE ~0.005-0.007, in-band ~1.0, energy ~89, zero overrides. Degraded (K~0.5): Kest converges to ~0.5-0.8 in ~150-250s, ff rises to ~0.41-0.66, integral supplies remainder, y climbs from ~0.34 to 0.5 without overshoot >0.65, MAE ~0.015-0.025 after 300s, in-band >0.70, energy ~140-180, zero overrides/hard violations. If diagnosis wrong (faster loss) the same extra integral still reduces bias but tau mismatch would show as slower approach.",
+    "self_test_expectations": [
+     "cold start y=0.15 target 0.5 returns u ~0.5-0.6 finite in [0,1]",
+     "50 steps sequence stays finite and rate change per step <=0.08*dt+eps",
+     "NaN/inf y returns last filtered value finite u and recovers next valid step",
+     "dt=0 or negative clamps to 0.05 and stays finite deterministic",
+     "two fresh instances produce identical 30-step outputs",
+     "200 steps run in <2s"
+    ],
+    "operator_note": "No action needed. Controller now self-estimates hold power. Nominal use unchanged (~0.26 mean). After degradation expect mean u ~0.60-0.65, higher energy, same band performance. If y sticks >0.82 output is forced to 0 for safety."
+   },
+   "static_ok": true,
+   "static_violations": [],
+   "sandbox_ok": true,
+   "sandbox_detail": [
+    "cold_start: ok u=0.544083",
+    "sequence_50: ok 50 consecutive steps returned finite u",
+    "nan_y: ok y=NaN: returned finite u=0.244083; process alive, next valid step u=0.244434",
+    "inf_y: ok y=+inf: returned finite u=0.244083; process alive, next valid step u=0.244434",
+    "zero_dt: ok dt=0: returned finite u=0.444333; process alive, next valid step u=0.444833",
+    "negative_dt: ok dt=-0.1: returned finite u=0.444333; process alive, next valid step u=0.444833",
+    "determinism: ok two fresh controllers produced identical 30-step sequences",
+    "timing: ok 200 steps in 0.386s (budget 10s)"
+   ],
+   "status": "failed_gate"
+  }
+ ],
+ "monitoring": {
+  "deployed_candidate_id": "hwb4-20261103-164305-807be7-v1",
+  "baseline_window_mae": 0.010081111111110987,
+  "recent_window_mae": 0.08885361111111104,
+  "degraded": true,
+  "degraded_at_t": 703.0,
+  "disturbance_family": "pump_derate",
+  "disturbance_at_t": 600.0
+ },
+ "stage_history": [
+  {
+   "from": "NEW",
+   "to": "EXPLORING",
+   "ts": 1793742190.104206
+  },
+  {
+   "from": "EXPLORING",
+   "to": "GENERATING",
+   "ts": 1793743965.119083
+  },
+  {
+   "from": "GENERATING",
+   "to": "STATIC_CHECK",
+   "ts": 1793744094.800967,
+   "candidate_id": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793744094.822052,
+   "candidate_id": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793744106.4235342,
+   "candidate_id": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "DEPLOYABLE",
+   "ts": 1793744133.523982,
+   "candidate_id": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "DEPLOYABLE",
+   "to": "MONITORING",
+   "ts": 1793744133.526794,
+   "candidate_id": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "MONITORING",
+   "to": "ADAPTING",
+   "ts": 1793745039.4500742,
+   "attempt": 0,
+   "parent": "hwb4-20261103-164305-807be7-v1",
+   "reidentifying": true
+  },
+  {
+   "from": "ADAPTING",
+   "to": "ADAPTING",
+   "ts": 1793746121.357452,
+   "attempt": 1,
+   "parent": "hwb4-20261103-164305-807be7-v1"
+  },
+  {
+   "from": "ADAPTING",
+   "to": "STATIC_CHECK",
+   "ts": 1793746294.658636,
+   "candidate_id": "hwb4-20261103-164305-807be7-v2"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793746294.666189,
+   "candidate_id": "hwb4-20261103-164305-807be7-v2"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793746302.94131,
+   "candidate_id": "hwb4-20261103-164305-807be7-v2"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "ADAPTING",
+   "ts": 1793746348.954914,
+   "attempt": 2,
+   "parent": "hwb4-20261103-164305-807be7-v2"
+  },
+  {
+   "from": "ADAPTING",
+   "to": "STATIC_CHECK",
+   "ts": 1793746452.1165462,
+   "candidate_id": "hwb4-20261103-164305-807be7-v3"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793746452.124614,
+   "candidate_id": "hwb4-20261103-164305-807be7-v3"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793746459.709603,
+   "candidate_id": "hwb4-20261103-164305-807be7-v3"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "ADAPTING",
+   "ts": 1793746505.276012,
+   "attempt": 3,
+   "parent": "hwb4-20261103-164305-807be7-v3"
+  },
+  {
+   "from": "ADAPTING",
+   "to": "STATIC_CHECK",
+   "ts": 1793746606.073976,
+   "candidate_id": "hwb4-20261103-164305-807be7-v4"
+  },
+  {
+   "from": "STATIC_CHECK",
+   "to": "SANDBOX_CHECK",
+   "ts": 1793746606.081436,
+   "candidate_id": "hwb4-20261103-164305-807be7-v4"
+  },
+  {
+   "from": "SANDBOX_CHECK",
+   "to": "EVALUATING",
+   "ts": 1793746614.130302,
+   "candidate_id": "hwb4-20261103-164305-807be7-v4"
+  },
+  {
+   "from": "EVALUATING",
+   "to": "FAILED",
+   "ts": 1793746659.832505,
+   "reason": "adaptation attempts exhausted; last approved controller retained"
+  }
+ ],
+ "model_usage": {
+  "calls": 16,
+  "failed_calls": 0,
+  "prompt_tokens": 1770919,
+  "completion_tokens": 114648,
+  "reasoning_tokens": 87378,
+  "cost_usd": 2.69937045
+ },
+ "elapsed_s": 4474.5,
+ "finished_at": 1793746659.985348
+}
