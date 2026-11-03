@@ -63,6 +63,7 @@ def build_agent_view(session: Session, *, include_candidate_traces: bool = True)
             "target": session.objective.target,
             "band": list(session.objective.band),
             "scored_after_settling_s": session.objective.settle_s,
+            "scored_episode_s": session.objective.episode_s,
             "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking.",
         },
         "constraints": {

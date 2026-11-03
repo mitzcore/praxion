@@ -14,7 +14,7 @@ import hashlib
 import json
 from typing import Any
 
-PROMPT_VERSION = "v1.5"  # v1.5: diagnosis categories defined generically (actuator vs loss vs lag vs sensor)
+PROMPT_VERSION = "v1.6"  # v1.6: revision prompt states the actual promotion rule and the scoring horizon (was: "do not break nominal")
 
 CONTROL_INTERFACE_DOC = '''
 def control(obs: dict, state: dict) -> tuple[float, dict]:
@@ -149,9 +149,20 @@ Tasks:
 
 {CONTROL_INTERFACE_DOC}
 
-The independent evaluator, not your explanation, decides whether the repair worked. It will
-re-score the new version on the same hidden scenarios as the old one, including scenarios where
-the machine has NOT changed, so do not break nominal behaviour to fix the degraded case.
+The independent evaluator, not your explanation, decides whether the repair worked. How it
+decides (this is the actual rule, not advice):
+- Your revision is scored on the CHANGED machine, on the same hidden scenarios as the frozen
+  previous version. The previous version's scores on the changed machine are in the session view
+  (post_change_evaluation): that is the number to beat.
+- It is promoted only if it lowers the tracking error by at least 20% on at least three of those
+  scenarios, with zero hard-cutoff violations, zero overrides and zero invalid outputs.
+- Every scored episode starts cold and lasts scored_episode_s seconds (objective in the session
+  view); error is measured after scored_after_settling_s. A repair must bring the output to the
+  target within that horizon. Online adaptation that needs many minutes of settled data before it
+  acts will score as no repair at all.
+- Behaviour on the UNCHANGED machine is re-scored and reported, but it does not block promotion.
+  Prefer a repair that holds the target on the machine as it now is over one that protects
+  nominal performance and fails the changed machine.
 
 Respond only in the required JSON shape.
 """.strip()

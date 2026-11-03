@@ -35,6 +35,7 @@ class Objective(BaseModel):
     target: float = 0.60
     band: tuple[float, float] = (0.55, 0.65)
     settle_s: float = 30.0
+    episode_s: float | None = None  # public: length of one scored episode (the horizon a controller is judged on)
 
 
 class PublicConstraints(BaseModel):
@@ -166,7 +167,8 @@ def session_from_profile(run_id: str, plant_description: str, profile: Any, agen
     """Build a Session whose objective, public constraints and budgets come from a PlantProfile."""
     return Session(
         run_id=run_id, plant_description=plant_description, agent_mode=agent_mode,  # type: ignore[arg-type]
-        objective=Objective(target=profile.target, band=tuple(profile.band), settle_s=profile.settle_s),
+        objective=Objective(target=profile.target, band=tuple(profile.band), settle_s=profile.settle_s,
+                            episode_s=profile.episode_s),
         constraints=PublicConstraints(soft_high_limit=profile.soft_high_limit, hard_cutoff=profile.hard_cutoff,
                                       max_single_experiment_s=profile.max_single_experiment_s,
                                       after_change_max_single_experiment_s=profile.after_change_max_single_experiment_s,
