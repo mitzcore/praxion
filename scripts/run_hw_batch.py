@@ -240,12 +240,18 @@ def run_batch(args: argparse.Namespace, *, heaters_off_fn: Callable[[str], bool]
     consecutive = 0
     caff = start_caffeinate(not args.no_caffeinate)
     try:
-        for k in range(1, args.n + 1):
+        last = args.start + args.n - 1
+        for k in range(args.start, last + 1):
             label = f"{args.label_prefix}{k}"
             order = order_for(k)
+            if args.stop_file and Path(args.stop_file).exists():
+                summary["stopped_early"] = True
+                summary["stop_reason"] = f"stop file present before run {k} ({args.stop_file})"
+                log(f"STOP: {summary['stop_reason']}")
+                break
             cmd = build_command(args.command, port=args.port, disturbance=args.disturbance,
                                 magnitude=args.magnitude, order=order, label=label, root=args.root)
-            log(f"=== run {k}/{args.n} label={label} order={order}")
+            log(f"=== run {k}/{last} label={label} order={order}")
             cool_t = cool_down_fn(args.port, args.cool_below_c, args.cool_timeout_s)
             log(f"exec: {shlex.join(cmd)}")
             code, killed, dur, text = run_child(cmd, logs_dir / f"{label}.log", args.max_run_s, ROOT)
@@ -296,6 +302,10 @@ def _print_summary(summary: dict, path: Path) -> None:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--n", type=int, default=6)
+    ap.add_argument("--start", type=int, default=1,
+                    help="index of the first run (labels and v1/v2 order keep counting, e.g. --start 3 after a pause)")
+    ap.add_argument("--stop-file", default="artifacts/batch_logs/BATCH_STOP",
+                    help="if this file exists when a run is about to start, stop cleanly (checked between runs only)")
     ap.add_argument("--port", default="/dev/cu.usbmodem1101")
     ap.add_argument("--label-prefix", default="hwb")
     ap.add_argument("--disturbance", default="pump_derate")
@@ -317,7 +327,7 @@ def main(argv: list[str] | None = None) -> int:
     global _LOG_PATH
     args = parse_args(argv)
     if args.dry_run:
-        for k in range(1, args.n + 1):
+        for k in range(args.start, args.start + args.n):
             cmd = build_command(args.command, port=args.port, disturbance=args.disturbance, magnitude=args.magnitude,
                                 order=order_for(k), label=f"{args.label_prefix}{k}", root=args.root)
             print(f"run {k}: cool-down (T1 < {args.cool_below_c} C, <= {args.cool_timeout_s:.0f} s) -> "
