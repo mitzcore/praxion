@@ -1,6 +1,6 @@
 # Demo film: structure and camera shot list
 
-Written 2026-11-03. The film is 3 minutes. Everything shown must have happened; camera footage of
+Written 2026-11-03; visual direction revised the same day: Mithran wants a beautiful, cinematic graphical treatment (reference: 3D cutaway industrial diagrams with labelled colour-coded flows) of the existing world of machines and how the AI is infused to generate and repair controllers; the captured footage is a small part. Demo production is the LAST task, after test and validation; nothing is produced before the direction is agreed. The film is 3 minutes. Everything shown must have happened; camera footage of
 the board is labelled with the run it belongs to, or as "illustration of the rig" if it is not from a
 scored run.
 
@@ -8,11 +8,11 @@ scored run.
 
 | Beat | Length | Source |
 |---|---|---|
-| Problem: a machine with no model, and what happens when it changes | 35 s | animated diagram (built in-repo, no credits) |
-| Solution: discover → author → gate → deploy → detect → diagnose → repair → re-gate, with the trust boundary drawn | 45 s | animated diagram |
+| Problem: the existing world of machines (plants, pumps, heaters) and what happens when one changes | 35 s | cinematic cutaway-style graphics (direction to be agreed with Mithran; Higgsfield allowed) |
+| Solution: how the AI is infused: discover → author → gate → deploy → detect → diagnose → repair → re-gate, trust boundary drawn | 45 s | same visual system, diagram that argues (shape = behaviour, colour = purpose) |
 | Simulation evidence: dashboard replay of the best tank run (`v13-s11`), gate results, code diff | 45 s | `scripts/record_demo.py` on the stored run |
 | Hardware evidence: phone footage of the TCLab run cut with the synced dashboard | 40 s | operator's phone + screen capture |
-| Honest results and limits: relay rival wins on post-change MAE, one hardware distribution point, next steps | 15 s | diagram |
+| Honest results and limits: relay rival wins on post-change MAE, one hardware distribution point, next steps | 15 s | same visual system |
 
 ## Decision: re-run on camera (recommended) or film an illustration
 
