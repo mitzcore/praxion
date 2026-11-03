@@ -42,6 +42,17 @@ Notes per run (from the same files):
 
 Not yet measured: no bundle contains a matching, real-board `board_verification.json`.
 
+## Twin fidelity under the board protocol
+
+Before each board trial, trusted code runs the same controller through the same protocol (reset, nominal window, change, post window) on the twin fitted from that run's own discovery traces, with the same trusted change applied (`board_verification.json` `twin_prediction`, basis named per run). The prediction is made before the board runs, so this is a forecast, not a fit. Every real, matching board trial counts, including runs whose repair was not promoted (v1 alone).
+
+| run id | controller | basis | twin post-change MAE °C | board °C | error °C | twin in-band | board in-band |
+|---|---|---|---|---|---|---|---|
+| `hwb1-20261103-122450-cde4ee` | v1 | original_twin_plus_trusted_derate | 1.86 | 1.82 | +0.04 | 65% | 56% |
+| `hwb2-20261103-140309-91b643` | v1 | original_twin_plus_trusted_derate | 2.23 | 2.02 | +0.21 | 54% | 41% |
+
+- 2 trial(s); median |twin − board| = 0.13 °C, median relative error 6%. Sensor noise on this board is about 0.7 °C rms, so the fitted twins' own noise floor is ~0.6 °C MAE.
+
 ## Statistics
 
 - Exact one-sided sign test for "v2 has lower post-change MAE than v1 on the board": not yet measured (0 board-verified runs).

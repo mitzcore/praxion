@@ -140,6 +140,7 @@ def test_real_bundles_plus_synthetic(tmp_path):
     assert "FAILED" in hw1 and "no (0/10, 2.18)" in hw1 and "not reached" in hw1
     assert "operator (fan)" in hw2 and "yes (9/10, 0.72)" in hw2 and "| 66 |" in hw2
     assert "7.50 → 1.09 (86%)" in hw2 and "| — | 33.7 |" in hw2
+    assert "## Twin fidelity under the board protocol" in text
     assert "pump_derate (trusted, m=0.35)" in syn and "4.80 → 1.80 (62%)" in syn and "6.00 → 1.20 (80%)" in syn
     assert "| board-verified improvement (board reduction > 0 and in-band v2 > v1) | 1 / 1 |" in md
     assert "p = P(X ≥ 1 | n=1, ½) = 0.5000" in md

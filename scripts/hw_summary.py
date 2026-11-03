@@ -257,6 +257,11 @@ def read_bundle(d: Path) -> dict | None:
                                                          "post_in_band", "overrides", "hard_violations",
                                                          "invalid_outputs", "interlock_hit")}
                                  for t in (bv.get("trials") or []) if isinstance(t, dict)]}
+        tp = bv.get("twin_prediction") if isinstance(bv.get("twin_prediction"), dict) else None
+        r["board"]["pred_basis"] = (tp or {}).get("prediction_basis")
+        r["board"]["pred"] = {t.get("label"): {"post_mae_c": (_num(t.get("post_mae")) * f) if _num(t.get("post_mae")) is not None else None,
+                                               "post_in_band": _num(t.get("post_in_band"))}
+                              for t in ((tp or {}).get("trials") or []) if isinstance(t, dict)}
         bd = bv.get("disturbance") if isinstance(bv.get("disturbance"), dict) else {}
         r["board"]["change"] = board_change_label(bd)
         r["board"]["mismatch"] = not change_matches(r["run_change"], bd)
@@ -309,6 +314,23 @@ def aggregate(runs: list[dict]) -> dict:
     n_sign = len(verified) - len(ties)
     twin_red = [r["twin_reduction"] for r in runs if r["twin_reduction"] is not None]
     board_red = [r["board"]["reduction"] for r in verified if r["board"]["reduction"] is not None]
+    # twin fidelity under the board protocol: every real, matching board trial that has a protocol-matched
+    # twin prediction (v1-only runs count: the prediction is per controller, not per pair)
+    fidelity = []
+    for r in runs:
+        b = r["board"]
+        if not b or b["fake_board"] or b["mismatch"]:
+            continue
+        for t in b["trials"]:
+            pr = (b.get("pred") or {}).get(t.get("label")) or {}
+            meas = _num(t.get("post_mae"))
+            if pr.get("post_mae_c") is None or meas is None:
+                continue
+            meas_c = meas * (r.get("y_scale") or 1.0)
+            fidelity.append({"run_id": r["run_id"], "label": t["label"], "pred_c": pr["post_mae_c"], "meas_c": meas_c,
+                             "pred_ib": pr.get("post_in_band"), "meas_ib": _num(t.get("post_in_band")),
+                             "basis": b.get("pred_basis"), "abs_err_c": abs(pr["post_mae_c"] - meas_c),
+                             "rel_err": (pr["post_mae_c"] - meas_c) / meas_c if meas_c else None})
     return {
         "attempted": len(runs), "completed": sum(1 for r in runs if r["stage"] == "COMPLETE"),
         "g2_first": sum(1 for r in runs if r["g2_pass"]), "detected": sum(1 for r in runs if r["detected"]),
@@ -322,6 +344,10 @@ def aggregate(runs: list[dict]) -> dict:
         "n_twin": len(twin_red), "n_board": len(board_red),
         "sign_k": len(lower), "sign_n": n_sign, "n_ties": len(ties),
         "sign_p": sign_test_one_sided(len(lower), n_sign) if n_sign > 0 else None,
+        "fidelity": fidelity,
+        "fidelity_median_abs_c": statistics.median([x["abs_err_c"] for x in fidelity]) if fidelity else None,
+        "fidelity_median_rel": statistics.median([abs(x["rel_err"]) for x in fidelity if x["rel_err"] is not None])
+        if any(x["rel_err"] is not None for x in fidelity) else None,
         "cp": clopper_pearson(len(success), len(verified)) if verified else None,
         "verified": verified,
     }
@@ -427,6 +453,27 @@ def render_markdown(runs: list[dict], agg: dict, fig_rel: str | None, root_displ
             order = ",".join(b["order"]) if isinstance(b["order"], list) else (b["order"] or DASH)
             L.append(f"| `{r['run_id']}` | {order} | {_f(r['twin_v1_c'])} | {_f(b['v1_c'])} | {_f(r['twin_v2_c'])} | "
                      f"{_f(b['v2_c'])} | {_pct(b['in_band_v1'])} → {_pct(b['in_band_v2'])} | {agree} |")
+    L.append("")
+    L.append("## Twin fidelity under the board protocol")
+    L.append("")
+    L.append("Before each board trial, trusted code runs the same controller through the same protocol (reset, "
+             "nominal window, change, post window) on the twin fitted from that run's own discovery traces, with the "
+             "same trusted change applied (`board_verification.json` `twin_prediction`, basis named per run). The "
+             "prediction is made before the board runs, so this is a forecast, not a fit. Every real, matching board "
+             "trial counts, including runs whose repair was not promoted (v1 alone).")
+    L.append("")
+    if not a["fidelity"]:
+        L.append("Not yet measured.")
+    else:
+        L.append("| run id | controller | basis | twin post-change MAE °C | board °C | error °C | twin in-band | board in-band |")
+        L.append("|---|---|---|---|---|---|---|---|")
+        for x in a["fidelity"]:
+            L.append(f"| `{x['run_id']}` | {x['label']} | {x['basis'] or DASH} | {_f(x['pred_c'])} | {_f(x['meas_c'])} | "
+                     f"{x['pred_c'] - x['meas_c']:+.2f} | {_pct(x['pred_ib'])} | {_pct(x['meas_ib'])} |")
+        L.append("")
+        L.append(f"- {len(a['fidelity'])} trial(s); median |twin − board| = {a['fidelity_median_abs_c']:.2f} °C"
+                 + (f", median relative error {a['fidelity_median_rel'] * 100:.0f}%" if a["fidelity_median_rel"] is not None else "")
+                 + ". Sensor noise on this board is about 0.7 °C rms, so the fitted twins' own noise floor is ~0.6 °C MAE.")
     L.append("")
     L.append("## Statistics")
     L.append("")
