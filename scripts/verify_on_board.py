@@ -292,6 +292,10 @@ def run_verification(run_dir: Path, plant: PlantAdapter, *, mode: str, order: li
     )
     bv.fake_board = fake
     store.write_json("board_verification.json", bv.model_dump(mode="json"))
+    if mode == "operator":
+        msg = "Session complete: turn the disturbance OFF now"
+        print(f"\n>>> {msg} (heater is off, nothing more to trigger).", flush=True)
+        _alert(msg, alerts and not fake)
     return bv
 
 
