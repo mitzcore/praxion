@@ -36,3 +36,5 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.ruff]
 line-length = 110
 target-version = "py312"
+# Model-authored controllers under artifacts/runs are stored byte-for-byte and are never linted or edited.
+extend-exclude = ["artifacts"]

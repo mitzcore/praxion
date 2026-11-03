@@ -1,0 +1,20 @@
+{
+  "id": "hw1-20261102-234915-81765d-v4",
+  "run_id": "hw1-20261102-234915-81765d",
+  "version": 4,
+  "path": "artifacts/runs/hw1-20261102-234915-81765d/controller_v4.py",
+  "sha256": "6897699914bcec5bbeb07ceb18e92cc8d345d76b1ed853e05c37867d85bf90e5",
+  "parent_id": "hw1-20261102-234915-81765d-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T05:17:29.077424+00:00",
+  "byte_length": 4529,
+  "rationale": "Kept 0.32 feedforward structure but retuned for +35s delay: Tp 35->70s for earlier braking, Kp 0.55->0.45 and Ki 0.014->0.010 with conditional integration (|e|>0.15 freezes, |e|>0.08 uses 30%) and tighter integral clamp +-0.12 to remove windup that caused 0.08-0.11 overshoot. Kept safety caps and added slow bumpless feedforward learner (only when |e|<0.035 and |df|<0.0009) to recover 0.31-0.33 steady duty without fighting transient. Umax 0.80->0.75.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order plus dead-time heater, y in [0,1]. Nominal: ambient ~0.2, K~0.9-0.95, tau ~130-170s, dead ~15-35s, u_ss(0.5)=0.32. Inferred changed: K~0.9-0.96 unchanged, ambient unchanged, tau ~200-220s, dead ~55-65s (+35s). Noise ~0.005-0.01. Requires u_ss 0.31-0.33, prediction horizon >=60s and low integral for stability.",
+    "predicted_behavior": "Cold 0.05->0.5: rise to 0.45 by ~180s, u cuts to ~0.30 before crossing, overshoot <0.03 (peak <0.555), re-enter 0.475-0.525 by ~320-380s even with +35s delay, then stay with in-band >0.85 after 300s, MAE <0.025, final mean 0.498-0.503 with u 0.30-0.34 and slope <0.0005/s. Nominal plant also passes with slightly faster entry and no undershoot. No overrides or hard violations.",
+    "diagnosis": "Same steady state but slower transient. Discovery: u=0.30->0.469, u=0.34->0.526, so 0.322 holds 0.5. Post-change v3 holds 0.500-0.503 with u_mean 0.312-0.315, within 3% - gain/outflow unchanged. Decay in v2 when u~0.09 (330-390s) drops 0.58->0.50 at ~0.0013/s, same as E2 zero-input 0.0011-0.0012/s - loss unchanged. Timing changed: E1 first move 15-21s, 63% in ~115s; eval first move 30-36s, 63% in ~138s, peak at 300-320s vs expected 180-200s, overshoot 0.08-0.11 vs <0.02 expected, settling 540-600s vs <300s, v2 period ~400s. Inferred dead-time from ~20-30s to ~55-65s (+30-40s) and tau from ~130-170s to ~200-220s. This explains why Tp=35s predictor brakes too late and Ki=0.014 winds to 0.15, holding u~0.45 at crossing and driving overshoot.",
+    "diagnosis_category": "response_slower"
+  }
+}

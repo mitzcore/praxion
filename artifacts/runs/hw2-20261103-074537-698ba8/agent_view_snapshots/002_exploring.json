@@ -1,0 +1,306 @@
+{
+ "plant": {
+  "description": "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; the device loses heat to the room on its own. Output y in [0,1] is a normalized temperature reading (0 = 15 \u00b0C, 1 = 75 \u00b0C).",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "scored_after_settling_s": 300.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 480.0,
+  "after_change_max_single_experiment_s": 480.0,
+  "worst_case_rate_per_unit_u_per_s": 0.006,
+  "experiments_remaining": 7,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 200.0,
+  "y": 0.506
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.5,
+   "duration_s": 200.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Magnitude of static gain and dominant lag/time constant, which determines steady-state power for 0.5 and safe controller aggressiveness.",
+   "expected_observation": "y rises from ~0.12 with short lag toward 0.3-0.5 over 200 s with diminishing but still positive slope, confirming positive gain and giving first lag/gain estimate.",
+   "verdict": "approved; worst-case bound 0.727",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.1305
+    ],
+    [
+     4.0,
+     0.13
+    ],
+    [
+     8.0,
+     0.1343
+    ],
+    [
+     12.0,
+     0.1337
+    ],
+    [
+     16.0,
+     0.1365
+    ],
+    [
+     20.0,
+     0.1386
+    ],
+    [
+     24.0,
+     0.1445
+    ],
+    [
+     28.0,
+     0.1552
+    ],
+    [
+     32.0,
+     0.1628
+    ],
+    [
+     36.0,
+     0.1681
+    ],
+    [
+     40.0,
+     0.1799
+    ],
+    [
+     44.0,
+     0.1901
+    ],
+    [
+     48.0,
+     0.2004
+    ],
+    [
+     52.0,
+     0.2079
+    ],
+    [
+     56.0,
+     0.2176
+    ],
+    [
+     60.0,
+     0.2283
+    ],
+    [
+     64.0,
+     0.2364
+    ],
+    [
+     68.0,
+     0.2492
+    ],
+    [
+     72.0,
+     0.2594
+    ],
+    [
+     76.0,
+     0.2697
+    ],
+    [
+     80.0,
+     0.2804
+    ],
+    [
+     84.0,
+     0.2847
+    ],
+    [
+     88.0,
+     0.2981
+    ],
+    [
+     92.0,
+     0.3073
+    ],
+    [
+     96.0,
+     0.318
+    ],
+    [
+     100.0,
+     0.3234
+    ],
+    [
+     104.0,
+     0.3352
+    ],
+    [
+     108.0,
+     0.3448
+    ],
+    [
+     112.0,
+     0.3545
+    ],
+    [
+     116.0,
+     0.3647
+    ],
+    [
+     120.0,
+     0.3717
+    ],
+    [
+     124.0,
+     0.3787
+    ],
+    [
+     128.0,
+     0.3878
+    ],
+    [
+     132.0,
+     0.3953
+    ],
+    [
+     136.0,
+     0.4028
+    ],
+    [
+     140.0,
+     0.412
+    ],
+    [
+     144.0,
+     0.4179
+    ],
+    [
+     148.0,
+     0.4254
+    ],
+    [
+     152.0,
+     0.4335
+    ],
+    [
+     156.0,
+     0.4405
+    ],
+    [
+     160.0,
+     0.4469
+    ],
+    [
+     164.0,
+     0.4539
+    ],
+    [
+     168.0,
+     0.4603
+    ],
+    [
+     172.0,
+     0.4646
+    ],
+    [
+     176.0,
+     0.4737
+    ],
+    [
+     180.0,
+     0.4727
+    ],
+    [
+     184.0,
+     0.485
+    ],
+    [
+     188.0,
+     0.4748
+    ],
+    [
+     192.0,
+     0.4958
+    ],
+    [
+     196.0,
+     0.5011
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 199.0,
+    "y_start": 0.131,
+    "y_end": 0.503,
+    "y_min": 0.111,
+    "y_max": 0.503,
+    "y_mean_last_5s": 0.501,
+    "u_mean_last_5s": 0.5,
+    "y_slope_last_5s_per_s": 0.0011
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+   "confidence": 0.8,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "With u=0, y decays on its own toward ambient near 0.1 over minutes due to heat loss.",
+   "confidence": 0.7,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "Step response lag/time constant is 30-150 s with no pure delay longer than ~10 s.",
+   "confidence": 0.4,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "Steady-state gain is ~0.5-0.9 y per unit u, so u ~0.4-0.7 is needed to hold y=0.5.",
+   "confidence": 0.3,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Response has no large dead zone; u>0.05 produces detectable rise and gain is roughly linear from 0.2 to 0.8.",
+   "confidence": 0.35,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor short-term noise is <0.02 peak-to-peak, so trends >0.05 are real response.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}

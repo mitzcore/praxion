@@ -1,0 +1,20 @@
+{
+  "id": "hw2-20261103-074537-698ba8-v1",
+  "run_id": "hw2-20261103-074537-698ba8",
+  "version": 1,
+  "path": "artifacts/runs/hw2-20261103-074537-698ba8/controller_v1.py",
+  "sha256": "84f4bfbfd9b3a0ba3c37fd48962497862a5a6e702ca777f8976ecb660745eae2",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T13:16:54.033845+00:00",
+  "byte_length": 2432,
+  "rationale": "First-order-plus-lag heater: y_ss=amb+K*u with amb~0.14-0.15, K~1.08-1.11, tau~150-200s, lag~20-30s, downward outlier noise. Therefore PI+feedforward: ff=(target-0.15)/1.08=0.324 for 0.5 so feedback only trims residual. Kp=0.60 gives loop gain ~0.65 and closed-loop tau~100s to settle in <300s without hitting soft limit; initial boost to ~0.55 speeds 0.15->0.5 rise. Ki=0.007 with Ti~86s removes offset slowly without delay-induced oscillation. Integral gated to |e|<0.10 and clamped to +/-0.15 u-authority prevents windup during long ramp but leaves >3x the +/-0.04 ff uncertainty so no permanent offset. 10s low-pass + -0.04 downward spike gate rejects 0.02-0.08 outliers while real rate is <0.004/s. U capped at 0.60 gives y_ss~0.80<0.85 safe but enough kick; conditional freeze on saturation gives anti-windup.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Electric heater, positive gain, self-draining to room. y in [0,1] (0=15C,1=75C), u in [0,1]. Ambient y0~0.14-0.16 (E2 ended 0.158 still falling). Gain K~1.08-1.11: y_ss~0.15+K*u. Measured: u=0.35 holds ~0.53 (E5), u=0.32 holds ~0.50-0.515 (E7), u=0.5 after 200s 0.501 still rising slope 0.0011/s (E1) implying ss~0.66-0.72. So u_ss(0.5)~0.31-0.33, use 0.324. Dynamics: 20-30s flat lag then tau~150-200s (E1 rise, E2 cool, E3 rise). Max rate ~0.004/s at useful u, worst-case bound 0.006/s. No large dead zone, roughly linear 0.30-0.50. Noise: 0.005-0.015 jitter plus isolated downward outliers 0.02-0.08 (E3,E5,E6,E7). Soft limit 0.85, hard cutoff 0.9 never approached if u<=0.60 (ss~0.80).",
+    "predicted_behavior": "From cold ~0.15: u~0.52-0.55 initially, y reaches 0.40 by ~130-170s, enters 0.475-0.525 by ~200-260s, settles to 0.495-0.505 by ~300s with overshoot <0.015 (true state) because P backs off and I is gated. After settling: MAE ~0.006-0.010, in-band >95%, steady u~0.31-0.34 (ff 0.324 plus small trim). From near target: minimal excursion, u 0.28-0.38. Energy kept low by 0.60 cap and slow integral; no oscillation, no supervisor override.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

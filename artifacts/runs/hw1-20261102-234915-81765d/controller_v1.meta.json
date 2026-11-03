@@ -1,0 +1,20 @@
+{
+  "id": "hw1-20261102-234915-81765d-v1",
+  "run_id": "hw1-20261102-234915-81765d",
+  "version": 1,
+  "path": "artifacts/runs/hw1-20261102-234915-81765d/controller_v1.py",
+  "sha256": "32461d88317ec4ce8749cfe5e7d8cdb4d885358ea74f25c5186721e5bc15a126",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T05:08:42.197042+00:00",
+  "byte_length": 3284,
+  "rationale": "First-order self-draining heater with long lag. Feedforward 0.322 centers output at target 0.5 from bracketing equilibria (u=0.3->0.469 settled slope 0, u=0.34->0.526 slope 0.0001) with incremental gain 1.425 (0.057/0.04). PI corrects residual: Kp=0.7 gives loop gain ~1.0 with K~1.2-1.4, stable against 15-40s dead-time and tau 150-250s. Ki=0.01 (Ti=70s) trims FF error within settling window; gated to 20% when |e|>0.15 to avoid windup during cold heat-up. D on filtered measurement Kd=8 with 20s filter damps lag overshoot, clamped to +/-0.12 for noise. Filter tau 12s smooths 0.005-0.01 noise. Integral clamp +/-0.25 leaves 0.25 authority, >3x max expected FF error 0.02-0.05, so no permanent offset. Output capped 0.75 plus yf>0.7/0.8 cutback keeps y far from 0.85 soft / 0.9 hard cutoff.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Electric heater, positive gain: more power = hotter. Self-draining: u=0 falls from 0.544 to 0.319 in 180s still falling -0.0011/s, ambient <=0.2 likely ~0.04-0.15. No dead-zone: u=0.3-0.5 all move. Lag: flat 15-40s after steps (E1 15s, E2 ~25s, E3 ~40s) + dominant tau ~150-250s (180s holds not fully settled except after 360s at 0.3). Gain: incremental 1.42 between 0.3/0.34 equilibria, average ~0.7-0.9 from 0.2 baseline. Steady points: (u=0.3,y=0.469 slope 0), (u=0.34,y=0.526 slope 0.0001), (u=0.5,y~0.50-0.52 still rising 0.0007 after 180s). Hold for target 0.5 needs u~0.322 interpolated. Noise on y ~0.005-0.01. Speed: worst-case 0.006/s per u, observed avg ~0.001-0.002/s.",
+    "predicted_behavior": "From cold 0.2: initial u~0.53-0.59, rise with ~150-200s to band, enter band ~150-220s, settle within +/-0.025 by <300s. Small overshoot <0.015 above 0.5 due to lag, then converge. Steady u ~0.30-0.34 centered 0.322, MAE after 300s <0.012, in-band >90%, energy ~0.10 per s (u^2~0.10). From near band: settle <120s with no overshoot beyond 0.55. Never exceeds 0.70 in normal tracking.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

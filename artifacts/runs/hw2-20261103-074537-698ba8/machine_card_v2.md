@@ -1,0 +1,1 @@
+Heater y in [0,1], u in [0,1]. Nominal: y_ss~0.15+1.08*u, tau~170s, lag ~20-30s, u_ss(0.5)~0.32. Changed: y_ss~0.095+0.71*u, tau~120-130s, lag ~20-30s unchanged, u_ss(0.5)~0.57. Noise ~0.01 plus down outliers. Limits: keep y<0.85 soft, y>=0.90 forces u=0.

@@ -1,0 +1,60 @@
+--- a/hw2-20261103-074537-698ba8/controller_v1.py
++++ b/hw2-20261103-074537-698ba8/controller_v2.py
+@@ -5,15 +5,15 @@
+     if x > hi:
+         return hi
+     return x
+-def control(obs, state):
++def control(obs: dict, state: dict) -> tuple[float, dict]:
+     AMB = 0.15
+     GAIN = 1.08
+-    KP = 0.60
+-    KI = 0.007
++    KP = 0.70
++    KI = 0.015
+     TAUF = 10.0
+-    UMAX = 0.60
+-    I_AUTH = 0.15
+-    E_GATE = 0.10
++    UMAX = 0.78
++    I_AUTH = 0.40
++    E_GATE = 0.25
+     if not isinstance(state, dict):
+         state = {}
+     try:
+@@ -75,22 +75,31 @@
+     ff = (target - AMB) / GAIN
+     ff = _clamp(ff, 0.0, UMAX)
+     e = target - yf
+-    p = KP * e
+     i_new = i_prev
+     if abs(e) < E_GATE:
+         cand = i_prev + e * dt
+         cand = _clamp(cand, -IMAX, IMAX)
+-        u_unsat = ff + p + KI * cand
++        u_unsat = ff + KP * e + KI * cand
+         if u_unsat > UMAX and e > 0.0:
+             i_new = i_prev
+         elif u_unsat < 0.0 and e < 0.0:
+             i_new = i_prev
+         else:
+-            i_new = cand
++            if yf > 0.80 and e < 0.0:
++                i_new = i_prev
++            else:
++                i_new = cand
+     else:
+         i_new = i_prev
+-    u = ff + p + KI * i_new
++    if yf > 0.80 and e < 0.0:
++        i_new = i_prev
++    u = ff + KP * e + KI * i_new
+     u = _clamp(u, 0.0, UMAX)
++    if yf > 0.80:
++        u = min(u, 0.25)
++    if y_raw > 0.88:
++        u = 0.0
++        i_new = i_prev
+     if not math.isfinite(u):
+         u = ff
+         u = _clamp(u, 0.0, UMAX)

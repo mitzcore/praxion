@@ -1,0 +1,992 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793709974.4576058,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.8,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.1 over minutes due to heat loss.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "Step response lag/time constant is 30-150 s with no pure delay longer than ~10 s.",
+    "confidence": 0.4,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state gain is ~0.5-0.9 y per unit u, so u ~0.4-0.7 is needed to hold y=0.5.",
+    "confidence": 0.3,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; u>0.05 produces detectable rise and gain is roughly linear from 0.2 to 0.8.",
+    "confidence": 0.35,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is <0.02 peak-to-peak, so trends >0.05 are real response.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793710204.1989398,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.1 over minutes due to heat loss.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response lag/time constant is 30-150 s with no pure delay longer than ~10 s.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state gain is ~0.5-0.9 y per unit u, so u ~0.4-0.7 is needed to hold y=0.5.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; u>0.05 produces detectable rise and gain is roughly linear from 0.2 to 0.8.",
+    "confidence": 0.4,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is <0.02 peak-to-peak, so trends >0.05 are real response.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793710713.192047,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.10-0.15 over minutes due to heat loss.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~15-30 s initial lag/delay then first-order lag with time constant ~120-200 s.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state gain is ~0.9-1.2 y per unit u, so u ~0.30-0.40 is needed to hold y=0.5.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; u>0.05 produces detectable rise and gain is roughly linear from 0.2 to 0.8.",
+    "confidence": 0.4,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor short-term noise is ~0.02-0.03 peak-to-peak, so trends >0.05 are real response.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793711049.604395,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.13-0.16 over minutes due to heat loss.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~15-30 s initial lag/delay then first-order lag with time constant ~100-200 s.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~0.80-0.90, so u~0.38-0.43 is needed to hold y=0.5.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.35 to 0.5 with no dead zone detected.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.01-0.03 typical jitter plus occasional 0.05-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793711092.587285,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.13-0.16 over minutes due to heat loss.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.14 + K*u with K~1.0-1.1, so u~0.32-0.36 is needed to hold y=0.5.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.35 to 0.5 with no dead zone detected.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1",
+     "E3"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.01-0.02 typical jitter plus occasional 0.05-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793711288.80461,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-180 s.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.34 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.72,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.01-0.02 typical jitter plus occasional 0.03-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793711496.585309,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.82,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.76,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.01-0.02 typical jitter plus occasional 0.03-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793711707.372662,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.005-0.015 typical jitter plus occasional 0.02-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793712803.591945,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.005-0.015 typical jitter plus occasional 0.02-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker heater gain: same ambient ~0.15, delay ~20-30 s and tau ~150-200 s, but K drops from ~1.05 to ~0.55-0.65, so u~0.40 holds y~0.37-0.41 and u=0 cooling matches E2.",
+    "confidence": 0.35,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster heat loss: effective gain lower and cooling at u=0 markedly faster (tau ~60-100 s vs ~150-200 s before) with u~0.40 holding y~0.37-0.41.",
+    "confidence": 0.3,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: same steady-state gain K~1.05 and ambient, but dead-time/lag increased to >60 s and/or tau much larger, so y~0.38 at u~0.40 is transient and would recover to ~0.55-0.60 if held.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor shift/scale: true thermal dynamics unchanged, but reading is biased down ~0.10-0.12 and/or scaled with similar jitter, so apparent low y and low gain are measurement artefacts and u=0 settles below ~0.05-0.10.",
+    "confidence": 0.25,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E8",
+  "ts": 1793713378.725016,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.005-0.015 typical jitter plus occasional 0.02-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker heater gain: same ambient ~0.15, delay ~20-30 s and tau ~150-200 s, but K drops from ~1.05 to ~0.55-0.65, so u~0.40 holds y~0.37-0.41 and u=0 cooling matches E2.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster heat loss: effective gain lower and cooling at u=0 markedly faster (tau ~60-100 s vs ~150-200 before) with u~0.40 holds y~0.37-0.41.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: same steady-state gain K~1.05 and ambient, but dead-time/lag increased to >60 s and/or tau much larger, so y~0.38 at u~0.40 is transient and would recover to ~0.55-0.60 if held.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor shift/scale: true thermal dynamics unchanged, but reading is biased down ~0.10-0.12 and/or scaled with similar jitter, so apparent low y and low gain are measurement artefacts and u=0 settles below ~0.05-0.10.",
+    "confidence": 0.3,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E9",
+  "ts": 1793713770.450782,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7",
+     "E9"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.35,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.5,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.005-0.015 typical jitter plus occasional 0.02-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E6",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker heater gain: same ambient ~0.15, delay ~20-30 s and tau ~150-200 s, but K drops from ~1.05 to ~0.55-0.65, so u~0.40 holds y~0.37-0.41 and u=0 cooling matches E2.",
+    "confidence": 0.12,
+    "evidence_refs": [
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster heat loss: effective gain lower and cooling at u=0 markedly faster (tau ~60-100 s vs ~150-200 before) with u~0.40 holds y~0.37-0.41.",
+    "confidence": 0.7,
+    "evidence_refs": [
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: same steady-state gain K~1.05 and ambient, but dead-time/lag increased to >60 s and/or tau much larger, so y~0.38 at u~0.40 is transient and would recover to ~0.55-0.60 if held.",
+    "confidence": 0.03,
+    "evidence_refs": [
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor shift/scale: true thermal dynamics unchanged, but reading is biased down ~0.10-0.12 and/or scaled with similar jitter, so apparent low y and low gain are measurement artefacts and u=0 settles below ~0.05-0.10.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E8",
+     "E9"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E10",
+  "ts": 1793714054.9314299,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing heater power u increases steady-state temperature y (positive static gain).",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E5",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "With u=0, y decays on its own toward ambient near 0.14-0.16 over minutes due to heat loss.",
+    "confidence": 0.2,
+    "evidence_refs": [
+     "E2",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "Step response has ~20-30 s initial flat/lag then first-order lag with time constant ~150-200 s.",
+    "confidence": 0.45,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "Steady-state is y_ss ~0.15 + K*u with K~1.0-1.1, so u~0.31-0.33 holds y=0.5; u=0.35 settles ~0.52-0.54.",
+    "confidence": 0.86,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Response has no large dead zone; gain is roughly linear from u=0.30 to 0.50.",
+    "confidence": 0.8,
+    "evidence_refs": [
+     "E1",
+     "E3",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor has ~0.005-0.015 typical jitter plus occasional 0.02-0.08 downward outliers, so trends >0.05 over >30 s are real response.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E3",
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C1",
+    "statement": "Change is weaker heater gain: same ambient ~0.09-0.10, delay ~20-30 s and tau ~130-150 s, but K drops from ~1.05 to ~0.55-0.65, so u~0.40 holds y~0.37-0.41 and u=0 cooling matches E2.",
+    "confidence": 0.1,
+    "evidence_refs": [
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C2",
+    "statement": "Change is faster heat loss: effective gain lower and cooling at u=0 markedly faster (tau ~80-120 s vs ~130-150 before) with u~0.40 holds y~0.37-0.41.",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E8",
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C3",
+    "statement": "Change is slower response: same steady-state gain K~1.05 and ambient, but dead-time/lag increased to >60 s and/or tau much larger, so y~0.38 at u~0.40 is transient and would recover to ~0.55-0.60 if held.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E9",
+     "E10"
+    ]
+   },
+   {
+    "id": "C4",
+    "statement": "Change is sensor shift/scale: true thermal dynamics unchanged, but reading is biased down ~0.10-0.12 and/or scaled with similar jitter, so apparent low y and low gain are measurement artefacts and u=0 settles below ~0.05-0.10.",
+    "confidence": 0.08,
+    "evidence_refs": [
+     "E8",
+     "E9",
+     "E10"
+    ]
+   }
+  ]
+ }
+]

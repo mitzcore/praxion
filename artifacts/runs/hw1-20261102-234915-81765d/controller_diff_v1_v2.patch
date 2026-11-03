@@ -1,0 +1,211 @@
+--- a/hw1-20261102-234915-81765d/controller_v1.py
++++ b/hw1-20261102-234915-81765d/controller_v2.py
+@@ -1,5 +1,4 @@
+ import math
+-
+ def _num(x, d):
+     try:
+         f = float(x)
+@@ -8,7 +7,12 @@
+     if not math.isfinite(f):
+         return d
+     return f
+-
++def _clamp(v, lo, hi):
++    if v < lo:
++        return lo
++    if v > hi:
++        return hi
++    return v
+ def control(obs, state):
+     try:
+         if not isinstance(state, dict):
+@@ -16,108 +20,106 @@
+         y = _num(obs.get("y", 0.5), 0.5)
+         target = _num(obs.get("target", 0.5), 0.5)
+         dt = _num(obs.get("dt", 1.0), 1.0)
+-        if dt <= 0.0 or not math.isfinite(dt):
++        if not math.isfinite(dt) or dt <= 0.0:
+             dt = 1.0
+         if dt < 0.2:
+             dt = 0.2
+         if dt > 5.0:
+             dt = 5.0
+-        if y < 0.0:
+-            y = 0.0
+-        if y > 1.0:
+-            y = 1.0
+-        if target < 0.0:
+-            target = 0.0
+-        if target > 1.0:
+-            target = 1.0
+-        yf_prev = _num(state.get("yf", y), y)
+-        integ_prev = _num(state.get("i", 0.0), 0.0)
+-        df_prev = _num(state.get("df", 0.0), 0.0)
+-        if yf_prev < 0.0:
+-            yf_prev = 0.0
+-        if yf_prev > 1.0:
+-            yf_prev = 1.0
+-        if integ_prev < -0.3:
+-            integ_prev = -0.3
+-        if integ_prev > 0.3:
+-            integ_prev = 0.3
+-        if df_prev < -0.05:
+-            df_prev = -0.05
+-        if df_prev > 0.05:
+-            df_prev = 0.05
+-        Kp = 0.7
+-        Ki = 0.01
+-        Kd = 8.0
+-        Tf = 12.0
+-        Td = 20.0
+-        Imin = -0.25
+-        Imax = 0.25
+-        Umax = 0.75
+-        ff = 0.322 + 0.7018 * (target - 0.5)
+-        if ff < 0.0:
+-            ff = 0.0
+-        if ff > 0.65:
+-            ff = 0.65
++        y = _clamp(y, 0.0, 1.0)
++        target = _clamp(target, 0.0, 1.0)
++        yf_prev = _clamp(_num(state.get("yf", y), y), 0.0, 1.0)
++        i_prev = _clamp(_num(state.get("i", 0.0), 0.0), -0.3, 0.3)
++        df_prev = _clamp(_num(state.get("df", 0.0), 0.0), -0.05, 0.05)
++        ff_raw = state.get("ff", None)
++        tgt_raw = state.get("tgt", None)
++        try:
++            ff_f = float(ff_raw) if ff_raw is not None else None
++            if ff_f is None or not math.isfinite(ff_f):
++                ff_f = None
++        except Exception:
++            ff_f = None
++        try:
++            tgt_f = float(tgt_raw) if tgt_raw is not None else None
++            if tgt_f is None or not math.isfinite(tgt_f):
++                tgt_f = None
++        except Exception:
++            tgt_f = None
++        if ff_f is None or tgt_f is None:
++            ff_adapt = 0.322 + 0.70 * (target - 0.5)
++        else:
++            ff_adapt = ff_f + 0.70 * (target - tgt_f)
++        ff_adapt = _clamp(ff_adapt, 0.05, 0.75)
++        Kp = 0.50
++        Ki = 0.028
++        Kd = 4.0
++        Tf = 10.0
++        Td = 15.0
++        Imin = -0.20
++        Imax = 0.20
++        Umax = 0.80
+         alpha = dt / (Tf + dt)
+         yf = alpha * y + (1.0 - alpha) * yf_prev
++        yf = _clamp(yf, 0.0, 1.0)
+         e = target - yf
+-        p = Kp * e
+-        draw = (yf - yf_prev) / dt
+-        if draw < -0.05:
+-            draw = -0.05
+-        if draw > 0.05:
+-            draw = 0.05
++        p = _clamp(Kp * e, -0.25, 0.25)
++        draw = _clamp((yf - yf_prev) / dt, -0.05, 0.05)
+         beta = dt / (Td + dt)
+-        df_new = beta * draw + (1.0 - beta) * df_prev
+-        dterm = -Kd * df_new
+-        if dterm < -0.12:
+-            dterm = -0.12
+-        if dterm > 0.12:
+-            dterm = 0.12
+-        if abs(e) < 0.15:
+-            kieff = Ki
++        df_new = _clamp(beta * draw + (1.0 - beta) * df_prev, -0.05, 0.05)
++        dterm = _clamp(-Kd * df_new, -0.10, 0.10)
++        kieff = Ki if abs(e) < 0.12 else Ki * 0.25
++        icand = _clamp(i_prev + kieff * e * dt, Imin, Imax)
++        u_raw = ff_adapt + p + icand + dterm
++        if (u_raw > Umax and e > 0.0) or (u_raw < 0.0 and e < 0.0):
++            integ_new = i_prev
++            u_raw = ff_adapt + p + integ_new + dterm
+         else:
+-            kieff = Ki * 0.2
+-        icand = integ_prev + kieff * e * dt
+-        if icand < Imin:
+-            icand = Imin
+-        if icand > Imax:
+-            icand = Imax
+-        u_raw = ff + p + icand + dterm
+-        integ_new = icand
+-        if (u_raw > Umax and e > 0.0) or (u_raw < 0.0 and e < 0.0):
+-            integ_new = integ_prev
+-            u_raw = ff + p + integ_new + dterm
+-        u = u_raw
+-        if u < 0.0:
+-            u = 0.0
+-        if u > Umax:
+-            u = Umax
++            integ_new = icand
++        u = _clamp(u_raw, 0.0, Umax)
+         if yf > 0.80:
+             u = 0.0
+         elif yf > 0.70:
+-            if u > 0.15:
+-                u = 0.15
+-        if not math.isfinite(u):
+-            u = ff
+-            if u < 0.0:
+-                u = 0.0
+-            if u > Umax:
+-                u = Umax
++            if u > 0.20:
++                u = 0.20
++        ff_new = ff_adapt
++        try:
++            settled = (abs(e) < 0.05) and (abs(df_new) < 0.0015) and (yf < 0.70) and (u > 0.02) and (u < Umax - 0.02)
++            if settled:
++                lam = 0.005 * dt
++                if lam > 0.2:
++                    lam = 0.2
++                delta = lam * (u - ff_adapt)
++                if delta > 0.005:
++                    delta = 0.005
++                if delta < -0.005:
++                    delta = -0.005
++                ff_proposed = _clamp(ff_adapt + delta, 0.05, 0.75)
++                actual = ff_proposed - ff_adapt
++                ff_new = ff_proposed
++                integ_new = _clamp(integ_new - actual, Imin, Imax)
++                u = _clamp(ff_new + p + integ_new + dterm, 0.0, Umax)
++                if yf > 0.80:
++                    u = 0.0
++                elif yf > 0.70:
++                    if u > 0.20:
++                        u = 0.20
++        except Exception:
++            ff_new = ff_adapt
+         if not math.isfinite(yf):
+             yf = y
+         if not math.isfinite(df_new):
+             df_new = 0.0
+-        nstate = {"yf": float(yf), "i": float(integ_new), "df": float(df_new)}
+-        if u < 0.0:
+-            u = 0.0
+-        if u > 1.0:
+-            u = 1.0
++        if not math.isfinite(integ_new):
++            integ_new = 0.0
++        if not math.isfinite(ff_new):
++            ff_new = ff_adapt
+         if not math.isfinite(u):
+-            u = 0.0
++            u = _clamp(ff_new, 0.0, Umax)
++        u = _clamp(float(u), 0.0, 1.0)
++        nstate = {"yf": float(_clamp(yf, 0.0, 1.0)), "i": float(_clamp(integ_new, -0.3, 0.3)), "df": float(_clamp(df_new, -0.05, 0.05)), "ff": float(_clamp(ff_new, 0.05, 0.75)), "tgt": float(target)}
+         return float(u), nstate
+     except Exception:
+         try:
+-            return float(0.322), {"yf": 0.5, "i": 0.0, "df": 0.0}
++            return float(0.322), {"yf": 0.5, "i": 0.0, "df": 0.0, "ff": 0.322, "tgt": 0.5}
+         except Exception:
+             return 0.0, {}

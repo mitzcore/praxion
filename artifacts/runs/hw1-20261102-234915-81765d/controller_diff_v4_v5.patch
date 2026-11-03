@@ -1,0 +1,67 @@
+--- a/hw1-20261102-234915-81765d/controller_v4.py
++++ b/hw1-20261102-234915-81765d/controller_v5.py
+@@ -46,18 +46,18 @@
+         except Exception:
+             tgt_f = None
+         if ff_f is None or tgt_f is None:
+-            ff_adapt = 0.322 + 0.90 * (target - 0.5)
++            ff_adapt = 0.31 + 0.90 * (target - 0.5)
+         else:
+             ff_adapt = ff_f + 0.90 * (target - tgt_f)
+         ff_adapt = _clamp(ff_adapt, 0.05, 0.75)
+-        Kp = 0.45
+-        Ki_base = 0.010
+-        Tp = 70.0
+-        Tf = 10.0
+-        Td = 18.0
+-        Imin = -0.12
+-        Imax = 0.12
+-        Umax = 0.75
++        Kp = 0.80
++        Ki_base = 0.028
++        Tp = 90.0
++        Tf = 12.0
++        Td = 25.0
++        Imin = -0.15
++        Imax = 0.15
++        Umax = 0.80
+         alpha = dt / (Tf + dt)
+         yf = alpha * y + (1.0 - alpha) * yf_prev
+         yf = _clamp(yf, 0.0, 1.0)
+@@ -66,12 +66,12 @@
+         beta = dt / (Td + dt)
+         df_new = _clamp(beta * draw + (1.0 - beta) * df_prev, -0.05, 0.05)
+         e_pred = _clamp(e - Tp * df_new, -0.6, 0.6)
+-        p = _clamp(Kp * e_pred, -0.30, 0.30)
++        p = _clamp(Kp * e_pred, -0.35, 0.35)
+         ae = abs(e)
+-        if ae > 0.15:
++        if ae > 0.12:
+             kieff = 0.0
+-        elif ae > 0.08:
+-            kieff = Ki_base * 0.30
++        elif ae > 0.06:
++            kieff = Ki_base * 0.40
+         else:
+             kieff = Ki_base
+         icand = _clamp(i_prev + kieff * e * dt, Imin, Imax)
+@@ -89,9 +89,9 @@
+                 u = 0.20
+         ff_new = ff_adapt
+         try:
+-            settled = (abs(e) < 0.035) and (abs(df_new) < 0.0009) and (yf < 0.68) and (u > 0.02) and (u < Umax - 0.02)
++            settled = (abs(e) < 0.030) and (abs(df_new) < 0.0009) and (yf < 0.68) and (u > 0.02) and (u < Umax - 0.02)
+             if settled:
+-                lam = 0.004 * dt
++                lam = 0.008 * dt
+                 if lam > 0.05:
+                     lam = 0.05
+                 delta = lam * (u - ff_adapt)
+@@ -126,6 +126,6 @@
+         return float(u), nstate
+     except Exception:
+         try:
+-            return float(0.322), {"yf": 0.5, "i": 0.0, "df": 0.0, "ff": 0.322, "tgt": 0.5}
++            return float(0.31), {"yf": 0.5, "i": 0.0, "df": 0.0, "ff": 0.31, "tgt": 0.5}
+         except Exception:
+             return 0.0, {}

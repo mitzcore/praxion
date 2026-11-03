@@ -1,0 +1,1 @@
+First-order + dead-time heater: y in [0,1] (0=15C,1=75C), u in [0,1]. Nominal Kincr~1.4 (avg ~0.9), tau~150s, dead-time~25s, ambient~0.2, noise ~0.005-0.01. Degraded: K~same, tau~200-220s, dead-time~50-60s, same ambient/noise. Steady u(0.5)~0.28-0.32. Limits: soft 0.85, hard 0.9 forces u=0.

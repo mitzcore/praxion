@@ -1,0 +1,1 @@
+First-order plus dead-time heater, y in [0,1]. Nominal: ambient ~0.2, K~0.9-0.95, tau ~130-170s, dead ~15-35s, u_ss(0.5)=0.32. Inferred changed: K~0.9-0.96 unchanged, ambient unchanged, tau ~200-220s, dead ~55-65s (+35s). Noise ~0.005-0.01. Requires u_ss 0.31-0.33, prediction horizon >=60s and low integral for stability.

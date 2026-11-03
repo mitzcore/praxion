@@ -1,0 +1,1 @@
+Heater y in [0,1], u in [0,1]. Nominal: y_ss=ambient+K*u, ambient~0.20 (hidden cold-start ~0.05), K~0.93, tau~150s, dead-time~25s, u_ss(0.5)~0.32. Changed: K and ambient/loss similar (decay 0.0009 vs 0.0012/s), dead-time~70s, tau~280s. Requires lead compensation and lower PI gains; ff 0.05-0.75, Umax 0.80, soft cap 0.20 above 0.70, cutoff at 0.80/0.90.

@@ -1,0 +1,79 @@
+--- a/hw1-20261102-234915-81765d/controller_v2.py
++++ b/hw1-20261102-234915-81765d/controller_v3.py
+@@ -50,29 +50,33 @@
+         else:
+             ff_adapt = ff_f + 0.70 * (target - tgt_f)
+         ff_adapt = _clamp(ff_adapt, 0.05, 0.75)
+-        Kp = 0.50
+-        Ki = 0.028
+-        Kd = 4.0
+-        Tf = 10.0
+-        Td = 15.0
+-        Imin = -0.20
+-        Imax = 0.20
++        Kp = 0.55
++        Ki_base = 0.014
++        Tp = 35.0
++        Tf = 8.0
++        Td = 12.0
++        Imin = -0.15
++        Imax = 0.15
+         Umax = 0.80
+         alpha = dt / (Tf + dt)
+         yf = alpha * y + (1.0 - alpha) * yf_prev
+         yf = _clamp(yf, 0.0, 1.0)
+         e = target - yf
+-        p = _clamp(Kp * e, -0.25, 0.25)
+         draw = _clamp((yf - yf_prev) / dt, -0.05, 0.05)
+         beta = dt / (Td + dt)
+         df_new = _clamp(beta * draw + (1.0 - beta) * df_prev, -0.05, 0.05)
+-        dterm = _clamp(-Kd * df_new, -0.10, 0.10)
+-        kieff = Ki if abs(e) < 0.12 else Ki * 0.25
++        e_pred = e - Tp * df_new
++        e_pred = _clamp(e_pred, -0.6, 0.6)
++        p = _clamp(Kp * e_pred, -0.35, 0.35)
++        if abs(e) < 0.12:
++            kieff = Ki_base
++        else:
++            kieff = Ki_base * 0.25
+         icand = _clamp(i_prev + kieff * e * dt, Imin, Imax)
+-        u_raw = ff_adapt + p + icand + dterm
++        u_raw = ff_adapt + p + icand
+         if (u_raw > Umax and e > 0.0) or (u_raw < 0.0 and e < 0.0):
+             integ_new = i_prev
+-            u_raw = ff_adapt + p + integ_new + dterm
++            u_raw = ff_adapt + p + integ_new
+         else:
+             integ_new = icand
+         u = _clamp(u_raw, 0.0, Umax)
+@@ -83,21 +87,21 @@
+                 u = 0.20
+         ff_new = ff_adapt
+         try:
+-            settled = (abs(e) < 0.05) and (abs(df_new) < 0.0015) and (yf < 0.70) and (u > 0.02) and (u < Umax - 0.02)
++            settled = (abs(e) < 0.04) and (abs(df_new) < 0.001) and (yf < 0.70) and (u > 0.02) and (u < Umax - 0.02)
+             if settled:
+-                lam = 0.005 * dt
+-                if lam > 0.2:
+-                    lam = 0.2
++                lam = 0.003 * dt
++                if lam > 0.05:
++                    lam = 0.05
+                 delta = lam * (u - ff_adapt)
+-                if delta > 0.005:
+-                    delta = 0.005
+-                if delta < -0.005:
+-                    delta = -0.005
++                if delta > 0.003:
++                    delta = 0.003
++                if delta < -0.003:
++                    delta = -0.003
+                 ff_proposed = _clamp(ff_adapt + delta, 0.05, 0.75)
+                 actual = ff_proposed - ff_adapt
+                 ff_new = ff_proposed
+                 integ_new = _clamp(integ_new - actual, Imin, Imax)
+-                u = _clamp(ff_new + p + integ_new + dterm, 0.0, Umax)
++                u = _clamp(ff_new + p + integ_new, 0.0, Umax)
+                 if yf > 0.80:
+                     u = 0.0
+                 elif yf > 0.70:
