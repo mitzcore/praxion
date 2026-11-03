@@ -1,0 +1,549 @@
+[
+ {
+  "after_experiment": null,
+  "ts": 1793739205.68612,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): a sustained u>0 drives y above its starting value.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia: y does not jump instantly but follows with lag/time-constant on order tens to low hundreds of seconds.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u around 0.3-0.4 produces a measurable positive slope, falsified if y stays flat at this level.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient near 0.15-0.17 due to heat loss to the room.",
+    "confidence": 0.7,
+    "evidence_refs": []
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is monotonically increasing and approximately linear in u, with the u needed to hold 0.5 in the mid-range 0.2-0.7.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small relative to control band width 0.05; repeated readings at settled conditions vary by <0.01.",
+    "confidence": 0.5,
+    "evidence_refs": []
+   }
+  ]
+ },
+ {
+  "after_experiment": "E1",
+  "ts": 1793739478.013439,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): a sustained u>0 drives y above its starting value.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia: y does not jump instantly but follows with lag/time-constant on order tens to low hundreds of seconds.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u around 0.3-0.4 produces a measurable positive slope, falsified if y stays flat at this level.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient near 0.15-0.17 due to heat loss to the room.",
+    "confidence": 0.65,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is monotonically increasing and approximately linear in u, with the u needed to hold 0.5 in the mid-range 0.2-0.7.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small relative to control band width 0.05; repeated readings at settled conditions vary by <0.01.",
+    "confidence": 0.3,
+    "evidence_refs": [
+     "E1"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E2",
+  "ts": 1793739986.5663948,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): a sustained u>0 drives y above its starting value.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia: y does not jump instantly but follows with lag/time-constant on order tens to low hundreds of seconds.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u around 0.3-0.4 produces a measurable positive slope, falsified if y stays flat at this level.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient near 0.15-0.17 due to heat loss to the room.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is monotonically increasing and approximately linear in u, with the u needed to hold 0.5 in the mid-range 0.2-0.7.",
+    "confidence": 0.6,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small relative to control band width 0.05; repeated readings at settled conditions vary by <0.01.",
+    "confidence": 0.15,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E3",
+  "ts": 1793740029.825797,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): a sustained u>0 drives y above its starting value.",
+    "confidence": 0.98,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia: y does not jump instantly but follows with lag/time-constant on order 100-200 s; E1 still rising at 250 s and E2 decaying over ~300 s imply settling needs several hundred seconds.",
+    "confidence": 0.93,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u around 0.3-0.4 produces a measurable positive slope, falsified if y stays flat at this level.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient near 0.15-0.20 due to heat loss to the room.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is monotonically increasing and approximately linear in u, with the u needed to hold 0.5 in the mid-range 0.2-0.7; only one unsettled point at u=0.4 (end 0.527 slope 0.0013 still rising) so gain ~0.9 and linearity untested.",
+    "confidence": 0.55,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small relative to control band width 0.05; repeated readings at settled conditions vary by <0.01.",
+    "confidence": 0.05,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor has baseline variation ~+/-0.02 plus intermittent large negative dropouts up to ~0.05-0.07 (E1: 0.18 to 0.11, 0.49 to 0.44; E2: 0.26 to 0.21, 0.20 to 0.15), large relative to 0.05 band and requiring filtering/robust control.",
+    "confidence": 0.85,
+    "evidence_refs": [
+     "E1",
+     "E2"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E4",
+  "ts": 1793740435.6178071,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): sustained u>0 drives y above start, u=0 lets it fall.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia with time-constant ~150-200 s and settling ~500-700 s: E1 still rising at 250 s, E4 still rising at 360 s, E2 decay tau ~175 s.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u=0.3 and u=0.4 both produce sustained positive slope and >0.3 rise.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E4"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient ~0.15-0.20 due to heat loss; E2 settled to ~0.175.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approx linear in u with gain ~1.1 above ambient (Ss ~0.18+1.1*u), so u to hold 0.5 is ~0.28-0.30; E1 extrapolates to ~0.63 at 0.4 and E4 to ~0.52 at 0.3 but neither was settled (slopes >0.001).",
+    "confidence": 0.75,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small (<0.01) relative to 0.05 band.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor has baseline variation ~+/-0.02 plus intermittent large negative dropouts ~0.05-0.07 (E1, E2, E4) large relative to band and requiring filtering/robust control.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E5",
+  "ts": 1793740660.891229,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): sustained u>0 drives y above start, u=0 lets it fall.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia with time-constant ~150-200 s and settling ~500-600 s: E1 still rising at 250 s, E4 still rising at 360 s, E2 decay tau ~175 s, E5 extended 0.3 hold to ~540 s total reaches slope ~0.0003.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u=0.3 and u=0.4 both produce sustained positive slope and >0.3 rise.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient ~0.15-0.20 due to heat loss; E2 settled to ~0.175.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approx linear in u with gain ~1.1-1.15 above ambient (Ss ~0.17+1.1*u), so u to hold 0.5 is ~0.28-0.30; E5 settles at ~0.505-0.52 at u=0.3 while E1 at 0.4 extrapolates to ~0.63 but was not settled.",
+    "confidence": 0.88,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small (<0.01) relative to 0.05 band.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor has baseline variation ~+/-0.02 plus intermittent large negative dropouts ~0.05-0.07 large relative to band and requiring filtering/robust control.",
+    "confidence": 0.94,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E6",
+  "ts": 1793740721.30229,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): sustained u=0.3-0.4 drives y up by >0.3, u=0 lets it fall from ~0.54 to ~0.19.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia with time-constant ~150-180 s and settling ~500-600 s with negligible pure delay: E1 still rising at 250 s (slope 0.0013), E4 still rising at 360 s (slope 0.0033), extended 0.3 hold to ~540 s total in E5 reaches slope ~0.0003.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u=0.3 and u=0.4 both produce sustained positive slope and >0.3 rise from ambient.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient ~0.15-0.20 due to heat loss; E2 decayed from 0.544 to mean 0.175 over 480 s.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approx linear in u with gain ~1.1-1.15 above ambient (Ss ~0.17+1.1*u), so u to hold 0.5 is ~0.28-0.30; E5 settles at ~0.505-0.52 at u=0.3 while E1 at 0.4 extrapolates to ~0.63 but was not settled, so second settled level still needed.",
+    "confidence": 0.9,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small (<0.01) relative to 0.05 band.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor has baseline variation ~+/-0.02 plus intermittent large negative dropouts ~0.05-0.07 large relative to band and requiring filtering/robust control; seen in E1,E2,E4 and E5 dip to 0.455.",
+    "confidence": 0.95,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5"
+    ]
+   }
+  ]
+ },
+ {
+  "after_experiment": "E7",
+  "ts": 1793740957.879178,
+  "hypotheses": [
+   {
+    "id": "H1",
+    "statement": "Increasing u increases y (positive steady-state gain): sustained u=0.3-0.4 drives y up by >0.3, u=0 lets it fall from ~0.54 to ~0.19, and stepping 0.3->0.2 drives y down 0.53->0.46 in 200 s.",
+    "confidence": 0.99,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H2",
+    "statement": "Response has inertia with time-constant ~150-250 s and settling ~450-600 s with negligible pure delay: E1 still rising at 250 s (slope 0.0013), E4 still rising at 360 s (slope 0.0033), extended 0.3 hold to ~540 s total in E5 reaches slope ~0.0003, and E7 still falling after 200 s at 0.2 (slope -0.001).",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H3",
+    "statement": "No large dead-zone: u=0.3 and u=0.4 both produce sustained positive slope and >0.3 rise from ambient, and u=0.2 produces sustained negative slope from ~0.5.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H4",
+    "statement": "At u=0, y decays on its own toward ambient ~0.15-0.20 due to heat loss; E2 decayed from 0.544 to mean 0.175 over 480 s.",
+    "confidence": 0.97,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4"
+    ]
+   },
+   {
+    "id": "H5",
+    "statement": "Steady-state y is approx linear in u with gain ~1.1 above ambient (Ss ~0.17+1.1*u), so u to hold 0.5 is ~0.28-0.30; E5 settles at ~0.505 at u=0.3, E1 at 0.4 extrapolates to ~0.61, and E7 fall 0.531->0.462 in 200 s toward ~0.39 is consistent but not yet settled so second settled level still needed.",
+    "confidence": 0.92,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H6",
+    "statement": "Sensor noise is small (<0.01) relative to 0.05 band.",
+    "confidence": 0.02,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   },
+   {
+    "id": "H7",
+    "statement": "Sensor has baseline variation ~+/-0.02 plus intermittent large negative dropouts ~0.05-0.07 large relative to band and requiring filtering/robust control; seen in E1,E2,E4,E5 dip to 0.455, and E7 dip to 0.419.",
+    "confidence": 0.96,
+    "evidence_refs": [
+     "E1",
+     "E2",
+     "E4",
+     "E5",
+     "E7"
+    ]
+   }
+  ]
+ }
+]

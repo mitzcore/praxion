@@ -13,7 +13,8 @@ Per run k (1-based):
   (e) stop after 2 consecutive child failures, and always write/print the batch summary.
 
 A "child failure" is an infrastructure failure: watchdog kill, a non-zero exit with no `final stage:`
-line (crash), or `final stage: FAILED` whose reason is an unexpected error / plant fault. A clean
+line (crash), or `final stage: FAILED` whose reason is an unexpected error, a plant fault or a model API
+failure (timeouts, connection errors: the run never reached a measured verdict). A clean
 `final stage: FAILED` because no candidate passed the release gate is a measured result, not a
 failure of the batch, and does not count toward the stop rule (run_live_demo.py exits 1 for both,
 so the exit code alone cannot tell them apart).
@@ -47,6 +48,7 @@ _RUN_ID_RE = re.compile(r"^run_id=(\S+)", re.MULTILINE)
 _STAGE_RE = re.compile(r"^final stage:\s*(\S+)", re.MULTILINE)
 _FAULT_RE = re.compile(
     r"unexpected error|plant fault|PlantUnavailable|SerialException|could not open port|"
+    r"model error|structured call failed|APITimeoutError|APIConnectionError|RateLimitError|"
     r"Traceback \(most recent call last\)",
     re.IGNORECASE,
 )

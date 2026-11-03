@@ -1,0 +1,20 @@
+{
+  "id": "hwb3-20261103-155249-1fdbe0-v1",
+  "run_id": "hwb3-20261103-155249-1fdbe0",
+  "version": 1,
+  "path": "artifacts/runs/hwb3-20261103-155249-1fdbe0/controller_v1.py",
+  "sha256": "65c81d40ee87bff3a1d00ab4a2bb63ee98e8df8318b7e911d441d433ac3202e5",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-03T21:31:15.594460+00:00",
+  "byte_length": 3103,
+  "rationale": "First-order heat-loss model y_ss=amb+K*u with amb~0.175 K~1.1 from E5 settled 0.505 at u=0.3, E2 ambient ~0.175 at u=0, E1/E8 consistent. Tau ~150-250s (still rising after 250-360s, settled after ~540s) so closed-loop Tc~90s via Kp=0.9 gives settling <300s. Feedforward u_ff=(target-amb)/K gives correct bias ~0.296 for 0.5; P halves residual FF error, I trims rest. I gated to |e|<0.15 and limited to +-0.20 in u (int_lim 25 with Ki=0.008) to prevent windup during 0.32 initial error while leaving authority for >0.1 FF error. EMA tau_f=12s smooths +-0.02 noise; single-sample dips -0.05 to -0.07 rejected by -0.04/+0.06 outlier gate with 0.1x update to avoid kick and energy waste. Saturation back-calculation + yf>0.84 cut to 0 protects 0.9 hard cutoff.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Heater: positive gain, no dead-zone. y_ss ~0.175+1.1*u. u=0.3 holds ~0.505, u=0.2 heads to ~0.395, u=0.4 heads to ~0.61, u=0 decays to ambient ~0.15-0.20. Inertia tau ~150-250s, settling ~450-600s, negligible pure delay. Self-draining: falls on its own at u=0 from 0.54 to 0.19 in 480s. Speed max ~0.006/s per unit u. Noise: baseline +-0.02 plus intermittent large negative dropouts 0.05-0.07 (E1,E2,E4,E5,E7,E8) large vs 0.05 band, must filter. Target 0.5 needs u~0.29-0.30.",
+    "predicted_behavior": "From ambient ~0.18 to 0.5: rise at ~0.0035/s, enters 0.475-0.525 in ~180-250s, settled by 300s. True overshoot <0.015, no oscillation. Steady u ~0.29-0.31 (0.296 nominal). After settling, true stays within +-0.01, noisy y mostly in band except rejected dips. Energy near minimum: steady u^2 ~0.09.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

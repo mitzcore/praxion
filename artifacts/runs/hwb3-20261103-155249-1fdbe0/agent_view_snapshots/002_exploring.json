@@ -1,0 +1,306 @@
+{
+ "plant": {
+  "description": "A small electric heater with a temperature sensor. Input u in [0,1] is heater power; the device loses heat to the room on its own. Output y in [0,1] is a normalized temperature reading (0 = 15 \u00b0C, 1 = 75 \u00b0C).",
+  "u_range": [
+   0.0,
+   1.0
+  ],
+  "y_range": [
+   0.0,
+   1.0
+  ]
+ },
+ "objective": {
+  "target": 0.5,
+  "band": [
+   0.475,
+   0.525
+  ],
+  "scored_after_settling_s": 300.0,
+  "notes": "Maximize time in band and minimize tracking error; lower actuation energy is better at equal tracking."
+ },
+ "constraints": {
+  "soft_high_limit": 0.85,
+  "hard_cutoff_forces_u_to_zero_at": 0.9,
+  "max_single_experiment_s": 480.0,
+  "after_change_max_single_experiment_s": 480.0,
+  "worst_case_rate_per_unit_u_per_s": 0.006,
+  "experiments_remaining": 7,
+  "after_change_experiments_remaining": 4,
+  "candidates_remaining": 5,
+  "min_completed_experiments_before_controller": 3
+ },
+ "current_observation": {
+  "t": 250.0,
+  "y": 0.528
+ },
+ "experiments": [
+  {
+   "id": "E1",
+   "phase": "discovery",
+   "status": "completed",
+   "command_u": 0.4,
+   "duration_s": 250.0,
+   "command_before": 0.0,
+   "seconds_since_command_last_changed_at_start": 0.0,
+   "uncertainty_targeted": "Direction/magnitude of gain and lag: a mid-level long hold separates positive-gain with inertia from dead-zone/no-response and gives first slope and curvature for settling time.",
+   "expected_observation": "If positive-gain heater hypothesis is right, y should rise monotonically from ~0.17 after a short lag/delay, with positive slope that gradually flattens as heat loss grows, ending clearly above start but well below soft limit.",
+   "verdict": "approved; worst-case bound 0.774",
+   "t_start": 0.0,
+   "samples": [
+    [
+     0.0,
+     0.1719
+    ],
+    [
+     5.0,
+     0.1687
+    ],
+    [
+     10.0,
+     0.1654
+    ],
+    [
+     15.0,
+     0.1773
+    ],
+    [
+     20.0,
+     0.1783
+    ],
+    [
+     25.0,
+     0.1112
+    ],
+    [
+     30.0,
+     0.1923
+    ],
+    [
+     35.0,
+     0.2004
+    ],
+    [
+     40.0,
+     0.2052
+    ],
+    [
+     45.0,
+     0.2176
+    ],
+    [
+     50.0,
+     0.2272
+    ],
+    [
+     55.0,
+     0.2052
+    ],
+    [
+     60.0,
+     0.2487
+    ],
+    [
+     65.0,
+     0.2594
+    ],
+    [
+     70.0,
+     0.2659
+    ],
+    [
+     75.0,
+     0.2809
+    ],
+    [
+     80.0,
+     0.2922
+    ],
+    [
+     85.0,
+     0.3003
+    ],
+    [
+     90.0,
+     0.3115
+    ],
+    [
+     95.0,
+     0.3013
+    ],
+    [
+     100.0,
+     0.3153
+    ],
+    [
+     105.0,
+     0.3389
+    ],
+    [
+     110.0,
+     0.3373
+    ],
+    [
+     115.0,
+     0.3577
+    ],
+    [
+     120.0,
+     0.3652
+    ],
+    [
+     125.0,
+     0.3728
+    ],
+    [
+     130.0,
+     0.3873
+    ],
+    [
+     135.0,
+     0.3937
+    ],
+    [
+     140.0,
+     0.4034
+    ],
+    [
+     145.0,
+     0.4066
+    ],
+    [
+     150.0,
+     0.4152
+    ],
+    [
+     155.0,
+     0.4249
+    ],
+    [
+     160.0,
+     0.4319
+    ],
+    [
+     165.0,
+     0.4383
+    ],
+    [
+     170.0,
+     0.4421
+    ],
+    [
+     175.0,
+     0.4517
+    ],
+    [
+     180.0,
+     0.4582
+    ],
+    [
+     185.0,
+     0.4652
+    ],
+    [
+     190.0,
+     0.4689
+    ],
+    [
+     195.0,
+     0.4764
+    ],
+    [
+     200.0,
+     0.4797
+    ],
+    [
+     205.0,
+     0.4394
+    ],
+    [
+     210.0,
+     0.4952
+    ],
+    [
+     215.0,
+     0.4963
+    ],
+    [
+     220.0,
+     0.4979
+    ],
+    [
+     225.0,
+     0.5054
+    ],
+    [
+     230.0,
+     0.5108
+    ],
+    [
+     235.0,
+     0.5172
+    ],
+    [
+     240.0,
+     0.5194
+    ],
+    [
+     245.0,
+     0.5226
+    ]
+   ],
+   "measured_summary": {
+    "t_start": 0.0,
+    "t_end": 249.0,
+    "y_start": 0.172,
+    "y_end": 0.527,
+    "y_min": 0.111,
+    "y_max": 0.527,
+    "y_mean_last_5s": 0.521,
+    "u_mean_last_5s": 0.4,
+    "y_slope_last_5s_per_s": 0.0013
+   },
+   "any_override": false
+  }
+ ],
+ "ledger": [
+  {
+   "id": "H1",
+   "statement": "Increasing u increases y (positive steady-state gain): a sustained u>0 drives y above its starting value.",
+   "confidence": 0.7,
+   "evidence_refs": []
+  },
+  {
+   "id": "H2",
+   "statement": "Response has inertia: y does not jump instantly but follows with lag/time-constant on order tens to low hundreds of seconds.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H3",
+   "statement": "No large dead-zone: u around 0.3-0.4 produces a measurable positive slope, falsified if y stays flat at this level.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H4",
+   "statement": "At u=0, y decays on its own toward ambient near 0.15-0.17 due to heat loss to the room.",
+   "confidence": 0.7,
+   "evidence_refs": []
+  },
+  {
+   "id": "H5",
+   "statement": "Steady-state y is monotonically increasing and approximately linear in u, with the u needed to hold 0.5 in the mid-range 0.2-0.7.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  },
+  {
+   "id": "H6",
+   "statement": "Sensor noise is small relative to control band width 0.05; repeated readings at settled conditions vary by <0.01.",
+   "confidence": 0.5,
+   "evidence_refs": []
+  }
+ ],
+ "candidates": [],
+ "monitoring": null
+}
