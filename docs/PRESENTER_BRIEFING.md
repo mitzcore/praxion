@@ -2,7 +2,7 @@
 
 For Mithran. This is the version of the project you carry in your head and say out loud. Nothing here requires control-theory background. Every number has a source in the repo; the sources are listed in Part 3 so you can check any of them. Read Parts 1 and 2 until you can say them without the page. Rehearse Part 4 out loud.
 
-Written 2026-11-02. One item is still open: the real-hardware answer (Q7) gets filled in after today's TCLab run.
+Written 2026-11-02; hardware answer (Q7) filled in 2026-11-03 after the TCLab runs.
 
 ---
 
@@ -74,7 +74,7 @@ Quote these and nothing else. Each has a file behind it.
 | Classical rival (relay auto-tune) | lower post-change error in 11 of 12 runs (median 0.0121 vs 0.0376), using about 5× the plant time (368 s vs 74 s) and touching the hard cutoff on 2 of 5 machines | `docs/BENCHMARKS.md` head-to-head |
 | Second-disturbance diagnostic | relay re-tune regains the band in 0 of 45 episodes on two families; Praxion repairs recover in about half and have lower error in 78 of 135; 3 of 9 repairs trip the supervisor | `artifacts/benchmarks/second_disturbance_diagnostic.md` |
 | Thermal simulator, fan disturbance | repair cut error 97%, diagnosis correct | run `tclabsim-fan5-20261101-104237-bfe4bb` |
-| Real hardware | FILL IN AFTER TODAY'S RUN | `artifacts/runs/hw1-*` |
+| Real hardware | two runs on a $50 TCLab heater kit: run 1 failed the performance gate (every experiment hit a 180 s cap; cap raised to 480 s); run 2 completed: controller passed first time, fan detected 66 s after it was switched on, diagnosis correct, repair cut error 85% (7.5 °C → 1.1 °C) on 10 of 10 scenarios | `artifacts/runs/hw1-20261102-234915-81765d`, `artifacts/runs/hw2-20261103-074537-698ba8` |
 
 ---
 
@@ -101,7 +101,7 @@ Each answer is about thirty seconds. Say them in your own words once you know th
 "Because we published it. We built the classical rival into our evaluator, scored it on exactly the same hidden scenarios, and it had lower error in eleven of twelve runs. It also used five times more time on the machine and touched the emergency cutoff on two machines, where our bounded experiments never did. Then we asked what it does when something else changes afterwards. It never recovers. Our repairs recover about half the time. Those are the real numbers and we would rather you see them from us."
 
 **Q7. Does it work on real hardware?**
-FILL IN AFTER TODAY'S RUN. If the run passed: "Yes, once, yesterday, on a fifty-dollar heater kit. [state the actual numbers from the bundle]. One run is a demonstration, not a distribution, and we say that." If it did not: "Not yet. We ran it on a heater kit yesterday and [say exactly what happened]. Everything else you see is simulation, and the README says so."
+"Yes, once, on a fifty-dollar heater kit, and the first attempt failed. In the failed run the agent was only allowed three-minute experiments on a machine that takes about that long to settle, so it never saw a steady state and all five controllers it wrote were rejected by our gate. We raised the experiment limit, nothing else, and ran again. That run went end to end: it learned the board in thirty minutes, its first controller passed, we switched a fan on, the monitor caught it in sixty-six seconds, it ran four more experiments, named the cause correctly, and its repair cut the error by eighty-five percent on the changed machine. One run is a demonstration, not a distribution, and the repair comparison was scored on a model fitted to the changed board, not by running both controllers on it. All of that is in the README."
 
 **Q8. Who pays for this? What is the business?**
 "Anyone who runs machines that drift and does not have a control engineer on call: small factories, water utilities, building systems, labs. Today the fix is a visit from a specialist. The nearest commercial systems, like AspenTech's and Emerson's, re-identify models inside structures humans wrote and cost what refineries pay. Imubit and Phaidra have each raised about fifty million dollars for AI that acts on industrial control loops within safety limits. The market exists. Our wedge is the piece nobody does: the AI investigates the changed machine and rewrites readable code, under a supervisor, with evidence."
@@ -128,7 +128,7 @@ From the demo script rules, plus three traps.
 - Never quote a number that is not in Part 3.
 - Trap 1: being asked about the relay result and sounding defensive. Lead with "we built it and published it", then the cost it paid, then the second-disturbance result.
 - Trap 2: being asked a deep control-theory question (stability margins, Nyquist, observer design). Answer: "I am not a control engineer. The protocol was designed so the controller's quality is judged by the frozen evaluator, not by me. The gains and diffs are in the bundle and I am happy to pull them up." Then stop. Honest beats fluent.
-- Trap 3: the hardware question before the hardware answer is filled in. Do not improvise it.
+- Trap 3: overselling the hardware run. It is one run, the first attempt failed, and the repair comparison is twin-scored. Say all three before anyone asks.
 
 ---
 
@@ -137,4 +137,4 @@ From the demo script rules, plus three traps.
 1. Read Parts 1 and 2 twice. Close the page. Say the thirty-second version to a wall. Repeat until it comes out in your words.
 2. Have someone fire Q1 to Q12 in random order. Thirty seconds each. If an answer runs past forty-five seconds, it has a sentence too many.
 3. Watch the demo video with the sound off and narrate it live from `docs/DEMO_SCRIPT.md`. Twice.
-4. Fill in Q7 and the hardware row of Part 3 the moment today's run finishes.
+4. Say Q7 out loud until the failed first run comes out as naturally as the successful second one.

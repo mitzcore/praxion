@@ -2,12 +2,26 @@
 
 Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
-_Last updated: 2026-11-03 00:50 — first TCLab hardware run `hw1-20261102-234915-81765d` FAILED G2 (all five candidates; every discovery experiment hit the 180 s cap on a board with tau ≈ 226 s); TCLab experiment cap raised to 480 s; second hardware run scheduled for the morning of Nov 3_
+_Last updated: 2026-11-03 09:30 — hardware run 2 `hw2-20261103-074537-698ba8` COMPLETE on the real TCLab: G2 first time, fan detected in 66 s, diagnosis correct, v2 promoted (−85 %, 10/10); run 1 FAILED G2 (kept). Docker benchmark re-score under `f4a4611dd0e71948` running_
 
 ## Audit, 2026-11-02 (before the hardware run)
 
 Four independent reviewers plus a statistics pass; full record in `docs/AUDIT_2026-11-02.md`. Verified: every published metric recomputes from the stored traces with independent code; same-seed scoring holds; physics, seeds and monitor hold; no hidden parameter, seed or truth reached the model in any stored prompt. Fixed in commit: three critical hardware defects (30 min budget stopped a 75 min run; heater left on after normal exit, SIGTERM, SIGHUP; actuator held open-loop between stages), serial-retry and honest FAILED on plant faults, non-blocking operator prompt (control keeps running while the fan is switched on), run id (operator label, plant seed) no longer reaches the model, full prompt scanned, readiness ignores sample-less experiments, monitored rollout now flushes the delay line on a trip, fingerprint covers `schemas.py`, `monitor.py`, `sandbox.py`, `protocol.py` and the relay cache key covers its detector. Disclosed in README: the model sees measured traces of the scoring episodes before a repair; `tclabsim-fan*`/`weak` diagnosis-correctness contaminated by the label leak; relay result rests on five machines; v1.3 5/5 is in-sample; relay nominal tune handicapped by its hysteresis correction; twin scenarios differ only in noise. **Pending:** full Docker re-score under fingerprint `f4a4611dd0e71948` (about 2 h) after the hardware run; `docs/BENCHMARKS.md` currently carries `da2a92755d05af19`. Fake-board verification: full loop COMPLETE, `Q1=0.0, stopped=true` at exit. Suite after the fixes: `uv run pytest -q -m "not live and not docker"` → 559 passed (2026-11-02, `artifacts/batch_logs/pytest-audit-final.log`); Docker-marked tests run after Docker is back.
 
+
+## Hardware run 2, 2026-11-03 07:45–09:05 EST (`hw2-20261103-074537-698ba8`): COMPLETE, v2 promoted
+
+Same board, same settings as run 1 plus the 480 s experiment cap; cold start 21.0 °C; fan in the calibrated position (1.32× loss), off until the prompt. Launched without a TTY: the operator prompt used the trigger-file path (`OPERATOR_GO` created 30 s after the prompt; recorded `operator_disturbance_applied t=630`).
+
+- **Discovery, 30 min, 7 proposals** (E4 rejected by the worst-case bound): 200 s at 0.5, **480 s at 0** (cooling), 300 s at 0.35, 150 s at 0.35, 170 s at 0.3, 170 s at 0.32. Twin from 1470 s of data: K = 76.2 °C/u, τ = 175.7 s, L = 30.8 s, Ta = 22.1 °C, RMSE 0.69 °C, no warnings; twin holding power for 45 °C = 0.30, matching the measured 0.32.
+- **v1 G2 PASS first candidate**: 9/10 (one scenario in-band 0.693), median MAE 0.72 °C, 0 overrides, 0 violations. Deployed on the board 600 s: mean 46.3 °C at u ≈ 0.303 over the last 330 s before the fan.
+- **Monitor**: baseline window MAE 0.0150, threshold 0.0301, fired at t = 696 s (66 s after the operator mark) with window MAE 0.124. v1 on the board drifted to a minimum of 33.7 °C and raised u only to 0.41 (its own UMAX 0.60, I_AUTH 0.15).
+- **Re-identification, 4 experiments, 30 min**: 480 s at 0, 300 s + 200 s at 0.4, 480 s at 0. Changed-machine twin: K = 44.2, τ = 131.6 s, L = 25.8 s, Ta = 19.9 °C, RMSE 0.57 °C.
+- **Diagnosis `outflow_increased`: correct**, with a neutral label (no label leak possible: opaque ids, run-id secret, prompts audited).
+- **v2 promoted**: changed-machine suite, frozen v1 MAE 0.125 (7.5 °C, in-band 0) vs v2 0.018 (1.1 °C); 10/10 improved, median −85.5 %, 0 hard violations, 0 invalid. Diff: KP 0.60 → 0.70, KI 0.007 → 0.015, UMAX 0.60 → 0.78, integral authority 0.15 → 0.40. Nominal G2 after repair: FAIL (0/10 on the original twin), reported.
+- 14 model calls, 0 failed, 759 766 / 93 260 tokens, $1.35. `scripts/audit_run.py hw2-…` → PASS 7/7. Heater idled at every stage boundary (4 `actuator_idled` events) and at exit.
+
+Caveats stated wherever this is cited: one run; the v1/v2 comparison is twin-scored; the deployed v1's drift under the fan is the only direct hardware measurement of the failure; the fan was calibrated to a strength the heater can still overcome.
 
 ## Hardware run 1, 2026-11-03 00:49–01:22 EST (`hw1-20261102-234915-81765d`): FAILED at G2
 
@@ -174,6 +188,7 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 
 ## Decisions log
 
+- **2026-11-03 — Hardware run 2 COMPLETE; cited as one demonstration run.** README gets a hardware section with both runs; the presenter briefing Q7 names the failed first attempt before the success. Replay recording of hw2 is the hardware beat of the film if the footage is usable.
 - **2026-11-03 — Hardware run 1 FAILED G2; TCLab experiment cap 180 → 480 s.** Recorded above. A protocol/profile change made after seeing the failure, disclosed as such; evaluator config unchanged. Run 2 in the morning with the same fan position (1.32× loss) and a neutral label.
 
 - **2026-11-02 — Audit outcome applied.** Hardware safety and budget fixes; opaque candidate ids and run-id secret; monitored rollout routed through the runtime's e-stop path; evaluator fingerprint widened to the files that determine scores (`f4a4611dd0e71948`), which invalidates the benchmark cache: BENCHMARKS.md is regenerated by a full Docker re-score before submission. Not changed: frozen config, promotion rule, the relay's identification (its handicap is disclosed), the envelope (disclosed). Diagnosis-correctness of the thermal-simulator runs is withdrawn as evidence because the run label reached the model.

@@ -56,6 +56,15 @@ The first full loop did not work. We changed the protocol four times, and we kep
 | v1.2 | 4/5 (seed 3 never passed; seed 14 needed 4 candidates) | 4/4 of deployed | 4/4 | 2/4 (seeds 11 and 14 kept; seeds 7 and 18: nominal in-band 0.07 / 0.01) |
 | v1.3 | 5/5 on the first candidate | 5/5 | 5/5 | 3/5 |
 
+## Real hardware: two runs on a $50 heater kit
+
+On 2026-11-03 the same loop ran on an APMonitor TCLab (an Arduino heater board on USB; profile `tclab`, target 45 °C, band ±1.5 °C). Nothing in the agent, prompts or evaluator was changed for hardware except the plant class and the profile constants; the hidden-scenario gates run on a thermal twin fitted by trusted code from the discovery experiments, and the operator applies the physical change (a room fan) when prompted. Both runs are in the bundle set and both count.
+
+- **Run 1 (`hw1-20261102-234915-81765d`, 00:49 EST): FAILED at G2.** All five controllers oscillated on the twin (in-band 0.21 → 0.53, need 0.70). Cause: every discovery experiment hit the profile's 180 s cap on a board whose time constant is about 200 s, so no hold ever levelled off and the holding power was extrapolated. The cap was raised to 480 s (the only change) and the failure is recorded in `docs/IMPLEMENTATION_STATUS.md`.
+- **Run 2 (`hw2-20261103-074537-698ba8`, 07:45 EST): COMPLETE, repair promoted.** Discovery 7 proposals in 30 min including two 480 s cooling holds; twin K = 76 °C per unit power, τ = 176 s, L = 31 s, ambient 22.1 °C. v1 passed G2 first time (9/10, median error 0.72 °C, zero overrides). Deployed on the board it held 46.3 °C at 30 % power. The operator switched the fan on at t = 630 s; the monitor fired at t = 696 s (window error 0.124 vs threshold 0.030). Four re-identification experiments; the changed-machine twin shows K = 44, τ = 132 s, ambient 19.9 °C (more heat loss). Diagnosis `outflow_increased` (heat loss increased): correct, under a neutral run label. v2 cut post-change error from 0.125 (7.5 °C) to 0.018 (1.1 °C) on 10/10 scenarios, −85 %, zero violations; nominal G2 after repair: fail (reported, not gating). `scripts/audit_run.py` passes 7/7. $1.35, 80 min wall clock.
+
+What this does and does not show. One hardware run is a demonstration, not a distribution. The v1-versus-v2 comparison is scored on the twin fitted from the changed machine, not by running both on the board; the deployed v1's drift to 34 °C under the fan is the only direct hardware measurement of the failure. The fan's strength was calibrated beforehand to 1.3× the natural heat loss (a stronger draft made 45 °C unreachable). Runbook and pre-flight: `docs/TCLAB_RUNBOOK.md`.
+
 ## Architecture
 
 ```mermaid
@@ -250,7 +259,7 @@ Full list: [`docs/SAFETY_LIMITATIONS.md`](docs/SAFETY_LIMITATIONS.md).
 - The relay result rests on five machines: the 11 of 12 count includes three runs that deployed no repair, and the relay's values repeat per machine. Among the nine runs with a deployed repair the relay wins 8 (one-sided sign test p = 0.02); among the five protocol v1.3 runs it wins 4 (p = 0.19). The relay's nominal tune is also handicapped: its hysteresis correction identifies the gain at about −158° phase, not the ultimate gain, so its kp is about half a textbook tune.
 - Protocol v1.3 was revised on plant seeds 3, 7, 11, 14 and 18 and its 5 of 5 result was then measured on those same machines. That distribution is in-sample for protocol development; the exact 95% interval for 5 of 5 is [0.48, 1.0]. A fresh-seed batch is the first post-submission measurement.
 - The monitored rollout used until 2026-11-02 did not flush the actuator delay line on a hard-cutoff trip, so three recorded monitoring traces show the tank at 0.98 to 1.0 where the scored episode path holds 0.90. Scores are unaffected (they use the episode path); the recorded traces Muse diagnosed from are kept as recorded.
-- Simulation establishes nothing about real hardware. No claim here transfers to a physical tank, pump or sensor without separate validation.
+- Simulation establishes nothing about real hardware, and one hardware run (above) establishes a demonstration, not a distribution. The hardware repair comparison is twin-scored; the first hardware run failed and is kept. No claim here transfers to any other physical machine without separate validation.
 
 ## Model usage and cost
 
