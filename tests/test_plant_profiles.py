@@ -279,3 +279,35 @@ def test_operator_pause_non_blocking_keeps_control_running() -> None:
     op_t = res.trace.meta.get("operator_disturbance_at_s")
     assert op_t is not None and 124.0 <= op_t <= 126.0, op_t
     assert res.trace.disturbance_at == op_t
+
+
+def test_orchestrator_operator_pause_without_tty_waits_for_trigger_file(monkeypatch, tmp_path):
+    """Launched without a keyboard (EOF on stdin), the operator prompt must NOT count as applied: it waits for the
+    trigger file in the run directory, and only then reports done."""
+    import io
+    import sys
+    import time
+
+    from backend.agent.orchestrator import Orchestrator
+
+    monkeypatch.setattr(sys, "stdin", io.StringIO(""))
+    events: list[dict] = []
+
+    class Store:
+        dir = tmp_path
+
+    class Fake:
+        store = Store()
+
+        def _event(self, kind, **payload):
+            events.append({"kind": kind, **payload})
+
+    done = Orchestrator._operator_pause(Fake())
+    time.sleep(0.3)
+    assert done() is False, "EOF on stdin was mistaken for Enter"
+    assert events[0]["mechanism"] == "trigger_file" and events[0]["trigger"] == str(tmp_path / "OPERATOR_GO")
+    (tmp_path / "OPERATOR_GO").touch()
+    deadline = time.time() + 5.0
+    while not done() and time.time() < deadline:
+        time.sleep(0.05)
+    assert done() is True

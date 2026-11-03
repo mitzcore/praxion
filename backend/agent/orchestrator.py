@@ -11,6 +11,7 @@ import contextlib
 import json
 import logging
 import math
+import sys
 import threading
 import time
 from collections.abc import Callable
@@ -628,14 +629,25 @@ class Orchestrator:
         """Physical plants: ask the operator to apply the disturbance. Non-blocking: the control loop keeps
         running (the heater stays under control) while a thread waits for Enter; the monitor records the
         first tick after Enter as the disturbance time. Logged, never described to the agent."""
-        self._event("operator_disturbance_prompt", note="operator asked to apply the physical change now")
+        trigger = self.store.dir / "OPERATOR_GO"
+        interactive = sys.stdin is not None and sys.stdin.isatty()
+        self._event("operator_disturbance_prompt", note="operator asked to apply the physical change now",
+                    mechanism="stdin" if interactive else "trigger_file", trigger=None if interactive else str(trigger))
         done = threading.Event()
 
         def _wait() -> None:
-            try:
-                input("\n>>> Apply the physical disturbance now, then press Enter (control keeps running)... ")
-            except EOFError:
-                pass
+            if interactive:
+                try:
+                    input("\n>>> Apply the physical disturbance now, then press Enter (control keeps running)... ")
+                except EOFError:
+                    pass
+            else:
+                # No keyboard (launched from a tool or a service): an EOF on stdin must not count as "applied".
+                # Wait for the operator to create the trigger file instead.
+                print(f"\n>>> Apply the physical disturbance now, then create {trigger} (control keeps running)... ",
+                      flush=True)
+                while not trigger.exists():
+                    time.sleep(0.5)
             done.set()
 
         threading.Thread(target=_wait, name="operator-prompt", daemon=True).start()
