@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T23:36:53-0500",
+ "generated_at": "2026-11-03T10:51:14-0500",
  "sandbox_mode": "docker",
  "include_mock": false,
  "frozen_config": {
@@ -43,7 +43,7 @@
    "actuator_lag": "dynamics"
   }
  },
- "evaluator_fingerprint": "da2a92755d05af19",
+ "evaluator_fingerprint": "bdfdc77bdafd157c",
  "baselines": [
   "fixed_pid",
   "fixed_onoff",
@@ -4052,10 +4052,10 @@
       "family": "actuator_lag",
       "rule": "tl_pi",
       "gains": {
-       "kp": 0.2407864940148577,
-       "ki": 0.0013836713826850798,
+       "kp": 0.24403725344849708,
+       "ki": 0.0014130703731818012,
        "kd": 0.0,
-       "u_bias": 0.5439282930288742
+       "u_bias": 0.5440489175708955
       },
       "stages": [
        {
@@ -4065,21 +4065,21 @@
         "bias_end": 0.5448132487810867,
         "ok": true,
         "cycles": 3,
-        "plant_s": 309.0,
-        "Pu": 79.10000000000002,
-        "Pu_cv": 0.0,
-        "a": 0.165924292985967,
-        "Ku": 0.7705167808475446,
-        "mean_u": 0.5439282930288742,
+        "plant_s": 263.0,
+        "Pu": 78.5,
+        "Pu_cv": 0.00509554140127432,
+        "a": 0.16373224122762958,
+        "Ku": 0.7809192110351907,
+        "mean_u": 0.5440489175708955,
         "bias_changes": 0,
         "overrides": 0,
         "hard_violations": 0,
-        "max_y": 0.7760569427308901,
-        "min_y": 0.4307846782613401,
+        "max_y": 0.7713774197788529,
+        "min_y": 0.4325800910743108,
         "warnings": []
        }
       ],
-      "plant_s_total": 369.0,
+      "plant_s_total": 323.0,
       "budget_s": 160.0,
       "cap_s": 600.0,
       "retuned": true,
@@ -4096,7 +4096,7 @@
       "fallback_reason": null,
       "source_estimate": "retune_relay",
       "hard_violations_total": 0,
-      "note": "monitor fired 93 s after the change; settle 60 s + relay 309 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 93 s after the change; settle 60 s + relay 263 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
      }
     }
    },
@@ -4697,11 +4697,11 @@
      {
       "variant": "relay PI re-tuned after change",
       "candidate": "baseline:relay_pi_retuned:actuator_lag",
-      "nominal_median_mae": 0.014867546655508355,
-      "nominal_in_band": 0.9565555555555555,
-      "nominal_energy": 38.14432568129705,
+      "nominal_median_mae": 0.014864376142606134,
+      "nominal_in_band": 0.9592222222222222,
+      "nominal_energy": 38.17722209731808,
       "nominal_passed": "10/10",
-      "post_median_mae": 0.009026328808469961,
+      "post_median_mae": 0.009253322171461461,
       "post_in_band": 1.0,
       "adaptation_latency_s": 0.0,
       "recovered": "5/5",
@@ -4712,9 +4712,9 @@
       "model_calls": 0,
       "cost_usd": 0.0,
       "wall_s": null,
-      "plant_s": 369.0,
+      "plant_s": 323.0,
       "retuned": true,
-      "note": "monitor fired 93 s after the change; settle 60 s + relay 309 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 93 s after the change; settle 60 s + relay 263 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
      },
      {
       "variant": "Muse v1 frozen",
@@ -4995,10 +4995,10 @@
       "family": "actuator_lag",
       "rule": "tl_pi",
       "gains": {
-       "kp": 0.25268538034461424,
-       "ki": 0.0013863245753256944,
+       "kp": 0.2519315021017411,
+       "ki": 0.0013755473770228827,
        "kd": 0.0,
-       "u_bias": 0.5769445863345785
+       "u_bias": 0.5780346564892231
       },
       "stages": [
        {
@@ -5008,27 +5008,27 @@
         "bias_end": 0.578815437270004,
         "ok": true,
         "cycles": 3,
-        "plant_s": 322.3,
-        "Pu": 82.84999999999997,
-        "Pu_cv": 0.0006035003017502884,
-        "a": 0.158176382629366,
-        "Ku": 0.8085932171027655,
-        "mean_u": 0.5769445863345785,
+        "plant_s": 314.5,
+        "Pu": 83.25000000000003,
+        "Pu_cv": 0.0006006006006003956,
+        "a": 0.15864545836658628,
+        "Ku": 0.8061808067255716,
+        "mean_u": 0.5780346564892231,
         "bias_changes": 0,
         "overrides": 0,
         "hard_violations": 0,
-        "max_y": 0.7779386919150083,
-        "min_y": 0.43443504222578005,
+        "max_y": 0.7785476690193637,
+        "min_y": 0.43498758030465173,
         "warnings": []
        }
       ],
-      "plant_s_total": 382.3,
+      "plant_s_total": 353.2,
       "budget_s": 160.0,
       "cap_s": 600.0,
       "retuned": true,
       "detector_fired_at_s": 149.5,
       "disturbance_at_s": 60.0,
-      "settle_s": 60.0,
+      "settle_s": 38.7,
       "settle_hard_violations": 0,
       "nominal_gains": {
        "kp": 4.10218733187809,
@@ -5039,7 +5039,7 @@
       "fallback_reason": null,
       "source_estimate": "retune_relay",
       "hard_violations_total": 0,
-      "note": "monitor fired 90 s after the change; settle 60 s + relay 322 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 90 s after the change; settle 39 s + relay 314 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
      }
     }
    },
@@ -5614,11 +5614,11 @@
      {
       "variant": "relay PI re-tuned after change",
       "candidate": "baseline:relay_pi_retuned:actuator_lag",
-      "nominal_median_mae": 0.01808776764679976,
-      "nominal_in_band": 0.9301111111111112,
-      "nominal_energy": 43.38460672537779,
+      "nominal_median_mae": 0.018697277398542947,
+      "nominal_in_band": 0.9338888888888889,
+      "nominal_energy": 43.46730876946052,
       "nominal_passed": "10/10",
-      "post_median_mae": 0.012191794169632807,
+      "post_median_mae": 0.013538513656870367,
       "post_in_band": 1.0,
       "adaptation_latency_s": 0.0,
       "recovered": "5/5",
@@ -5629,9 +5629,9 @@
       "model_calls": 0,
       "cost_usd": 0.0,
       "wall_s": null,
-      "plant_s": 382.3,
+      "plant_s": 353.2,
       "retuned": true,
-      "note": "monitor fired 90 s after the change; settle 60 s + relay 322 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 90 s after the change; settle 39 s + relay 314 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
      },
      {
       "variant": "Muse v1 frozen",
@@ -5659,9 +5659,9 @@
      "family": null,
      "family_kind": null,
      "attempts": [],
-     "passed": null,
-     "status": "N/A",
-     "detail": "no disturbance in this run"
+     "passed": false,
+     "status": "NOT REACHED",
+     "detail": "no approved v1: the run never reached deployment"
     },
     "diagnosis": []
    }
@@ -7820,10 +7820,10 @@
       "family": "actuator_lag",
       "rule": "tl_pi",
       "gains": {
-       "kp": 0.2407864940148577,
-       "ki": 0.0013836713826850798,
+       "kp": 0.24403725344849708,
+       "ki": 0.0014130703731818012,
        "kd": 0.0,
-       "u_bias": 0.5439282930288742
+       "u_bias": 0.5440489175708955
       },
       "stages": [
        {
@@ -7833,21 +7833,21 @@
         "bias_end": 0.5448132487810867,
         "ok": true,
         "cycles": 3,
-        "plant_s": 309.0,
-        "Pu": 79.10000000000002,
-        "Pu_cv": 0.0,
-        "a": 0.165924292985967,
-        "Ku": 0.7705167808475446,
-        "mean_u": 0.5439282930288742,
+        "plant_s": 263.0,
+        "Pu": 78.5,
+        "Pu_cv": 0.00509554140127432,
+        "a": 0.16373224122762958,
+        "Ku": 0.7809192110351907,
+        "mean_u": 0.5440489175708955,
         "bias_changes": 0,
         "overrides": 0,
         "hard_violations": 0,
-        "max_y": 0.7760569427308901,
-        "min_y": 0.4307846782613401,
+        "max_y": 0.7713774197788529,
+        "min_y": 0.4325800910743108,
         "warnings": []
        }
       ],
-      "plant_s_total": 369.0,
+      "plant_s_total": 323.0,
       "budget_s": 160.0,
       "cap_s": 600.0,
       "retuned": true,
@@ -7864,7 +7864,7 @@
       "fallback_reason": null,
       "source_estimate": "retune_relay",
       "hard_violations_total": 0,
-      "note": "monitor fired 93 s after the change; settle 60 s + relay 309 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 93 s after the change; settle 60 s + relay 263 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
      }
     }
    },
@@ -8465,11 +8465,11 @@
      {
       "variant": "relay PI re-tuned after change",
       "candidate": "baseline:relay_pi_retuned:actuator_lag",
-      "nominal_median_mae": 0.014867546655508355,
-      "nominal_in_band": 0.9565555555555555,
-      "nominal_energy": 38.14432568129705,
+      "nominal_median_mae": 0.014864376142606134,
+      "nominal_in_band": 0.9592222222222222,
+      "nominal_energy": 38.17722209731808,
       "nominal_passed": "10/10",
-      "post_median_mae": 0.009026328808469961,
+      "post_median_mae": 0.009253322171461461,
       "post_in_band": 1.0,
       "adaptation_latency_s": 0.0,
       "recovered": "5/5",
@@ -8480,9 +8480,9 @@
       "model_calls": 0,
       "cost_usd": 0.0,
       "wall_s": null,
-      "plant_s": 369.0,
+      "plant_s": 323.0,
       "retuned": true,
-      "note": "monitor fired 93 s after the change; settle 60 s + relay 309 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 93 s after the change; settle 60 s + relay 263 s plant time (agent after-change budget 160 s); kp=0.24 ki=0.0014 bias=0.54; 0 hard-cutoff ticks while identifying"
      },
      {
       "variant": "Muse v1 frozen",
@@ -10649,10 +10649,10 @@
       "family": "actuator_lag",
       "rule": "tl_pi",
       "gains": {
-       "kp": 0.25268538034461424,
-       "ki": 0.0013863245753256944,
+       "kp": 0.2519315021017411,
+       "ki": 0.0013755473770228827,
        "kd": 0.0,
-       "u_bias": 0.5769445863345785
+       "u_bias": 0.5780346564892231
       },
       "stages": [
        {
@@ -10662,27 +10662,27 @@
         "bias_end": 0.578815437270004,
         "ok": true,
         "cycles": 3,
-        "plant_s": 322.3,
-        "Pu": 82.84999999999997,
-        "Pu_cv": 0.0006035003017502884,
-        "a": 0.158176382629366,
-        "Ku": 0.8085932171027655,
-        "mean_u": 0.5769445863345785,
+        "plant_s": 314.5,
+        "Pu": 83.25000000000003,
+        "Pu_cv": 0.0006006006006003956,
+        "a": 0.15864545836658628,
+        "Ku": 0.8061808067255716,
+        "mean_u": 0.5780346564892231,
         "bias_changes": 0,
         "overrides": 0,
         "hard_violations": 0,
-        "max_y": 0.7779386919150083,
-        "min_y": 0.43443504222578005,
+        "max_y": 0.7785476690193637,
+        "min_y": 0.43498758030465173,
         "warnings": []
        }
       ],
-      "plant_s_total": 382.3,
+      "plant_s_total": 353.2,
       "budget_s": 160.0,
       "cap_s": 600.0,
       "retuned": true,
       "detector_fired_at_s": 149.5,
       "disturbance_at_s": 60.0,
-      "settle_s": 60.0,
+      "settle_s": 38.7,
       "settle_hard_violations": 0,
       "nominal_gains": {
        "kp": 4.10218733187809,
@@ -10693,7 +10693,7 @@
       "fallback_reason": null,
       "source_estimate": "retune_relay",
       "hard_violations_total": 0,
-      "note": "monitor fired 90 s after the change; settle 60 s + relay 322 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 90 s after the change; settle 39 s + relay 314 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
      }
     }
    },
@@ -11322,11 +11322,11 @@
      {
       "variant": "relay PI re-tuned after change",
       "candidate": "baseline:relay_pi_retuned:actuator_lag",
-      "nominal_median_mae": 0.01808776764679976,
-      "nominal_in_band": 0.9301111111111112,
-      "nominal_energy": 43.38460672537779,
+      "nominal_median_mae": 0.018697277398542947,
+      "nominal_in_band": 0.9338888888888889,
+      "nominal_energy": 43.46730876946052,
       "nominal_passed": "10/10",
-      "post_median_mae": 0.012191794169632807,
+      "post_median_mae": 0.013538513656870367,
       "post_in_band": 1.0,
       "adaptation_latency_s": 0.0,
       "recovered": "5/5",
@@ -11337,9 +11337,9 @@
       "model_calls": 0,
       "cost_usd": 0.0,
       "wall_s": null,
-      "plant_s": 382.3,
+      "plant_s": 353.2,
       "retuned": true,
-      "note": "monitor fired 90 s after the change; settle 60 s + relay 322 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
+      "note": "monitor fired 90 s after the change; settle 39 s + relay 314 s plant time (agent after-change budget 160 s); kp=0.25 ki=0.0014 bias=0.58; 0 hard-cutoff ticks while identifying"
      },
      {
       "variant": "Muse v1 frozen",
@@ -12392,6 +12392,14 @@
    "reason": "mock run (excluded; use --include-mock)"
   },
   {
+   "run_id": "hw1-20261102-234915-81765d",
+   "reason": "plant profile 'tclab': this evaluator re-scores the tank only; MVP-2 results are reported from the in-run bundle in docs/IMPLEMENTATION_STATUS.md"
+  },
+  {
+   "run_id": "hw2-20261103-074537-698ba8",
+   "reason": "plant profile 'tclab': this evaluator re-scores the tank only; MVP-2 results are reported from the in-run bundle in docs/IMPLEMENTATION_STATUS.md"
+  },
+  {
    "run_id": "tclabsim-fan-20261101-095643-376310",
    "reason": "plant profile 'tclab_sim': this evaluator re-scores the tank only; MVP-2 results are reported from the in-run bundle in docs/IMPLEMENTATION_STATUS.md"
   },
@@ -12463,7 +12471,7 @@
    "G1": "5/5",
    "G2": "4/5",
    "G3": "4/5",
-   "G3_not_reached": 0,
+   "G3_not_reached": 1,
    "median_experiments_to_v1": 10.5,
    "median_cost_usd": 1.652953,
    "median_wall_s": 775.5
@@ -12483,9 +12491,9 @@
   }
  ],
  "cache": {
-  "hits": 534,
-  "misses": 0,
+  "hits": 224,
+  "misses": 310,
   "dir": "artifacts/benchmarks/cache"
  },
- "scoring_wall_s": 5.2
+ "scoring_wall_s": 6327.6
 }

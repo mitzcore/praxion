@@ -71,7 +71,7 @@ Quote these and nothing else. Each has a file behind it.
 | Model | `muse-spark-1.3`; Wonder tried once | `model_calls.jsonl` in each bundle |
 | Tests | 563 passing | `uv run pytest -q` |
 | Hostile code corpus | 18 of 18 malicious controllers contained by the sandbox | `docs/IMPLEMENTATION_STATUS.md` |
-| Classical rival (relay auto-tune) | lower post-change error in 11 of 12 runs (median 0.0121 vs 0.0376), using about 5× the plant time (368 s vs 74 s) and touching the hard cutoff on 2 of 5 machines | `docs/BENCHMARKS.md` head-to-head |
+| Classical rival (relay auto-tune) | lower post-change error in 11 of 12 runs (median 0.0121 vs 0.0376), using about 5× the plant time (358 s vs 74 s) and touching the hard cutoff on 2 of 5 machines | `docs/BENCHMARKS.md` head-to-head |
 | Second-disturbance diagnostic | relay re-tune regains the band in 0 of 45 episodes on two families; Praxion repairs recover in about half and have lower error in 78 of 135; 3 of 9 repairs trip the supervisor | `artifacts/benchmarks/second_disturbance_diagnostic.md` |
 | Thermal simulator, fan disturbance | repair cut error 97%, diagnosis correct | run `tclabsim-fan5-20261101-104237-bfe4bb` |
 | Real hardware | two runs on a $50 TCLab heater kit: run 1 failed the performance gate (every experiment hit a 180 s cap; cap raised to 480 s); run 2 completed: controller passed first time, fan detected 66 s after it was switched on, diagnosis correct, repair cut error 85% (7.5 °C → 1.1 °C) on 10 of 10 scenarios | `artifacts/runs/hw1-20261102-234915-81765d`, `artifacts/runs/hw2-20261103-074537-698ba8` |
