@@ -302,3 +302,22 @@ def test_audit_board_verification_fail_cases(hw2_copy: Path, mutate, msg):
 def test_audit_board_verification_fake_board_warns(hw2_copy: Path):
     (hw2_copy / "board_verification.json").write_text(json.dumps(_synthetic_bv(hw2_copy, fake_board=True)))
     assert _check8(hw2_copy).status == "WARN"
+
+
+# ------------------------------------------------------------------ Part F: live readout (camera)
+def test_live_readout_prints_every_n_seconds_and_never_alters_commands():
+    plant = vob.fake_board()
+    lab = plant._open()
+    lines: list[str] = []
+    ro = vob.LiveReadout(plant, every_s=5.0, out=lines.append)
+    ro.on_event("board_trial_started", {"label": "v2"})
+    plant.reset(seed=0, scenario=0)
+    for _ in range(21):
+        plant.step(0.4)
+    assert len(lines) >= 4  # t = 0, 5, 10, 15, 20 s buckets (reset tick may land on 0)
+    assert all(line.startswith("[v2] t=") and "°C" in line and "heater  40 %" in line for line in lines)
+    assert lab.q1[-1] == 40.0  # the command sent to the board is untouched
+    ro.on_event("operator_disturbance_prompt", {"purpose": "apply"})
+    for _ in range(6):
+        plant.step(0.4)
+    assert "<< change requested" in lines[-1]

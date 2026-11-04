@@ -256,11 +256,54 @@ def fake_board() -> Any:
     return TCLabHardware(port="FAKE", lab_factory=lambda: lab, clock=clk, sleep=clk.sleep)
 
 
+
+# ------------------------------------------------------------------------------------- live readout
+class LiveReadout:
+    """Prints one terminal line every ``every_s`` seconds of plant time while a board trial runs:
+    trial label, time, temperature, target and the heater command. Observation only: it wraps
+    ``plant.step`` and never changes what is sent to the board. Meant for the camera during an
+    operator session, where the dashboard does not follow a script-driven run live."""
+
+    def __init__(self, plant: Any, profile: PlantProfile = TCLAB, every_s: float = 5.0,
+                 out: Callable[[str], None] | None = None) -> None:
+        self.plant = plant
+        self.profile = profile
+        self.every_s = float(every_s)
+        self.label = "?"
+        self.note = ""
+        self._out = out or (lambda line: print(line, flush=True))
+        self._last_bucket: int | None = None
+        self._orig_step = plant.step
+        plant.step = self._step  # type: ignore[method-assign]
+
+    def _step(self, u_applied: float) -> Any:
+        obs = self._orig_step(u_applied)
+        bucket = int(float(obs.t) // self.every_s)
+        if bucket != self._last_bucket:
+            self._last_bucket = bucket
+            temp = self.profile.to_display(float(obs.y))
+            target = self.profile.to_display(float(self.profile.target))
+            note = f"  {self.note}" if self.note else ""
+            self._out(f"[{self.label}] t={float(obs.t):6.0f} s  T1={temp:5.1f} °C  target {target:4.1f} °C"
+                      f"  heater {100.0 * float(u_applied):3.0f} %{note}")
+        return obs
+
+    def on_event(self, kind: str, payload: dict[str, Any]) -> None:
+        if kind == "board_trial_started":
+            self.label = str(payload.get("label", "?"))
+            self.note = ""
+            self._last_bucket = None
+        elif kind == "operator_disturbance_prompt" and payload.get("purpose") == "apply":
+            self.note = "<< change requested (operator applies it now)"
+        elif kind == "board_trial_finished":
+            self.note = ""
+
+
 # ------------------------------------------------------------------------------------- run + report
 def run_verification(run_dir: Path, plant: PlantAdapter, *, mode: str, order: list[str], sandbox: str,
                      magnitude: float = DEFAULT_MAGNITUDE, pre_s: float = 480.0, post_s: float = 600.0,
                      profile: PlantProfile = TCLAB, fake: bool = False, alerts: bool = True,
-                     quiet: bool = False) -> BoardVerification:
+                     quiet: bool = False, readout: LiveReadout | None = None) -> BoardVerification:
     """Shared by this script and run_live_demo --verify-on-board. Writes board_verification.json and
     appends events (stage = the run's final stage from result.json) through RunStore."""
     run_dir = Path(run_dir)
@@ -273,6 +316,8 @@ def run_verification(run_dir: Path, plant: PlantAdapter, *, mode: str, order: li
     def log(kind: str, **payload: Any) -> None:
         payload.setdefault("fake_board", fake)
         store.event(kind, stage=stage, **payload)
+        if readout is not None:
+            readout.on_event(kind, payload)
         if not quiet:
             short = {k: v for k, v in payload.items() if k not in ("trials", "prediction_vs_board")}
             print(f"[{time.time() - t0:6.1f}s] {kind:24s} {json.dumps(short, default=str)[:240]}", flush=True)
@@ -352,6 +397,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--sandbox", choices=["docker", "subprocess_dev_only"], default="docker")
     ap.add_argument("--fake-board", action="store_true", help="TEST ONLY: in-process fake board, accelerated clock")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--live", type=float, default=None, metavar="SECONDS",
+                    help="print temperature/target/heater every SECONDS of plant time during the board trials")
     args = ap.parse_args(argv)
 
     run_dir = Path(args.root) / args.run
@@ -387,9 +434,10 @@ def main(argv: list[str] | None = None) -> int:
         with contextlib.suppress(Exception):
             signal.signal(sig, _raise_exit)
     try:
+        readout = LiveReadout(plant, every_s=args.live) if args.live else None
         bv = run_verification(run_dir, plant, mode=args.disturbance, order=order, sandbox=args.sandbox,
                               magnitude=args.magnitude, pre_s=args.pre_s, post_s=args.post_s,
-                              fake=args.fake_board, quiet=args.quiet)
+                              fake=args.fake_board, quiet=args.quiet, readout=readout)
     except BundleError as e:
         print(f"error: {e}", file=sys.stderr)
         return 3
