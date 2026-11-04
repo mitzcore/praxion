@@ -1,0 +1,20 @@
+{
+  "id": "hwb8-20261104-020122-b678aa-v2",
+  "run_id": "hwb8-20261104-020122-b678aa",
+  "version": 2,
+  "path": "artifacts/runs/hwb8-20261104-020122-b678aa/controller_v2.py",
+  "sha256": "894e12ef7fa2cd5bc5db6e7808314eb29e73795a3f89f732f4609b8a18f60871",
+  "parent_id": "hwb8-20261104-020122-b678aa-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T08:15:45.816058+00:00",
+  "byte_length": 3375,
+  "rationale": "Raised actuation ceiling 0.70->0.85 and replaced fixed 0.33 feedforward + small +/-0.25 trim with adaptive hold-bias initialized at nominal 0.33 but allowed to learn 0.0-0.85. Increased integral rate 0.006->0.020 and widened integration gate 0.20->0.35 with strict saturation anti-windup. Kp 0.80->0.90. This directly targets halved heater gain: old trim (+0.25 max, 0.70 cap) cannot supply new hold ~0.73, so y stuck ~0.45; new bias learns +0.40 offset while starting at nominal value so nominal behavior is preserved.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Adaptive-bias PI for normalized heater: yf low-pass 12s, u=bias+0.9*e, bias dot=0.020*e gated |e|<0.35, bias in [0,0.85], u in [0,0.85], bias init nominal hold 0.33+(target-0.5)/1.1. Nominal hold ~0.33, degraded hold ~0.73.",
+    "predicted_behavior": "Degraded plant: initial u~0.65-0.71, y climbs from ~0.12 to ~0.35 by ~150s, bias climbs 0.33->0.6, y reaches 0.45 by ~200-250s and 0.5 by ~280-350s then holds with u~0.70-0.78, steady error ->0, in_band after 300s >0.70, MAE ~0.02-0.035, no overrides/hard violations. Nominal plant: same as before, hold ~0.32-0.34, MAE ~0.014-0.018, in_band ~0.70-0.75, max y <0.6, max u <0.65 except initial transient.",
+    "diagnosis": "Actuator weaker, gain roughly halved, loss/delay/sensor unchanged. E8 u=0 decay 0.351->0.136 over 480s to ambient ~0.135 with 63% time ~150-200s, essentially same as E2 0.534->0.157 to ~0.15, so tau and ambient unchanged - rules out outflow_increased which would decay faster/lower and response_slower which would hold flat. E9 u=0.5 from ~0.13 rises only to 0.279 in 200s with post-delay slope ~0.0010-0.0015/s vs original E1 ~0.002-0.003/s from similar level: initial slope =K*u/tau halved, while outflow-only would preserve initial slope. E9+E10 380s at 0.5 only reaches ~0.346 with slope still >0 vs original ~0.52 settled, and E11 u=0.8 0.355->0.417 in 100s extrapolates to y_ss(0.8)~0.49-0.53. With ambient ~0.135 this gives K_new=(0.49-0.135)/0.8~0.44 to ~0.52 vs K_old~(0.505-0.14)/0.33~1.1 and (0.533-0.14)/0.38~1.03, i.e. ~45-50% of original. Hold for 0.5 rises from ~0.33 to (0.5-0.135)/0.45~0.81, ~0.72-0.80. Delay still ~10-20s (E9 rises promptly, no 80s flat) and noise ~0.01 unchanged, ruling out sensor_changed.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

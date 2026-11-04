@@ -1,0 +1,1 @@
+Adaptive-bias PI for normalized heater: yf low-pass 12s, u=bias+0.9*e, bias dot=0.020*e gated |e|<0.35, bias in [0,0.85], u in [0,0.85], bias init nominal hold 0.33+(target-0.5)/1.1. Nominal hold ~0.33, degraded hold ~0.73.
