@@ -155,7 +155,7 @@ A control engineer's first objection is that a 1970s self-tuner solves the tank.
 
 Gate definitions are in `PRAXION_IMPLEMENTATION_PLAN.md` section 10 and frozen in `backend/evaluation/config.py`.
 
-- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02; 639 passed on 2026-11-04), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
+- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02; 645 passed on 2026-11-04), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
 - **G1 discovery:** ≥ 3 distinct experiments tied to the ledger, ≥ 1 valid verbatim Muse controller.
 - **G2 performance:** ≥ 8/10 held-out scenarios, zero violations and overrides, ≥ 0.70 in-band after settling.
 - **G3 self-repair:** the repair cuts post-change MAE by ≥ 20% vs frozen v1 on ≥ 3/5 disturbance scenarios, with zero hard violations and zero invalid outputs.

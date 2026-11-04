@@ -69,7 +69,7 @@ Quote these and nothing else. Each has a file behind it.
 | First full run | repair failed, recorded as FAIL, original controller kept | run `spark2-20261031-004636-3d012e` |
 | Cost and time per run | median about $1.72 and about 13 minutes | `docs/BENCHMARKS.md` cross-run summary |
 | Model | `muse-spark-1.3`; Wonder tried once | `model_calls.jsonl` in each bundle |
-| Tests | 639 passing | `uv run pytest -q` |
+| Tests | 645 passing | `uv run pytest -q` |
 | Hostile code corpus | 18 of 18 malicious controllers contained by the sandbox | `docs/IMPLEMENTATION_STATUS.md` |
 | Classical rival (relay auto-tune) | lower post-change error in 11 of 12 runs (median 0.0121 vs 0.0376), using about 5× the plant time (358 s vs 74 s) and touching the hard cutoff on 2 of 5 machines | `docs/BENCHMARKS.md` head-to-head |
 | Second-disturbance diagnostic | relay re-tune regains the band in 0 of 45 episodes on two families; Praxion repairs recover in about half and have lower error in 78 of 135; 3 of 9 repairs trip the supervisor | `artifacts/benchmarks/second_disturbance_diagnostic.md` |
