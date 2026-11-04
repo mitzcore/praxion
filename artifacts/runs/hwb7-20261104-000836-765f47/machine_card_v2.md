@@ -1,0 +1,1 @@
+First-order heater with delay: y0~0.135 ambient, tau~150-250s (typ 180s), delay ~15-30s (typ 20s), y_ss=y0+K*u. Nominal K~1.0-1.1 (use 1.05), u_ss(0.5)~0.32-0.35. Changed machine: same y0/tau/delay/noise, K~0.46-0.53 (~0.47x nominal), u_ss(0.5)~0.70-0.75. Sensor jitter ~0.02, no offset.

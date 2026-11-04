@@ -1,0 +1,20 @@
+{
+  "id": "hwb7-20261104-000836-765f47-v1",
+  "run_id": "hwb7-20261104-000836-765f47",
+  "version": 1,
+  "path": "artifacts/runs/hwb7-20261104-000836-765f47/controller_v1.py",
+  "sha256": "18989b1778e9de503c37a51415ddf4d668bbbc7f35ca22971369d94034de3e6b",
+  "parent_id": null,
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T05:35:17.700786+00:00",
+  "byte_length": 4474,
+  "rationale": "Slow first-order heater with lag: E1 +0.205 in 300s at u=0.3 still rising +0.0022/s, E3 +0.37 in 220s at u=0.5 still rising, E7 -0.052 in 100s at u=0.3 slope -0.0011, E8 -0.034 in 120s at u=0.32 slope -0.0004. Implies tau ~180-250s, lag 20-30s, ambient ~0.145, K~1.05, u_ss(0.5)~0.33. Use feedforward (target-y0)/K + PI for residual. Kp=1.1 gives closed tau~200/(1+1.15)~93s, settles in ~280s within 300s window without aggressive crossover (wc~0.006 rad/s, lag phase ~9deg). Ti~183s (Ki=0.006) matches plant tau for IMC-like zero cancellation. Filter tau_f=15s smooths 0.02-0.04 jitter without adding much phase. Integral +-0.30 leaves authority to correct +-0.30 feedforward error, far larger than 0.05 uncertainty, preventing permanent offset, with conditional freeze anti-windup. Outlier clip 0.06+0.006*dt rejects spikes like 0.13 jump. Safety cap above 0.75 and cut to 0 above 0.80 keeps far from 0.85/0.90.",
+  "extra": {
+    "kind": "controller",
+    "machine_card": "Heater: more power -> hotter (positive gain). No dead zone: u=0.3 clearly heats and cools. Self-draining to room ~0.12-0.16 (E2 ended 0.15 after 480s at u=0, E3 started 0.15). Gain K~1.0-1.1: y_ss ~0.145+1.05*u. So u=0.3 -> ~0.46-0.52, u=0.5 -> ~0.61-0.71, u=0.32 -> ~0.48-0.54. Hold 0.5 needs u~0.32-0.34. Slow: lag 20-30s with no move, then tau ~180-250s (E1 still +0.0022/s after 300s, E7 -0.0011/s after 100s, E8 -0.0004/s near equilibrium). Noise 0.02-0.04 jitter with occasional 0.05 spikes; 0.13 jump E3->E7 is not plant dynamics. Max rate <0.006/s per unit u.",
+    "predicted_behavior": "From near ambient, filtered reading reaches 0.45 in ~150-200s and enters 0.475-0.525 in ~200-260s with feedforward + proportional boost (~0.5-0.55 initially). Settles with <0.02 overshoot because filter + modest Kp and conditional integral prevent windup. After settling, y stays in band >90% time, MAE ~0.01-0.015 limited by sensor noise, steady duty ~0.32-0.36 depending on true ambient/gain, integral trimming feedforward error. Energy ~0.11 mean u^2. From hot start >0.6, cuts to low power and glides down without undershoot below 0.45.",
+    "diagnosis": null,
+    "diagnosis_category": null
+  }
+}

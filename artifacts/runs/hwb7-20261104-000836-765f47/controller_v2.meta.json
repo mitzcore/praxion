@@ -1,0 +1,20 @@
+{
+  "id": "hwb7-20261104-000836-765f47-v2",
+  "run_id": "hwb7-20261104-000836-765f47",
+  "version": 2,
+  "path": "artifacts/runs/hwb7-20261104-000836-765f47/controller_v2.py",
+  "sha256": "0b0e8588eb45317f8d76d5c621605408604290ca31b3368938bb15134c6d779c",
+  "parent_id": "hwb7-20261104-000836-765f47-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T06:19:05.805371+00:00",
+  "byte_length": 7158,
+  "rationale": "Fixed impotent integral and added adaptive feedforward. Old ki*integ max was 0.006*0.30=0.0018 so steady error could not be removed when gain halved (stuck at u~0.46,y~0.39). New uses ki=0.025 with contribution limits +-0.35 (max 0.35) plus slow gain estimator Kest: yf tau12s, ys/uf tau35s, settled gate |yf-ys|<0.02, uf in 0.15-0.90, yf>y0+0.03, t>60s, then Kest+=(Kraw-Kest)*dt/(50+dt) with Kraw=(ys-y0)/uf clamped 0.35-1.30, and uff=(target-y0)/Kest clamped 0-0.85. Kept safety caps at 0.75/0.80 and rate limit 0.10*dt+0.02 and outlier-rejecting filter.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater with delay: y0~0.135 ambient, tau~150-250s (typ 180s), delay ~15-30s (typ 20s), y_ss=y0+K*u. Nominal K~1.0-1.1 (use 1.05), u_ss(0.5)~0.32-0.35. Changed machine: same y0/tau/delay/noise, K~0.46-0.53 (~0.47x nominal), u_ss(0.5)~0.70-0.75. Sensor jitter ~0.02, no offset.",
+    "predicted_behavior": "Nominal: in_band>0.90 after 300s, MAE~0.023, energy~126, no overrides/violations, u~0.31-0.35 steady. Degraded (K~0.5): y rises slower, Kest 1.05->~0.5 over ~150-200s, uff 0.34->~0.68-0.73, integral covers residual, y reaches 0.475-0.525 by ~250-300s and stays, in_band>0.70, MAE~0.025-0.040, energy~210-260, no hard violations. Confirms actuator_weaker: if outflow had increased, adapted K would be wrong and decay test would mismatch.",
+    "diagnosis": "Actuator gain halved with unchanged loss/delay/ambient/sensor. E10 u=0.5 rise 0.133->0.296 delta 0.163 in 220s vs E3 0.15->0.524 delta 0.374 ratio 0.436; initial slope 0.00103 vs 0.00219 /s ratio 0.47. E9 0.353->0.141 and E11 0.335->0.136 endpoints 0.138/0.136 match E2 0.436->0.148 endpoint 0.15 same shape/tau ~150-180s and same ambient ~0.13-0.14, so u=0 decay speed unchanged -> not outflow_increased. Lag onset ~16-24s in E3/E10/E11 unchanged -> not response_slower. u=0 level and jitter ~0.01-0.02 unchanged -> not sensor_changed. Monitoring: u 0.354->0.468 while y 0.48->0.38 falling confirms same u holds lower level. Quantified: Kold~1.05, Knew~0.46-0.54 (~44-51% of old), need u_ss(0.5)=(0.5-0.135)/Knew~0.68-0.79 vs old 0.34.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}
