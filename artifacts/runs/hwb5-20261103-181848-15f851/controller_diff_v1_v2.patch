@@ -1,0 +1,158 @@
+--- a/hwb5-20261103-181848-15f851/controller_v1.py
++++ b/hwb5-20261103-181848-15f851/controller_v2.py
+@@ -1,5 +1,4 @@
+ import math
+-
+ def _num(x, d):
+     try:
+         v = float(x)
+@@ -8,7 +7,6 @@
+     if not math.isfinite(v):
+         return d
+     return v
+-
+ def control(obs, state):
+     y_raw = _num(obs.get("y", 0.5), 0.5)
+     target = _num(obs.get("target", 0.5), 0.5)
+@@ -33,21 +31,19 @@
+     if dtc > 20.0:
+         dtc = 20.0
+     KP = 1.0
+-    KI = 0.012
++    KI_NEAR = 0.035
++    KI_FAR = 0.005
++    E_NEAR = 0.20
+     TF = 15.0
+     CLIP = 0.045
+-    I_MIN = -0.15
+-    I_MAX = 0.20
++    I_MIN = -0.30
++    I_MAX = 0.70
++    FF_MIN = 0.05
++    FF_MAX = 0.85
+     U_MIN = 0.0
+-    U_MAX = 0.75
+-    E_EN = 0.15
+-    KFF = 1.0
+-    FF_BASE = 0.26
+-    ff = FF_BASE + (target - 0.5) / KFF
+-    if ff < 0.0:
+-        ff = 0.0
+-    if ff > 0.70:
+-        ff = 0.70
++    U_MAX = 0.95
++    T_TRANS = 120.0
++    E_TRANS = 0.04
+     try:
+         old_yf = float(state.get("yf", y_raw))
+         if not math.isfinite(old_yf):
+@@ -60,6 +56,12 @@
+             old_i = 0.0
+     except Exception:
+         old_i = 0.0
++    try:
++        old_ff = float(state.get("ff", 0.26))
++        if not math.isfinite(old_ff):
++            old_ff = 0.26
++    except Exception:
++        old_ff = 0.26
+     if old_yf < 0.0:
+         old_yf = 0.0
+     if old_yf > 1.0:
+@@ -68,6 +70,10 @@
+         old_i = I_MIN
+     if old_i > I_MAX:
+         old_i = I_MAX
++    if old_ff < FF_MIN:
++        old_ff = FF_MIN
++    if old_ff > FF_MAX:
++        old_ff = FF_MAX
+     first = ("yf" not in state)
+     if first:
+         yf = y_raw
+@@ -95,34 +101,67 @@
+     e = target - yf
+     if not math.isfinite(e):
+         e = 0.0
++    ae = e if e >= 0.0 else -e
++    ki = KI_NEAR if ae < E_NEAR else KI_FAR
+     p = KP * e
++    cand_i = old_i + ki * e * dtc
++    if cand_i < I_MIN:
++        cand_i = I_MIN
++    if cand_i > I_MAX:
++        cand_i = I_MAX
++    ff_use_base = old_ff + (target - 0.5)
++    if ff_use_base < FF_MIN:
++        ff_use_base = FF_MIN
++    if ff_use_base > FF_MAX:
++        ff_use_base = FF_MAX
++    u_test = ff_use_base + p + cand_i
+     new_i = old_i
+-    ae = e if e >= 0.0 else -e
+-    if ae < E_EN:
+-        cand = old_i + KI * e * dtc
+-        if cand < I_MIN:
+-            cand = I_MIN
+-        if cand > I_MAX:
+-            cand = I_MAX
+-        u_test = ff + p + cand
+-        if u_test > U_MAX and e > 0.0:
+-            new_i = old_i
+-        elif u_test < U_MIN and e < 0.0:
+-            new_i = old_i
+-        else:
+-            new_i = cand
++    if u_test > U_MAX and e > 0.0:
++        new_i = old_i
++    elif u_test < U_MIN and e < 0.0:
++        new_i = old_i
+     else:
+-        new_i = old_i
+-    u = ff + p + new_i
++        new_i = cand_i
++    new_ff = old_ff
++    if ae < E_TRANS:
++        delta = new_i * dtc / T_TRANS
++        if delta > 0.02:
++            delta = 0.02
++        if delta < -0.02:
++            delta = -0.02
++        tmp_ff = new_ff + delta
++        if tmp_ff < FF_MIN:
++            tmp_ff = FF_MIN
++        if tmp_ff > FF_MAX:
++            tmp_ff = FF_MAX
++        shift = tmp_ff - new_ff
++        new_ff = tmp_ff
++        new_i = new_i - shift
++        if new_i < I_MIN:
++            new_i = I_MIN
++        if new_i > I_MAX:
++            new_i = I_MAX
++    ff_use = new_ff + (target - 0.5)
++    if ff_use < FF_MIN:
++        ff_use = FF_MIN
++    if ff_use > FF_MAX:
++        ff_use = FF_MAX
++    u = ff_use + p + new_i
+     if not math.isfinite(u):
+-        u = ff
++        u = ff_use
+     if u > U_MAX:
+         u = U_MAX
+     if u < U_MIN:
+         u = U_MIN
++    if yf >= 0.84:
++        if u > 0.15:
++            u = 0.15
++    elif yf >= 0.80:
++        if u > 0.40:
++            u = 0.40
+     if u > 1.0:
+         u = 1.0
+     if u < 0.0:
+         u = 0.0
+-    ns = {"yf": float(yf), "i": float(new_i)}
++    ns = {"yf": float(yf), "i": float(new_i), "ff": float(new_ff)}
+     return (float(u), ns)

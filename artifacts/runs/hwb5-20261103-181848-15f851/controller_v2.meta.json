@@ -1,0 +1,20 @@
+{
+  "id": "hwb5-20261103-181848-15f851-v2",
+  "run_id": "hwb5-20261103-181848-15f851",
+  "version": 2,
+  "path": "artifacts/runs/hwb5-20261103-181848-15f851/controller_v2.py",
+  "sha256": "a94090016a9ffb69bf867f1737af9e5f8e5ab9f3345915dec654a10ac0b3c7e7",
+  "parent_id": "hwb5-20261103-181848-15f851-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T00:42:03.000201+00:00",
+  "byte_length": 4023,
+  "rationale": "Raised steady-state authority to cover ~2.4x holding power: U_MAX 0.75->0.95, I_MAX 0.20->0.70/I_MIN -0.30, KI 0.012->0.035 near / 0.005 far with E gate 0.15->0.20, plus adaptive feedforward ff in [0.05,0.85] init 0.26 that learns holding power by slow transfer i->ff when |e|<0.04 (T=120s). Fast integral now ramps from 0.26 to ~0.76 to compensate ~58% gain loss; slow transfer moves steady bias to ff so integral returns to ~0. Preserves outlier-reject filter and conditional anti-windup; adds yf>0.80 safety cap to allow higher U_MAX safely.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "First-order heater tau~130-170s, delay <30s, ambient y0~0.17. DC gain K_new~0.42-0.45 (~42% of old ~1.0-1.14). Steady law y~=y0+K*u. Hold y=0.5 needs u*~0.75-0.80 (was 0.26). Reachable with u<1.0. Noise: +/-0.015 plus brief -0.03 dips (proportionally smaller). No extra lag/offset.",
+    "predicted_behavior": "Nominal: warm-up as before, ff~0.26 i~0, MAE~0.005 in-band ~0.99, energy ~93, no overrides. Changed: integral ramps 0->~0.5 in ~150-200s, u 0.61->~0.77, y rises to 0.5 without saturation, then ff transfers to ~0.77 i->0 over ~120s. After 300s MAE <0.02 in-band >0.70, steady u~0.76 slope ~0. Energy higher ~230-260 due to higher hold (unavoidable). No oscillation (KP unchanged, TF 15s) or hard violations.",
+    "diagnosis": "Actuator gain fell to ~40-45% with unchanged dynamics. E9 u=0.3 from 0.168 holds 0.296 (rise 0.128) vs E3 same u/start holds 0.487-0.53 (rise ~0.30): ratio 0.43. E11 u=0.75 from 0.153 reaches 0.34 at 140s still rising 0.0057/s, projecting to ~0.48-0.52 steady =0.17+0.43*0.75, vs old 0.17+1.0*0.75>>1.0. Zero-input decays unchanged: E2 0.605->0.206 tau~130-170s 63% remaining at 100s; E8 0.374->0.178 and E10 0.308->0.164 same fraction 0.60-0.66 prompt <30s fall, ambient 0.164-0.178 vs 0.206 (delta 0.03 << high-u deficit 0.23). No delay: response in <30s in E8/E9/E10. Not sensor: offset 0.03 cannot explain 0.23 deficit; scale+offset would need contrived s~0.39. New K~0.42 (0.296-0.17)/0.3, old K~1.0-1.14, ambient ~0.17, holding for 0.5 needs (0.5-0.17)/0.42~=0.76-0.80 vs old 0.26.",
+    "diagnosis_category": "actuator_weaker"
+  }
+}

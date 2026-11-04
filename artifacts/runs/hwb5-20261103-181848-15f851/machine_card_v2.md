@@ -1,0 +1,1 @@
+First-order heater tau~130-170s, delay <30s, ambient y0~0.17. DC gain K_new~0.42-0.45 (~42% of old ~1.0-1.14). Steady law y~=y0+K*u. Hold y=0.5 needs u*~0.75-0.80 (was 0.26). Reachable with u<1.0. Noise: +/-0.015 plus brief -0.03 dips (proportionally smaller). No extra lag/offset.
