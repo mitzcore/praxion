@@ -47,7 +47,7 @@ def main():
 
     # --- pre-composites
     quote_bg = blend_scene_over_broll(OUT / "01_quote.mp4", BROLL / "plant.mp4", work / "01_quote_bg.mp4")
-    close_bg = blend_scene_over_broll(OUT / "06_close.mp4", BROLL / "dc.mp4", work / "06_close_bg.mp4", pad_s=4.0)
+    close_bg = blend_scene_over_broll(OUT / "06_close.mp4", BROLL / "dc.mp4", work / "06_close_bg.mp4", pad_s=8.0)
 
     # --- EDL: (file, in, dur). Durations of scenes are whatever was rendered.
     def scene(name):
@@ -55,7 +55,7 @@ def main():
     edl = [
         (quote_bg, 0.0, dur(quote_bg)),            # 1  quote over plant B-roll
         (CUTS / "fan_tap_zoom.mp4", 2.0, 5.0),     # 2  hand switches the fan on (22:17)
-        (CUTS / "terminal.mp4", 0.0, 4.0),         # 3  temperature falling on the Mac
+        (CUTS / "terminal.mp4", 0.0, 3.5),         # 3  temperature falling on the Mac
         scene("01_title"),                          # 4
         scene("02_problem"),                        # 5
         scene("03_loop"),                           # 6
@@ -63,13 +63,13 @@ def main():
         scene("03_simstat"),                        # 8
         scene("04_hwintro"),                        # 9
         (CUTS / "photo_4807.mp4", 0.0, 5.0),       # 10 the rig
-        (CUTS / "fan_tap_wide.mp4", 1.5, 6.5),     # 11 fan on, wide
-        (CUTS / "approach.mp4", 2.0, 7.0),         # 12 handheld approach to the board
-        (CUTS / "board_close.mp4", 0.0, 7.0),      # 13 board close, heater LED
+        (CUTS / "fan_tap_wide.mp4", 1.5, 6.0),     # 11 fan on, wide
+        (CUTS / "approach.mp4", 2.0, 6.0),         # 12 handheld approach to the board
+        (CUTS / "board_close.mp4", 0.0, 6.0),      # 13 board close, heater LED
         (CUTS / "still_hw2_ab.mp4", 0.0, 5.0),     # 14 board A/B panel
         scene("04_hwnumbers"),                      # 15
         scene("05_results"),                        # 16
-        (CUTS / "stills_strips.mp4", 0.0, 5.0),    # 17 four board pairs
+        (CUTS / "stills_strips.mp4", 0.0, 4.0),    # 17 four board pairs
         (close_bg, 0.0, dur(close_bg)),            # 18 close over data-centre B-roll
     ]
     # clamp every segment to what its file really holds (xfade breaks silently past an input's end)
@@ -117,12 +117,22 @@ def main():
     inputs += ["-i", str(AUDIO / "music.mp3")]
     music_in = ai; ai += 1
     narr_filters, narr_labels = [], []
+    voice_dir = AUDIO / os.environ.get("VOICE_DIR", "arthur")
+    tempo = {"n4s": 1.04, "n8s": 1.05}   # gentle time-stretch where a line would otherwise collide with the next
+    prev_end, placed = -1.0, []
     for k, (name, seg) in enumerate(narr_at.items()):
-        p = AUDIO / f"{name}.wav"
-        start = starts[seg - 1] + narr_offset[name]
+        p = voice_dir / f"{name}.wav"
+        d = dur(p) / tempo.get(name, 1.0)
+        start = max(starts[seg - 1] + narr_offset[name], prev_end + 0.35)
+        if start + d > total - 0.3:
+            print(f"WARNING {name}: ends at {start + d:.1f}s, film ends {total:.1f}s", file=sys.stderr)
+        placed.append((name, round(start, 2), round(start + d, 2)))
+        prev_end = start + d
         inputs += ["-i", str(p)]
-        narr_filters.append(f"[{ai}:a]aformat=sample_rates=48000:channel_layouts=stereo,volume=1.0,adelay={int(start * 1000)}|{int(start * 1000)}[n{k}]")
+        at = f"atempo={tempo[name]}," if name in tempo else ""
+        narr_filters.append(f"[{ai}:a]aformat=sample_rates=48000:channel_layouts=stereo,{at}volume=1.0,adelay={int(start * 1000)}|{int(start * 1000)}[n{k}]")
         narr_labels.append(f"n{k}"); ai += 1
+    print("narration:", placed)
     filters += narr_filters
     filters.append("".join(f"[{l}]" for l in narr_labels) + f"amix=inputs={len(narr_labels)}:normalize=0:dropout_transition=0[narr]")
     filters.append(f"[{music_in}:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:{total:.3f},afade=t=in:st=0:d=1.5,afade=t=out:st={total - 4:.3f}:d=4,volume=0.16[mus]")
