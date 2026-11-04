@@ -71,8 +71,11 @@ def _write_synthetic(d: Path, name: str, mae_v1: float, mae_v2: float, ib1: floa
 
 
 def _copy_real(dst: Path) -> None:
+    # The committed hw2 bundle carries its real board_verification.json since the filmed fan A/B
+    # (2026-11-03). These tests model the state before any board trial, so the board file is left out.
     for src in (HW1, HW2):
-        shutil.copytree(src, dst / src.name, ignore=shutil.ignore_patterns("agent_view_snapshots", "controller_*"))
+        shutil.copytree(src, dst / src.name,
+                        ignore=shutil.ignore_patterns("agent_view_snapshots", "controller_*", "board_verification.json"))
 
 
 def test_synthetic_bundle_row_and_stats(tmp_path):

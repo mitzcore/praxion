@@ -234,6 +234,10 @@ def hw2_copy(tmp_path: Path) -> Path:
         pytest.skip("hw2 bundle not present")
     dst = tmp_path / "runs" / HW2.name
     shutil.copytree(HW2, dst)
+    # The committed hw2 bundle carries the real board_verification.json since the filmed fan A/B
+    # (2026-11-03 22:45 EST). These tests need the bundle *without* it: they add synthetic board files
+    # or assert that an aborted verification writes none.
+    (dst / "board_verification.json").unlink(missing_ok=True)
     return dst
 
 
