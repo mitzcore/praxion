@@ -2,7 +2,7 @@
 
 ## Who wrote what
 
-All code in this repository was written during the hackathon window, October 30 to November 4, 2026, by Mithran Selvaraj with AI coding assistants (Claude). Mithran set the objective, made the scope and design decisions, and reviewed the work. Claude wrote most of the implementation from those decisions and ran the tests.
+All code in this repository was written during the hackathon window, October 30 to November 4, 2026, by Mithran Selvaraj with AI coding assistants (AI coding assistance). Mithran set the objective, made the scope and design decisions, and reviewed the work. AI coding assistance wrote most of the implementation from those decisions and ran the tests.
 
 ## Model-authored artifacts
 

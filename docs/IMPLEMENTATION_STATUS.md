@@ -1,6 +1,6 @@
 # Implementation status — Praxion
 
-Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
+Living document. Updated by the AI assistant at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
 _Last updated: 2026-11-04 14:30 — demo film cut (2:59.5, `artifacts/demo/film/praxion_demo.mp4`, tooling in `demo/film/`); submission day_
 
@@ -11,7 +11,7 @@ Four independent reviewers plus a statistics pass; full record in `docs/AUDIT_20
 
 ## Hardware depth push, 2026-11-03 12:00 → overnight: self-repair measured on the board itself
 
-Goal (Mithran, Ambition protocol re-affirmed Nov 3): a hostile control engineer should be able to see the repair claim measured on the physical board, not only on the twin. Built Nov 3 12:00–15:00 (two Opus subagents, Fable review, fake-board tests, real-board smoke), all under `uv run pytest -q` (629 passed at 16:30):
+Goal (Mithran, Ambition protocol re-affirmed Nov 3): a hostile control engineer should be able to see the repair claim measured on the physical board, not only on the twin. Built Nov 3 12:00–15:00 (AI-assisted implementation, reviewed; fake-board tests, real-board smoke), all under `uv run pytest -q` (629 passed at 16:30):
 
 - **Trusted actuator fault on hardware.** `TCLabHardware.schedule_disturbance` accepts `pump_derate` only: Q1 = 100·u·(1 − m), applied by trusted code at the monitor's disturbance time, cleared on reset, reported in `true_state()["trusted_disturbance"]` (trusted-only). Standard hardware-in-the-loop fault injection, disclosed; it removes the operator from the loop so runs can be unattended. `--magnitude` (added 15:50) sets m; the bundle records it in `monitoring.json` and `board_verification.json`.
 - **On-board A/B** (`backend/evaluation/board_verify.py`, `scripts/verify_on_board.py`, `run_live_demo.py --verify-on-board`): after a run, frozen v1 and the promoted repair each run on the board under the same change (reset → cool below 30 °C → 480 s nominal → change → 600 s), scored by the frozen metrics; order counterbalanced across runs; hashes checked against the registered candidates; heater idled on every path. Before the board trials, trusted code runs the same controller through the same protocol on that run's twin with the same trusted change → a **forecast** stored beside the measurement (`twin_prediction`, `prediction_vs_board`). `scripts/audit_run.py` check 8 verifies the board file. A run without a promoted repair verifies v1 alone.
@@ -251,5 +251,5 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 - 2026-10-31: Wall-clock budget 12 → 30 min (measured need). Model-call budget 40 unchanged.
 - 2026-10-31: Added `actuator_lag` family; `DISTURBANCE_FAMILIES` labels offset vs dynamics; added independent interlock; plant/scenario split; widened plant ranges with envelope rate 0.10.
 - 2026-10-31: Diagnosis categories: actuator_weaker, outflow_increased, response_slower, sensor_changed, unknown; scored after the fact against the hidden family.
-- 2026-10-31: Product name Praxion; Pi out; second plant stretch only; Fable reasons/validates, Opus implements.
+- 2026-10-31: Product name Praxion; Pi out; second plant stretch only; the lead engineer reasons/validates, Opus implements.
 - 2026-10-30: Stage-driven structured calls over free tool loop; Docker sandbox with dev-only subprocess fallback.

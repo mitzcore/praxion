@@ -2,9 +2,7 @@
 
 **An AI control engineer, built on Meta Muse (`muse-spark-1.3`, Meta Model API).** Hand it a physical machine it has never seen. It runs small, safe experiments, writes the controller itself in Python, proves that code against hidden scenarios in a sealed sandbox, deploys it under a trusted safety layer, notices when the machine changes, diagnoses the change, and rewrites its own controller. Then it proves the repair again before it is allowed to run. Tested in simulation and on a $50 heater board, where the repairs were measured on the board itself.
 
-Built for the Meta Global AI Developer Hackathon 2026, Indie track, theme *Push the Frontier*. Demo film: `artifacts/demo/film/praxion_demo.mp4` (link in the submission); script and every on-screen number with its source in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
-
-<p align="center"><img src="docs/img/tclab_rig.jpg" width="49%" alt="The TCLab heater board on USB next to the laptop running Praxion"> <img src="docs/img/fan_on.jpg" width="49%" alt="A hand switches on the fan that changes the machine, 2026-11-03 22:17 EST"></p>
+<p align="center"><img src="docs/img/architecture.png" width="100%" alt="Praxion architecture: Muse proposes and authors; trusted supervisor, sandbox, evaluator, monitor and registry measure and gate; the plant is a simulated tank or the TCLab board"></p>
 
 ## The problem
 
@@ -51,6 +49,10 @@ The failures are kept and classified (noise-floor fault size, API timeouts, thre
 
 <p align="center"><img src="docs/img/dashboard_hw2.jpg" width="100%" alt="Praxion evidence dashboard replaying hardware run hw2: plant trace, controller diff, agent timeline, hypothesis ledger"></p>
 
+## Architecture
+
+Three trust zones. *Untrusted:* everything Muse returns, including controller source. *Semi-trusted:* a candidate controller executing inside the sandbox (`python:3.12-slim`, `--network none --read-only --user 65534 --cap-drop ALL`, memory and pid limits). *Trusted:* orchestrator, supervisor, evaluator, registry, monitor and the plant adapters. Muse runs between experiments, one structured call at a time; the approved controller runs locally at a fixed rate under the supervisor, and neither the deployed loop nor the safety limits ever wait on the cloud. The model's only view of the world is built by `backend/agent/view.py`. Scores come from `backend/evaluation/` on seeds frozen in `backend/evaluation/config.py` before any scored run.
+
 ## For reviewers and agents: where to look
 
 | question | answer |
@@ -60,192 +62,7 @@ The failures are kept and classified (noise-floor fault size, API timeouts, thre
 | Is the model cheating? | `tests/test_agent_blindness.py`; the agent's only view is `backend/agent/view.py`. |
 | Can I reproduce it? | `uv sync && uv run pytest -q` (645 tests, mock agent, no credits). Live: `uv run python scripts/run_live_demo.py --model muse-spark-1.3 --plant-seed 7 --disturbance actuator_lag`. Dashboard: `uv run uvicorn backend.main:app` then open `/?run=<run_id>`. |
 | What is not claimed? | Not "any machine", not "guaranteed safe", not "beats PID". No PID baseline on the board yet. The twin's forecast under-rates aggressive repairs; the board measurement is the claim. |
-| Status and decisions | [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md), [`docs/PRESENTER_BRIEFING.md`](docs/PRESENTER_BRIEFING.md), [`docs/SUBMISSION_TEXT.md`](docs/SUBMISSION_TEXT.md). |
-
----
-
-# Details
-
-## What happened in a real run
-
-Run `v13-s11-20261031-020922-a0e68e` (model `muse-spark-1.3`, plant seed 11, protocol v1.3, Docker sandbox, disturbance family `actuator_lag`). Every number below is from `artifacts/runs/v13-s11-20261031-020922-a0e68e/`.
-
-1. **Discovery.** Muse proposed and ran 12 experiments: constant pump duty from 0.0 to 0.7, held 3 to 20 s. Each one names the ledger uncertainty it targets and gives a safety argument the supervisor checks. Muse did not declare readiness. The 12-experiment budget ran out, and the orchestrator moved to authoring. (`result.json`, `event_log.jsonl`)
-2. **Authoring.** Muse wrote `controller_v1.py` (2326 bytes, sha256 `686ea165e103e5ae…`). Static check and sandbox interface tests passed. (`controller_v1.meta.json`)
-3. **Hidden-scenario gate (G2).** v1 passed 10/10 held-out scenarios: median MAE 0.0132, mean in-band 0.925, zero overrides, zero hard violations. The fixed PID baseline on the same 10 scenarios: median MAE 0.0080, in-band 1.00. On this machine, before the change, PID tracked better. (`evaluation_v1.json`)
-4. **Change.** v1 ran under the trusted runtime. At t = 60.0 s the hidden plant changed: a transport delay was added to the actuator. The trusted monitor fired at t = 89.5 s, with a 15 s window MAE of 0.2635 against a threshold of 0.05 (calibrated baseline 0.0124). (`monitoring.json`)
-5. **Frozen v1 under the change.** On the 5 frozen disturbance scenarios (300 s each), v1 had median post-change MAE 0.2172, mean in-band 0.11, 2 hard violations and 3 overrides. The fixed PID on the same scenarios: 0.164 and 28 hard violations. (`evaluation_disturbance_v1.json`)
-6. **Re-identification.** Muse ran 4 bounded experiments on the changed machine (E13 to E16). E13 was recorded `invalid`: it started at level 0.893 and the supervisor overrode once. E14 to E16 completed. (`result.json`, `event_log.jsonl`)
-7. **Diagnosis.** Category `response_slower`, which the trusted scorer marks correct for the hidden family. Muse's diagnosis text, verbatim from `controller_v2.meta.json`:
-
-   > Same u now acts ~24 s later, gain/drain/noise unchanged. E14 u=0.5 for 16 s from 0 stays flat 0.0-0.01 slope -0.0002 vs E4 same u rose to 0.227 slope +0.0114. E15 continuation of same 0.5 stays flat until ~193.7 (~24.1 s after 169.6 step) then rises 0.02->0.139 slope +0.0162, matching discovery rise rate. E16 cut 0.5->0 at 201.6 keeps rising 0.136->0.333 peak at 224.0 (~22.4 s) then falls with slope -0.0116 matching discovery drain -0.0097. Discovery E2 rose within 0.2 s, so Td_old <1 s, Td_new ~24 s (+/-1 s). Noise <0.01 unchanged. Old controller therefore drives delay-induced limit cycle 0.03-0.89 period ~80 s with hard violations seen in monitoring after_change and post-change eval.
-
-   The family adds an 18 to 22 s transport delay on top of a nominal 0.3 to 1 s (`docs/IMPLEMENTATION_STATUS.md`).
-8. **Repair.** Muse wrote `controller_v2.py` (3650 bytes, sha256 `3db8d5814fc90455…`). Its rationale: "Detuned for ~24 s deadtime while keeping nominal stability: Kp 0.80->0.22, Ki 0.12->0.018 …" (`controller_v2.meta.json`).
-9. **Gate 3 on the same frozen scenarios.** Post-change median MAE 0.0205 vs 0.2172 for frozen v1. 5/5 scenarios improved by 20% or more, median reduction 90.6%. In-band 1.00, zero hard violations, zero overrides. (`evaluation_disturbance_v2.json`, `adaptation_v2.json`)
-10. **Nominal after repair.** Re-scored on the original held-out scenarios: G2 PASS 10/10, median MAE 0.0233, in-band 0.934. (`evaluation_v2.json`)
-11. **Outcome.** Final stage `COMPLETE`, reason "v2 promoted (nominal G2 after repair: pass)". 18 model calls, $1.747 estimated, 688.8 s wall time. (`result.json`)
-
-The independent audit of this bundle passes 8/8 (check 8, the board verification, is skipped for simulation runs):
-
-```bash
-uv run python scripts/audit_run.py v13-s11-20261031-020922-a0e68e
-```
-
-This is the best of the five v1.3 runs. It is not the typical one. Seed 7's repair under v1.3 cut post-change MAE by 50%, but post-change in-band was only 0.32. Two of the five v1.3 repairs did not keep nominal G2. See the table below.
-
-### How it got there: four protocol versions
-
-The first full loop did not work. We changed the protocol four times, and we kept every version's results. The protocol is what the agent may measure, what it is shown about its own actions, and the prompts. Controllers, scores, scenario seeds and the frozen evaluator were never edited to fit a result. Each change is logged with the measured failure that motivated it and a new prompt hash (`docs/IMPLEMENTATION_STATUS.md` decisions log, `docs/PROVENANCE.md`).
-
-**v1.0, run `spark2-20261031-004636-3d012e` (seed 7). Gate 3 FAILED.** v1 passed G2 10/10 (median MAE 0.0017 vs fixed PID 0.0077). The monitor fired at t = 155.3 s. Muse picked the right category (`response_slower`) twice, but it had only seen post-change traces. It estimated the delay at 5 to 10 s, against a true value of about 20 s. v2 and v3 failed Gate 3: post-change MAE 0.168 and 0.204 vs frozen v1 0.164, 0/5 improved, 28 and 36 hard violations. The run ended `FAILED` and kept v1. That failure is what led to v1.1. (`artifacts/runs/spark2-20261031-004636-3d012e/`, `docs/IMPLEMENTATION_STATUS.md`)
-
-**Scorecard on plant seed 7** (same machine, same frozen scenarios, same model; source `docs/IMPLEMENTATION_STATUS.md` and each run's `adaptation_v*.json`):
-
-| Protocol | Run | Repair attempts (median post-change MAE change vs frozen v1) | Result |
-|---|---|---|---|
-| v1.0 | `spark2-20261031-004636-3d012e` | −1%, −25% (both worse) | FAIL |
-| v1.1 | `spark3-20261031-010142-feac7f` | −28.5% (7 hard violations), −76.6% (0 hard violations) | changed-machine criteria met on attempt 3; recorded FAILED under the rule then in force (see below) |
-| v1.2 | `spark4-20261031-011710-0c4353` | −81.5% | promoted on attempt 1 |
-| v1.3 | `v13-s7-20261031-020602-18f408` | −50% | promoted; post-change in-band 0.32; nominal not kept (0.56) |
-
-**v1.2 vs v1.3 on the same five machines** (plant seeds 3, 7, 11, 14, 18; source `docs/IMPLEMENTATION_STATUS.md`):
-
-| Protocol | G2 on deployed v1 | G3 | Diagnosis category correct | Nominal kept after repair |
-|---|---|---|---|---|
-| v1.2 | 4/5 (seed 3 never passed; seed 14 needed 4 candidates) | 4/4 of deployed | 4/4 | 2/4 (seeds 11 and 14 kept; seeds 7 and 18: nominal in-band 0.07 / 0.01) |
-| v1.3 | 5/5 on the first candidate | 5/5 | 5/5 | 3/5 |
-
-## Real hardware: ten runs on a $50 heater kit, repairs measured on the board
-
-On 2026-11-03/04 the same loop ran on an APMonitor TCLab (an Arduino heater board on USB; profile `tclab`, target 45 °C, band ±1.5 °C). Nothing in the agent, prompts or evaluator changed for hardware except the plant class and the profile constants. The hidden-scenario gates run on a thermal twin that trusted code fits from the discovery experiments; the change is either a room fan switched on by the operator when prompted (runs `hw1`, `hw2`) or a trusted software derate of the heater command, Q1 = 100·u·(1 − m), applied at the monitor's change time so the eight batch runs could run unattended overnight (`hwb1`–`hwb8`). All ten runs are in the bundle set and all ten count. `docs/HARDWARE_RESULTS.md` is generated from the bundles by `scripts/hw_summary.py`; nothing in it is typed by hand.
-
-**Measured on the board, not only on the twin.** After every run that promoted a repair, frozen v1 and the promoted v2 each ran on the physical board under the same change (cool below 30 °C → 480 s nominal → change → 600 s), scored by the frozen metrics, order alternated between runs, hashes checked against the registered candidates (`scripts/audit_run.py` check 8). Before each board trial, trusted code ran the same controller through the same protocol on that run's twin with the same change, so every measurement sits next to a forecast made before it.
-
-| measure | result |
-|---|---|
-| runs attempted | 10 |
-| first controller passed G2 on the twin | 7 / 10 |
-| change detected by the trusted monitor | 8 / 8 deployments (66–153 s after the change) |
-| diagnosis correct | 7 / 7 |
-| repair promoted by the gate | 4 / 7 |
-| **promoted repair beat frozen v1 on the board** | **4 / 4** (cuts 58 %, 75 %, 66 %, 34 %), one-sided sign test p = 0.0625, 95 % Clopper–Pearson [0.40, 1.00] |
-| overrides or hard violations in 11 board trials | 0 |
-| twin forecast vs board, 11 trials | median error 0.57 °C (14 %); sensor noise ≈ 0.7 °C rms |
-
-The four board pairs, post-change mean error in °C and time in band after the change:
-
-| run | change | frozen v1 | promoted v2 |
-|---|---|---|---|
-| `hw2` | fan, operator, filmed | 8.99 °C, 0 % | 3.77 °C, 53 % |
-| `hwb5` | heater derate 55 % | 3.96 °C, 0 % | 0.99 °C, 99 % |
-| `hwb7` | heater derate 55 % | 6.18 °C, 0 % | 2.12 °C, 27 % |
-| `hwb8` | heater derate 55 % (v2 ran first) | 4.81 °C, 0 % | 3.18 °C, 68 % |
-
-The failures are kept and classified. `hw1`: every discovery experiment hit a 180 s cap on a board with a 200 s time constant, G2 failed on all five controllers; the cap was raised to 480 s, the only hardware fix. `hwb1`, `hwb2` (derate 35 %): diagnosis right, every repair rejected, because frozen v1's post-change error on the twin was already at the twin's noise floor, so the 20 % bar was unattainable; the derate was raised to 55 % for the remaining runs and the two cohorts are labelled per run. `hwb3`: model-API timeouts, kept as an infrastructure failure. `hwb4`: diagnosis right, three repairs each worse than v1 on the twin, v1 kept (on the board v1 alone measured 4.20 °C, 0 % in band; forecast 4.77 °C). `hwb6`: four nominal revisions used the run's five-controller budget before the fault arrived, so no repair could be written.
-
-What this does and does not show. Four board-verified pairs is a small distribution; the interval is the honest reading. Repair promotion is 4 of 7 attempts, not 4 of 4. Every promoted repair bought post-change performance with warm-up overshoot (peaks 54–57 °C against 45 °C, under the 66 °C soft limit); nominal performance is reported, never a promotion gate. The twin's forecast is close for the frozen controller and under-rates aggressive repairs (hwb5 v2: forecast 3.84 °C, board 0.99 °C), so the board measurement, not the forecast, is the claim. In three of four pairs the second trial started a few degrees warmer because the reset accepts the first reading below 30 °C; the fourth pair ran the repair first from the colder start and it still won. The derate is a software fault at the actuator, not a worn heater; the fan run is the one physical change. No PID or thermostat baseline has been measured on the board yet. Runbook: `docs/TCLAB_RUNBOOK.md`.
-
-## Architecture
-
-```mermaid
-flowchart TD
-    U[Human goal and constraints<br/>"Hold level at 0.6, never overflow,<br/>minimize pump energy"] --> UI[Praxion dashboard + REST/SSE]
-    UI --> O[Praxion orchestrator<br/>finite-state loop, budgets, event log]
-    O --> M[Meta Muse via Meta Model API<br/>muse-wonder-1.0 / muse-spark-1.3<br/>hypothesize / propose experiment / author code / revise]
-    M -->|Structured experiment proposal| V[Safety supervisor + action validator<br/>limits, budgets, worst-case bound, interlock, e-stop]
-    V -->|Approved bounded commands| A[PlantAdapter<br/>observe / apply_input / reset / emergency_stop]
-    A --> S1[TankSimulator<br/>hidden dynamics + noise + disturbance]
-    A --> S2[TCLab heater board<br/>USB serial, trusted derate or operator fan]
-    S1 --> T[Telemetry store<br/>time series, experiment id, source]
-    S2 --> T
-    T --> O
-    M -->|controller_vN.py source| C[Controller registry<br/>sha256, parent, diff, prompt hash, model id]
-    C --> G[Static checks + Docker sandbox<br/>no net, read-only fs, non-root, limits]
-    G -->|Passes interface tests| E[Independent evaluator<br/>hidden seeds, disturbance suites, baselines, ablation]
-    E -->|Pass/fail + metrics| O
-    E -->|Approved version only| R[Trusted local controller runtime<br/>fixed rate, no cloud in fast loop]
-    R --> V
-    T --> D[Evidence: charts, timeline, ledger, diffs, scores]
-    E --> D
-    C --> D
-    D --> UI
-    O -->|Budget exhausted or gates met| F[Artifact bundle<br/>result.json, event_log.jsonl, model_calls.jsonl,<br/>controller sources, diffs, machine cards, evaluations]
-    style M fill:#243b55,color:#fff,stroke:#79b2ff
-    style V fill:#593e20,color:#fff,stroke:#efbc68
-    style G fill:#593e20,color:#fff,stroke:#efbc68
-    style E fill:#214d3d,color:#fff,stroke:#65c99f
-```
-
-**Three trust zones.**
-- *Untrusted:* everything Muse returns, including controller source.
-- *Semi-trusted:* a candidate controller executing inside the sandbox.
-- *Trusted:* orchestrator, supervisor, simulator, evaluator, registry, monitor.
-
-**Two time scales.** Muse runs between experiments and rollout segments, one structured call at a time. The approved controller runs locally at a fixed simulated rate under the supervisor. The deployed loop and the safety limits never wait on the cloud.
-
-**One egress.** The model sees only what `backend/agent/view.py` builds: the public plant description, objective, constraints, noisy measured traces, facts about its own commands, trusted summaries computed only from measured level and applied input, its own ledger, and agent-safe evaluation summaries. It never sees plant parameters, hidden scenario seeds, the disturbance family or mechanism, the simulator source, the true level, or the baselines. `tests/test_agent_blindness.py` enforces this.
-
-**Docker sandbox.** Model-authored code runs only in `python:3.12-slim` with `--network none --read-only --user 65534:65534 --cap-drop ALL --security-opt no-new-privileges --memory 256m --memory-swap 256m --pids-limit 64 --cpus 1` and a small noexec `/tmp` tmpfs (`backend/controller/sandbox.py`). The status doc records 18 hostile candidates (network, file, fork, dunder escapes, exec, memory bomb, CPU burn, infinite loop, huge state), all contained with the static checker bypassed. A subprocess fallback exists for development only and is labeled in the UI.
-
-**Independent evaluator and hidden scenarios.** Scores come from `backend/evaluation/`, on held-out scenario seeds 1000 to 1009 and disturbance seeds 2000 to 2004. Seeds, windows and thresholds are frozen in `backend/evaluation/config.py` before scoring. Within a run, the evaluator tests this machine on unseen scenarios (different initial level, noise stream, disturbance magnitude). Cross-machine evidence comes from repeating the whole protocol over plant seeds 3, 7, 11, 14 and 18.
-
-**Trusted monitor and interlock.** The monitor calibrates on a window ending at 58 s. It fires when the 15 s window MAE stays above max(2 × baseline, 0.05) for 10 s, or when any supervisor override occurs after calibration. An independent high-level interlock on the true simulated level (at 0.90) forces `u = 0` and an emergency stop, which also flushes the actuator delay line. Overrides and violations count against the candidate, never in its favor.
-
-## Why the disturbance is a transport delay
-
-Feedback absorbs offset disturbances. A plain PI controller rejects a weaker pump, an extra leak or a drain shift by construction. Across all five machines, the fixed PID's post-change MAE on the three offset families stays between 0.0026 and 0.0055 (`docs/BENCHMARKS.md`, every run section). An offset change therefore cannot test whether an agent adapts. Only a change in dynamics can. We added the `actuator_lag` family: time constant ×1.0 to 1.5 plus an 18 to 22 s transport delay. Slowing the actuator alone does not break PI. Pure delay does. Under the delay, the fixed PID's post-change in-band fraction falls to 0.312 to 0.416. A slow PID tuned by hand stays in band 0.979 to 1.000 with zero violations, so the change is repairable. That slow PID was tuned post hoc on the disturbance seeds. It is an existence proof, not a fair rival; the fair rival is the relay auto-tuned PI in the next section. (`docs/BENCHMARKS.md`, every run section)
-
-The offset families stay in the benchmark to show the monitor correctly staying quiet when feedback already handles the change. The detector sweep in the status doc: floor 0.05 caught 24/25 lag cases with 0 false alarms across 150 offset and nominal cases.
-
-## Related work, and the classical rival we score against
-
-Every piece of this loop exists somewhere. We found no system that runs all of it, and two pieces appear unexplored: re-identifying the changed machine with fresh experiments before rewriting, and promoting a repair only on a same-seed comparison against the frozen old version by an evaluator the author cannot see into. Sources and confidence levels are in [`docs/COMPETITIVE_LANDSCAPE.md`](docs/COMPETITIVE_LANDSCAPE.md). The closest work, and how Praxion differs:
-
-- **Self-tuning regulators and relay auto-tuning** (Åström and Wittenmark 1973; Åström and Hägglund 1984) identify online and redesign a fixed controller structure, with stability proofs Praxion does not have. They adjust parameters inside a structure a human wrote. Praxion rewrites inspectable, diffable source code, explains the change in words, and is gated by scenarios whose seeds and truth it cannot see (it does see measured traces of them after a failed attempt; see Limitations).
-- **AspenTech DMC3 Adaptive and Emerson DeltaV Adapt** run automatic step tests, flag degraded models and re-identify or re-tune online in production plants. Same two differences: coefficients and gains, not code; no held-out gating or evidence bundle.
-- **Mercangöz group, Imperial College** (LLM agents controlling the TCLab heater directly, and LLM fault-tolerant control with digital-twin validation and an engineered fallback, [arXiv 2507.07115](https://arxiv.org/abs/2507.07115), [2606.28011](https://arxiv.org/abs/2606.28011)). The LLM outputs heater power or setpoint actions, validated against a twin. It does not design experiments, author controller code, or re-identify after a fault.
-- **ControlAgent, Agents4PLC, Act–Observe–Rewrite** ([2410.19811](https://arxiv.org/abs/2410.19811), [2410.14209](https://arxiv.org/abs/2410.14209), [2603.04466](https://arxiv.org/abs/2603.04466)) have LLMs write and iterate controller or PLC code against specs, model checkers, or between trials. The plant model is given or the code is rewritten without a monitor, re-identification, or a same-seed promotion gate.
-
-A control engineer's first objection is that a 1970s self-tuner solves the tank. So we score one, as a fourth baseline, under rules that favor it. `backend/evaluation/autotune.py` is a fully automatic Åström–Hägglund relay auto-tuner with Tyreus–Luyben PI design. *Relay PI nominal* tunes once from the same start state the agent discovers from, within the agent's discovery budget (the rival of Muse v1 frozen). *Relay PI re-tuned* deploys that PI under the same monitored rollout and the same degradation detector Praxion uses, and when the detector fires it settles, re-identifies the changed machine with a small-amplitude bias-seeking relay, and redesigns (the rival of Full Praxion). When the detector stays silent it keeps its gains, as Praxion keeps v1. Every constant was frozen on exploration seeds 1 to 20 before any hidden-seed scoring, and the tuning rule was chosen by a pre-stated criterion, the highest worst-case in-band fraction across both phases. The rules favor the baseline in two ways we report rather than hide: the relay switches in closed loop at the control period, which the agent's experiment API does not allow, and its plant-time cap is 600 s against the agent's 160 s after-change budget. Results are in the head-to-head table in [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) ("Praxion vs the classical self-tuner"), regenerated from the bundles with everything else. If the relay wins, that is the result.
-
-**It did, on this plant and this metric.** Across the 12 runs whose deployed controller met the `actuator_lag` change, the relay re-tuned PI has the lower post-change MAE in 11 (median 0.0121 against Full Praxion's 0.0376; Praxion wins one run, `v13-s14`, 0.0103 against 0.0156) and holds the band 100% of the time in every run; Praxion does so in 3 of 12. On the unchanged machine the relay-tuned PI also beats every Muse v1 controller on MAE. What the relay spent to get there is in the same table: a median 358 s of plant time per re-identification against Praxion's 74 s, closed-loop switching the agent is not allowed, and contact with the hard cutoff while identifying on two of the five machines, where the agent's bounded experiments had none. The gains explain the win: the re-tune lands at kp ≈ 0.25 with an integral time near 180 s and its bias set to the pre-change mean input, which is close to an open-loop hold at the one input that is still correct after a delay-only change, and the frozen suite applies that one change and nothing else. Praxion's repairs keep 5 to 10 times more integral authority and change the controller's structure (rate prediction of the delayed level, gain scheduling, adaptive feedforward; the diffs are in the bundles). An exploration diagnostic, `scripts/diagnose_second_disturbance.py`, follows the lag with a second disturbance on five non-hidden scenarios to measure what that difference buys (details in `docs/IMPLEMENTATION_STATUS.md`; not a frozen gate). It cuts both ways. The re-tuned relay PI never regains the band after a second disturbance (0 of 45 episodes on two families, 2 of 45 on the third), as its gains predict. Praxion's repairs recover the band in about half the episodes and have the lower error in 78 of 135, but three of the nine repairs trip the trusted supervisor on these scenarios even before the second disturbance, which the five hidden scenarios had not revealed. What the two results say about Praxion together: the repairs are real, inspectable and gated; they are inconsistent across runs (post-change MAE 0.010 to 0.140 among the nine deployed repairs, against the relay's 0.009 to 0.016); and five hidden scenarios are too few to certify a repair's robustness. Repair robustness and consistency are the next protocol targets, and the gate size is the first parameter to raise in the next version. A hostile reviewer should also know that both methods were developed on exploration plant seeds that include the five run machines, and that the scenario seeds scored here were hidden from both.
-
-## Gates and current status
-
-Gate definitions are in `PRAXION_IMPLEMENTATION_PLAN.md` section 10 and frozen in `backend/evaluation/config.py`.
-
-- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02; 645 passed on 2026-11-04), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
-- **G1 discovery:** ≥ 3 distinct experiments tied to the ledger, ≥ 1 valid verbatim Muse controller.
-- **G2 performance:** ≥ 8/10 held-out scenarios, zero violations and overrides, ≥ 0.70 in-band after settling.
-- **G3 self-repair:** the repair cuts post-change MAE by ≥ 20% vs frozen v1 on ≥ 3/5 disturbance scenarios, with zero hard violations and zero invalid outputs.
-
-**Cross-run summary per protocol**, copied verbatim from `docs/BENCHMARKS.md` (generated 2026-11-03T10:51:14-0500 by `uv run python scripts/run_evaluation.py`, Docker sandbox, evaluator fingerprint `bdfdc77bdafd157c`: the fingerprint widened by the 2026-11-02 audit, plus the TCLab experiment-cap constant in `backend/profiles.py` changed on 2026-11-03; the tank profile is unchanged. Against the 2026-11-01 table every Praxion, PID and on-off number is bit-identical; the relay re-tuned PI moved slightly on two of five machines because the audit fixed the delay-line flush on a hard-cutoff trip, which the relay's identification window sees). Every candidate source is re-hashed and scored fresh on the frozen scenarios. G3 applies the current promotion rule. A run that never reached repair counts as not passed.
-
-| prompt version | runs | G1 | G2 | G3 | G3 not reached | median experiments to v1 | median cost USD | median wall s |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| v1.0 | 2 | 2/2 | 2/2 | 0/2 | 1 | 10.0 | 0.600 | 763.2 |
-| v1.1 | 1 | 1/1 | 1/1 | 1/1 | 0 | 11.0 | 2.053 | 923.4 |
-| v1.2 | 5 | 5/5 | 4/5 | 4/5 | 1 | 10.5 | 1.653 | 775.5 |
-| v1.3 | 5 | 5/5 | 5/5 | 5/5 | 0 | 12.0 | 1.719 | 816.8 |
-
-Notes. v1.1 shows G3 1/1 because fresh scoring applies the current rule. That run (`spark3-20261031-010142-feac7f`) recorded FAILED under the rule then in force, and the recorded verdict stands. The v1.2 G3 4/5 counts `spark6-20261031-012958-e01d87` as not passed; it failed G2 and never deployed, so it is also the one run in *G3 not reached*. The Wonder run (`wonder1-20261031-010124-6130b3`) is skipped by the benchmark because it stopped before any evaluation.
-
-**Protocol v1.3, per machine** (source `docs/IMPLEMENTATION_STATUS.md`; prompt hash `0d19650e641cac11`; every bundle passes `scripts/audit_run.py` 8/8):
-
-| Plant seed | Run | Discovery exps | v1 G2 (in-band) | Frozen v1 post-change MAE / hard viol. | Promoted repair | Post-change MAE / in-band / hard viol. | Median reduction | Nominal kept (in-band) | Diagnosis | Cost | Time |
-|---:|---|---:|---|---|---|---|---:|---|---|---:|---:|
-| 3 | `v13-s3-20261031-015222-39a872` | 12 | PASS (0.89) | 0.186 / 21 | v3 (attempt 2) | 0.031 / 0.87 / 0 | −84% | no (0.36) | correct | $2.17 | 17 min |
-| 7 | `v13-s7-20261031-020602-18f408` | 12 | PASS (0.78) | 0.190 / 7 | v2 | 0.095 / 0.32 / 0 | −50% | no (0.56) | correct | $1.71 | 11 min |
-| 11 | `v13-s11-20261031-020922-a0e68e` | 12 | PASS (0.92) | 0.217 / 2 | v2 | 0.021 / 1.00 / 0 | −91% | yes (0.93) | correct | $1.75 | 11 min |
-| 14 | `v13-s14-20261031-015222-af63b9` | 11 | PASS (1.00) | 0.044 / 0 | v2 | 0.010 / 1.00 / 0 | −78% | yes (1.00) | correct | $1.72 | 14 min |
-| 18 | `v13-s18-20261031-021658-2cc943` | 12 | PASS (1.00) | 0.027 / 0 | v2 | 0.014 / 0.94 / 0 | −59% | yes (1.00) | correct | $1.71 | 17 min |
-
-Summary: G1 5/5, G2 5/5 on the first candidate, G3 5/5, diagnosis 5/5, nominal kept 3/5.
-
-### The promotion rule
-
-A repair is promoted on the changed machine's criteria only: ≥ 3/5 disturbance scenarios with ≥ 20% lower post-change MAE than frozen v1, zero hard violations, and zero invalid outputs. Nominal G2 after repair is re-scored and reported, as in the "nominal kept" column, but it does not gate promotion. The repaired controller is for the machine as it now is. Requiring it to also pass on the machine that no longer exists is a robustness demand, not self-repair. We decided this on 2026-10-31, while no run had yet passed Gate 3 (decisions log in `docs/IMPLEMENTATION_STATUS.md`). Run spark3 recorded FAILED under the earlier rule, which also required nominal G2. That recorded verdict was not rewritten.
+| The long version | [`docs/TECHNICAL_NOTES.md`](docs/TECHNICAL_NOTES.md): a real run step by step, four protocol versions, the hardware batch, related work, gates and per-run tables, model usage. Status and decisions: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md). |
 
 ## Quickstart
 
@@ -295,7 +112,7 @@ uv run python scripts/run_evaluation.py   # rewrites docs/BENCHMARKS.md from sto
 | Path | Contents |
 |---|---|
 | `backend/agent/` | Muse client, prompts, agent view (the single egress), orchestrator stage machine, mock agent for CI |
-| `backend/plant/` | `TankSimulator` and the `PlantAdapter` interface |
+| `backend/plant/` | `PlantAdapter` interface; `TankSimulator`; TCLab simulator, thermal twin and the USB hardware driver |
 | `backend/safety/` | supervisor, interlock, exploration envelope |
 | `backend/controller/` | static checker, Docker sandbox, interface tests, registry, runtime |
 | `backend/evaluation/` | frozen config, metrics, baselines, suites, monitor, benchmarks |
@@ -304,73 +121,13 @@ uv run python scripts/run_evaluation.py   # rewrites docs/BENCHMARKS.md from sto
 | `scripts/` | live run, replay, demo recording, audit, evaluation, export, connectivity check |
 | `tests/` | unit, blindness, sandbox (`-m docker`), live (`-m live`) tests |
 | `artifacts/runs/<run_id>/` | recorded bundles |
-| `docs/` | status, benchmarks, safety limitations, demo script, provenance, market evidence, competitive landscape |
+| `docs/` | technical notes, status, benchmarks, hardware results, safety limitations, demo script, provenance; `architecture.archify.json` is the source of the diagram above (rendered with [archify](https://github.com/tt-a1i/archify)) |
 | `demo/film/` | the submission film: motion-graphic scenes (HTML/SVG), renderer, assembler, spec with every number's source |
-
-## Evidence and honesty
-
-**What `scripts/audit_run.py` checks** on a bundle, with nothing but the bundle:
-1. Every `controller_vN.py` sha256 and length match its `meta.json`, and `result.json` lists the same candidates.
-2. Every agent view snapshot passes the leak scanner `find_leaks`.
-3. `model_calls.jsonl` exists, successful calls use `muse-*` model ids (mock ids are flagged), and token and cost totals match `result.json`.
-4. Event log sequence numbers are strictly increasing and contiguous, and every stage transition is allowed by the stage machine.
-5. Each `candidate_registered` event's hash and length match the stored file.
-6. Each registered source is byte-identical to the `source_code` in the authoring model call's response. This is the authorship proof.
-7. No disturbance family name appears in any model request message.
-
-**What the blindness test checks.** `tests/test_agent_blindness.py` builds views from rich synthetic sessions and from every stored snapshot of every recorded run. The leak scanner has three layers. Layer 1 rejects trusted keys anywhere in the view (for example `h_true`, `hidden_params`, `plant_seed`, `disturbance_family`, plant parameter names). Layer 2 rejects specific trusted identifiers in any value, model text included: parameter names, every disturbance family name, baseline names. Layer 3 rejects whole numbers in the hidden seed ranges 1000 to 1019 and 2000 to 2019 everywhere except model-authored free text. The scanner was redesigned after it stopped a Wonder run on a false positive (the word "hidden" in Muse's own ledger), and all recorded runs were re-audited.
-
-**Mock and replay labeling.** Mock mode exists for CI only. Mock runs are excluded from benchmarks unless asked for, and the dashboard shows "MOCK · not model output". Replay shows a REPLAY badge with speed, run id and recording time. Runs that used the dev-only subprocess sandbox carry a warning badge.
-
-**Frozen config policy.** Metrics, windows, seeds and thresholds live in `backend/evaluation/config.py`. Every change to them is logged in the status doc with a reason, and each was made before official scoring. When Muse underperforms, we change the protocol, never the controller, the scores or the seeds. Each protocol version has a logged prompt hash. Protocol v1.3 is frozen for the submission.
-
-**What the operator API exposes.** The dashboard API serves trusted data to the human operator, including the disturbance family and the hidden plant parameters in the evaluation audit entries. The operator is not the agent. None of it passes through `agent/view.py`, and audit checks 2 and 7 verify that on every bundle.
-
-## Safety limitations
-
-Full list: [`docs/SAFETY_LIMITATIONS.md`](docs/SAFETY_LIMITATIONS.md).
-
-- The interlock is an ideal model: it reads the true simulated level with no noise, delay or failure modes. The true level can still exceed 0.90 by up to about 0.01.
-- The exploration envelope ignores commands already queued in the actuator delay line and starts from the noisy measurement.
-- The supervisor's measurement-based cutoff reacts late under delay. It cannot undo inflow that is already committed.
-- A repair is specific to the change it was written for. Promoted repairs detune for the measured delay and then absorb offset changes (weaker pump, extra leak) worse than the original controller did: `v13-s11` v2 under `pump_derate` has post-change MAE 0.1856 and in-band 0.33, against 0.0098 for its v1 (`docs/BENCHMARKS.md`). A machine that reverts or changes a second way needs another monitored repair cycle.
-- Five hidden scenarios are too few to certify a repair. On five non-hidden scenarios with a harsher draw (slower actuator, lower starting level), three of nine promoted repairs tripped the trusted supervisor under the same `actuator_lag` change they had passed G3 on (`scripts/diagnose_second_disturbance.py`, results in `docs/IMPLEMENTATION_STATUS.md`). The frozen gate stands as recorded; the next version scores more scenarios.
-- On this tank a classical relay auto-tuner that re-identifies after the same detector beats Praxion's repairs on post-change error in 11 of 12 runs, at about five times the plant time and without rejecting a later disturbance. See "Related work, and the classical rival we score against".
-- The model is blind to seeds, parameters and the true level, but not to the scoring episodes themselves: after a failed gate attempt and before every repair it receives the measured traces of the held-out and disturbance episodes, and the next candidate is scored on those same episodes (up to three repair attempts against one fixed five-scenario gate). No stored run shows episode-specific code. A third seed set used only for promotion is the next-version fix.
-- Until 2026-11-02 the run id (which carries the operator's label and the plant seed) appeared in candidate ids shown to the model. The thermal-simulator runs therefore told Muse "fan" or "weak" in their repair prompts, so their diagnosis-correctness results are not evidence of blind diagnosis and are not cited as such. Fixed: the model now sees opaque ids and the run id is a scanned secret; every stored prompt of every run is audited by `tests/test_agent_blindness.py`. Details in `docs/AUDIT_2026-11-02.md`.
-- The relay result rests on five machines: the 11 of 12 count includes three runs that deployed no repair, and the relay's values repeat per machine. Among the nine runs with a deployed repair the relay wins 8 (one-sided sign test p = 0.02); among the five protocol v1.3 runs it wins 4 (p = 0.19). The relay's nominal tune is also handicapped: its hysteresis correction identifies the gain at about −158° phase, not the ultimate gain, so its kp is about half a textbook tune.
-- Protocol v1.3 was revised on plant seeds 3, 7, 11, 14 and 18 and its 5 of 5 result was then measured on those same machines. That distribution is in-sample for protocol development; the exact 95% interval for 5 of 5 is [0.48, 1.0]. A fresh-seed batch is the first post-submission measurement.
-- The monitored rollout used until 2026-11-02 did not flush the actuator delay line on a hard-cutoff trip, so three recorded monitoring traces show the tank at 0.98 to 1.0 where the scored episode path holds 0.90. Scores are unaffected (they use the episode path); the recorded traces Muse diagnosed from are kept as recorded.
-- Simulation establishes nothing about real hardware. The hardware results are their own, smaller claim: ten runs on one heater board, four promoted repairs, all four better than the frozen controller when both ran on the board (p = 0.0625, interval 0.40–1.00), failures kept. The derate fault is a software change at the actuator; no PID baseline has been measured on the board; the twin's forecast under-rates aggressive repairs. See `docs/HARDWARE_RESULTS.md` and `docs/SAFETY_LIMITATIONS.md`.
-
-## Model usage and cost
-
-Each protocol v1.3 run cost $1.71 to $2.17 and took 11 to 17 min (`docs/IMPLEMENTATION_STATUS.md`; `result.json` `elapsed_s` 651.1 to 1047.3 s). Input tokens dominate the cost, because candidate evaluation traces go into the view. Run `v13-s11` used 992,743 prompt tokens for 18 calls.
-
-Estimated spend for every live run, from each `result.json` `model_usage.cost_usd`:
-
-| Run | Model | Protocol | Calls | Cost USD |
-|---|---|---|---:|---:|
-| `spark-20261031-002956-c19d0d` | muse-spark-1.3 | v1.0 | 14 | 0.498 |
-| `spark2-20261031-004636-3d012e` | muse-spark-1.3 | v1.0 | 12 | 0.702 |
-| `spark3-20261031-010142-feac7f` | muse-spark-1.3 | v1.1 | 19 | 2.053 |
-| `wonder1-20261031-010124-6130b3` | muse-wonder-1.0 | v1.1 | 9 | 2.243 |
-| `spark4-20261031-011710-0c4353` | muse-spark-1.3 | v1.2 | 18 | 1.653 |
-| `spark5-20261031-011712-e34d36` | muse-spark-1.3 | v1.2 | 16 | 1.360 |
-| `spark6-20261031-012958-e01d87` | muse-spark-1.3 | v1.2 | 18 | 1.960 |
-| `spark7-20261031-012959-a9c6d6` | muse-spark-1.3 | v1.2 | 21 | 4.300 |
-| `spark8-20261031-013049-bc09a1` | muse-spark-1.3 | v1.2 | 13 | 1.445 |
-| `v13-s3-20261031-015222-39a872` | muse-spark-1.3 | v1.3 | 19 | 2.168 |
-| `v13-s7-20261031-020602-18f408` | muse-spark-1.3 | v1.3 | 18 | 1.715 |
-| `v13-s11-20261031-020922-a0e68e` | muse-spark-1.3 | v1.3 | 18 | 1.747 |
-| `v13-s14-20261031-015222-af63b9` | muse-spark-1.3 | v1.3 | 18 | 1.719 |
-| `v13-s18-20261031-021658-2cc943` | muse-spark-1.3 | v1.3 | 18 | 1.711 |
-| **Total, 14 live runs** | | | | **25.274** |
-
-The 13 Spark runs total $23.031. The Wonder run adds $2.243. Spark is the primary model: it is 3 to 4 times cheaper, and its operator notes were coherent, while Wonder's single run had hallucinated notes (`docs/IMPLEMENTATION_STATUS.md`).
 
 ## License and provenance
 
 MIT License, Copyright (c) 2026 Mithran Selvaraj.
 
 How the code was written, what Muse authored, the protocol history, every run id, and which third-party libraries are used: [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
+
+Built for the Meta Global AI Developer Hackathon 2026 (Indie track). Demo film script, with every on-screen number and its source: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).

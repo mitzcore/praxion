@@ -1,4 +1,4 @@
-"""Transparent baselines for scoring only. NEVER shown to the model (CLAUDE.md rule 1)."""
+"""Transparent baselines for scoring only. NEVER shown to the model (project rule: baselines exist for scoring only)."""
 from __future__ import annotations
 
 import math

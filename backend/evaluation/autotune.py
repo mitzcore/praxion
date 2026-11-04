@@ -1,6 +1,6 @@
 """Classical self-tuning baseline: Åström–Hägglund relay auto-tuning → Tyreus–Luyben PI. TRUSTED, scoring only.
 
-NEVER shown to the model (CLAUDE.md rule 1). This is the fair classical rival the competitive review asked
+NEVER shown to the model (project rule: baselines exist for scoring only). This is the fair classical rival the competitive review asked
 for (docs/COMPETITIVE_LANDSCAPE.md): a fully automatic identify-then-design controller that gets the same
 plant access as Praxion's agent and re-identifies when the SAME degradation detector fires.
 

@@ -1,7 +1,7 @@
 """Evaluation constants.
 
 ###########################################################################################
-# FROZEN. These values are fixed BEFORE any scoring run (CLAUDE.md rule 6, plan 5.4/10).  #
+# FROZEN. These values are fixed BEFORE any scoring run (project rule: same-seed comparisons). #
 # Changing any of them invalidates every previously recorded score and must be logged in  #
 # docs/IMPLEMENTATION_STATUS.md with a reason. Never tune these to make a result look     #
 # better. Held-out (1000s) and disturbance (2000s) seeds are evaluator-only and must      #
