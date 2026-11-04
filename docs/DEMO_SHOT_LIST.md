@@ -26,7 +26,7 @@ Command (Claude runs it; alerts by macOS notification and voice):
 
 ```
 uv run python scripts/verify_on_board.py --run hw2-20261103-074537-698ba8 \
-  --port /dev/cu.usbmodem1101 --disturbance operator --order v1,v2
+  --port /dev/cu.usbmodem1101 --disturbance operator --order v1,v2 --live 5
 ```
 
 Session timeline (about 55 min, two trials, each: cool to < 30 °C, 480 s nominal, fan, 600 s):
