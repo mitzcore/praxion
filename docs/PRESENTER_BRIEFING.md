@@ -2,7 +2,7 @@
 
 For Mithran. This is the version of the project you carry in your head and say out loud. Nothing here requires control-theory background. Every number has a source in the repo; the sources are listed in Part 3 so you can check any of them. Read Parts 1 and 2 until you can say them without the page. Rehearse Part 4 out loud.
 
-Written 2026-11-02; hardware answer (Q7) filled in 2026-11-03 after the TCLab runs.
+Written 2026-11-02; hardware answer (Q7) and the hardware row rewritten 2026-11-04 after the overnight board batch.
 
 ---
 
@@ -62,19 +62,19 @@ Quote these and nothing else. Each has a file behind it.
 
 | Claim | Number | Source |
 |---|---|---|
-| Live runs recorded (tank) | 13 scored runs on 5 different machines, plus 8 thermal runs | `docs/BENCHMARKS.md`, `artifacts/runs/` |
+| Live runs recorded (tank) | 13 scored runs on 5 different machines, plus 10 hardware runs on the TCLab board | `docs/BENCHMARKS.md`, `artifacts/runs/` |
 | Final protocol (v1.3), 5 machines | discovery 5/5, first controller passed 5/5, repair passed 5/5, diagnosis correct 5/5, original-machine performance kept 3/5 | `docs/IMPLEMENTATION_STATUS.md`, protocol v1.3 batch |
 | Repair effect, v1.3 | post-change error cut 50% to 91% | `docs/BENCHMARKS.md` |
 | Best run (the demo) | 90.6% cut, 5/5 scenarios, zero violations, delay measured at about 24 s by the AI (true about 20 s) | run `v13-s11-20261031-020922-a0e68e` |
 | First full run | repair failed, recorded as FAIL, original controller kept | run `spark2-20261031-004636-3d012e` |
 | Cost and time per run | median about $1.72 and about 13 minutes | `docs/BENCHMARKS.md` cross-run summary |
 | Model | `muse-spark-1.3`; Wonder tried once | `model_calls.jsonl` in each bundle |
-| Tests | 563 passing | `uv run pytest -q` |
+| Tests | 639 passing | `uv run pytest -q` |
 | Hostile code corpus | 18 of 18 malicious controllers contained by the sandbox | `docs/IMPLEMENTATION_STATUS.md` |
 | Classical rival (relay auto-tune) | lower post-change error in 11 of 12 runs (median 0.0121 vs 0.0376), using about 5× the plant time (358 s vs 74 s) and touching the hard cutoff on 2 of 5 machines | `docs/BENCHMARKS.md` head-to-head |
 | Second-disturbance diagnostic | relay re-tune regains the band in 0 of 45 episodes on two families; Praxion repairs recover in about half and have lower error in 78 of 135; 3 of 9 repairs trip the supervisor | `artifacts/benchmarks/second_disturbance_diagnostic.md` |
 | Thermal simulator, fan disturbance | repair cut error 97%, diagnosis correct | run `tclabsim-fan5-20261101-104237-bfe4bb` |
-| Real hardware | two runs on a $50 TCLab heater kit: run 1 failed the performance gate (every experiment hit a 180 s cap; cap raised to 480 s); run 2 completed: controller passed first time, fan detected 66 s after it was switched on, diagnosis correct, repair cut error 85% (7.5 °C → 1.1 °C) on 10 of 10 scenarios | `artifacts/runs/hw1-20261102-234915-81765d`, `artifacts/runs/hw2-20261103-074537-698ba8` |
+| Real hardware | 10 runs on a $50 TCLab heater board (2 with an operator fan, 8 unattended with a trusted 35 %/55 % heater derate): first controller passed 7/10; change detected 8/8 (66–153 s); diagnosis correct 7/7; repair promoted 4/7; promoted repair beat frozen v1 on the physical board 4/4 (error cut 58 %, 75 %, 66 %, 34 %; sign test p = 0.0625; 95 % interval 0.40–1.00); zero overrides or violations in 11 board trials; twin forecast within 0.57 °C of the board (median, 11 trials) | `docs/HARDWARE_RESULTS.md`, `artifacts/runs/hw*` |
 
 ---
 
@@ -101,7 +101,7 @@ Each answer is about thirty seconds. Say them in your own words once you know th
 "Because we published it. We built the classical rival into our evaluator, scored it on exactly the same hidden scenarios, and it had lower error in eleven of twelve runs. It also used five times more time on the machine and touched the emergency cutoff on two machines, where our bounded experiments never did. Then we asked what it does when something else changes afterwards. It never recovers. Our repairs recover about half the time. Those are the real numbers and we would rather you see them from us."
 
 **Q7. Does it work on real hardware?**
-"Yes, once, on a fifty-dollar heater kit, and the first attempt failed. In the failed run the agent was only allowed three-minute experiments on a machine that takes about that long to settle, so it never saw a steady state and all five controllers it wrote were rejected by our gate. We raised the experiment limit, nothing else, and ran again. That run went end to end: it learned the board in thirty minutes, its first controller passed, we switched a fan on, the monitor caught it in sixty-six seconds, it ran four more experiments, named the cause correctly, and its repair cut the error by eighty-five percent on the changed machine. One run is a demonstration, not a distribution, and the repair comparison was scored on a model fitted to the changed board, not by running both controllers on it. All of that is in the README."
+"Yes. Ten runs on a fifty-dollar heater board, and we measured the repairs on the board itself, not only on a model. The first run failed: the agent was only allowed three-minute experiments on a machine that takes that long to settle, so every controller it wrote was rejected. We raised the experiment limit, nothing else. After that, the loop ran end to end nine times. The monitor caught the change every time it was deployed, within one to two and a half minutes. The diagnosis was right seven out of seven. The gate accepted a repair in four of seven attempts. Then came the part I care most about: for each of those four, we ran the old controller and the repaired one on the physical board under the same fault and compared them. The repair won all four times, cutting the error by between a third and three quarters, with zero safety interventions in eleven board trials. The three attempts where no repair was good enough are in the results too; one of them was simply that the fault was too small to improve on. Everything is in a results document generated straight from the run files."
 
 **Q8. Who pays for this? What is the business?**
 "Anyone who runs machines that drift and does not have a control engineer on call: small factories, water utilities, building systems, labs. Today the fix is a visit from a specialist. The nearest commercial systems, like AspenTech's and Emerson's, re-identify models inside structures humans wrote and cost what refineries pay. Imubit and Phaidra have each raised about fifty million dollars for AI that acts on industrial control loops within safety limits. The market exists. Our wedge is the piece nobody does: the AI investigates the changed machine and rewrites readable code, under a supervisor, with evidence."
@@ -110,7 +110,7 @@ Each answer is about thirty seconds. Say them in your own words once you know th
 "Their copilots write control code from a human's specification. They never touch the machine. The adaptive systems on the other side touch the machine but only adjust coefficients. We found no product, paper or demo that runs the whole loop: experiment, write code, score on hidden tests, deploy, detect the change, experiment again, rewrite, promote only if better. Two steps in particular appear nowhere we could find: designing new experiments on the changed machine before repairing, and promoting the repair only after a same-scenario comparison against the frozen old version."
 
 **Q10. What failed? What are the limits?**
-"Plenty, and it is all written down. Our first full run failed to repair and we kept the result. In two of the five final runs the repair fixed the changed machine but lost some performance on the unchanged one; the gate reports that rather than hiding it. Three of nine repairs that passed our gate turned out fragile on harsher scenarios, which told us five hidden scenarios are too few; raising that number is the first change for the next version. Our final protocol was tuned on the same five machines it was then measured on, so the five-for-five is in-sample. One plant type in simulation, one on hardware. We do not claim it works on any machine or that it is safe in general."
+"Plenty, and it is all written down. Our first full run failed to repair and we kept the result. In two of the five final runs the repair fixed the changed machine but lost some performance on the unchanged one; the gate reports that rather than hiding it. Three of nine repairs that passed our gate turned out fragile on harsher scenarios, which told us five hidden scenarios are too few; raising that number is the first change for the next version. Our final protocol was tuned on the same five machines it was then measured on, so the five-for-five is in-sample. One plant type in simulation, one on hardware. On the board, four repairs out of seven attempts were good enough to promote, and every promoted one overshoots while warming up; we report that rather than hide it. We have not yet measured a plain PID on the board against our repairs. We do not claim it works on any machine or that it is safe in general."
 
 **Q11. Why Meta's Muse models? What did the model contribute?**
 "Everything that required judgment. Muse designed every experiment and said which uncertainty it targeted and why it was safe. It kept the hypothesis ledger. It wrote every line of every controller; our code never patched one. After the change it chose the new experiments, named the diagnosis, and wrote the repair. Spark did all the scored runs at about a dollar seventy each. We used structured JSON output for every stage, which both Muse models handled."

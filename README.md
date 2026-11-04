@@ -26,7 +26,7 @@ Run `v13-s11-20261031-020922-a0e68e` (model `muse-spark-1.3`, plant seed 11, pro
 10. **Nominal after repair.** Re-scored on the original held-out scenarios: G2 PASS 10/10, median MAE 0.0233, in-band 0.934. (`evaluation_v2.json`)
 11. **Outcome.** Final stage `COMPLETE`, reason "v2 promoted (nominal G2 after repair: pass)". 18 model calls, $1.747 estimated, 688.8 s wall time. (`result.json`)
 
-The independent audit of this bundle passes 7/7:
+The independent audit of this bundle passes 8/8 (check 8, the board verification, is skipped for simulation runs):
 
 ```bash
 uv run python scripts/audit_run.py v13-s11-20261031-020922-a0e68e
@@ -56,14 +56,35 @@ The first full loop did not work. We changed the protocol four times, and we kep
 | v1.2 | 4/5 (seed 3 never passed; seed 14 needed 4 candidates) | 4/4 of deployed | 4/4 | 2/4 (seeds 11 and 14 kept; seeds 7 and 18: nominal in-band 0.07 / 0.01) |
 | v1.3 | 5/5 on the first candidate | 5/5 | 5/5 | 3/5 |
 
-## Real hardware: two runs on a $50 heater kit
+## Real hardware: ten runs on a $50 heater kit, repairs measured on the board
 
-On 2026-11-03 the same loop ran on an APMonitor TCLab (an Arduino heater board on USB; profile `tclab`, target 45 °C, band ±1.5 °C). Nothing in the agent, prompts or evaluator was changed for hardware except the plant class and the profile constants; the hidden-scenario gates run on a thermal twin fitted by trusted code from the discovery experiments, and the operator applies the physical change (a room fan) when prompted. Both runs are in the bundle set and both count.
+On 2026-11-03/04 the same loop ran on an APMonitor TCLab (an Arduino heater board on USB; profile `tclab`, target 45 °C, band ±1.5 °C). Nothing in the agent, prompts or evaluator changed for hardware except the plant class and the profile constants. The hidden-scenario gates run on a thermal twin that trusted code fits from the discovery experiments; the change is either a room fan switched on by the operator when prompted (runs `hw1`, `hw2`) or a trusted software derate of the heater command, Q1 = 100·u·(1 − m), applied at the monitor's change time so the eight batch runs could run unattended overnight (`hwb1`–`hwb8`). All ten runs are in the bundle set and all ten count. `docs/HARDWARE_RESULTS.md` is generated from the bundles by `scripts/hw_summary.py`; nothing in it is typed by hand.
 
-- **Run 1 (`hw1-20261102-234915-81765d`, 00:49 EST): FAILED at G2.** All five controllers oscillated on the twin (in-band 0.21 → 0.53, need 0.70). Cause: every discovery experiment hit the profile's 180 s cap on a board whose time constant is about 200 s, so no hold ever levelled off and the holding power was extrapolated. The cap was raised to 480 s (the only change) and the failure is recorded in `docs/IMPLEMENTATION_STATUS.md`.
-- **Run 2 (`hw2-20261103-074537-698ba8`, 07:45 EST): COMPLETE, repair promoted.** Discovery 7 proposals in 30 min (one rejected by the supervisor's worst-case bound) including a 480 s cooling hold; twin K = 76 °C per unit power, τ = 176 s, L = 31 s, ambient 22.1 °C. v1 passed G2 first time (9/10, median error 0.72 °C, zero overrides). Deployed on the board it held 46.3 °C at 30 % power. The operator switched the fan on at t = 630 s; the monitor fired at t = 696 s (window error 0.124 vs threshold 0.030). Four re-identification experiments; the changed-machine twin shows K = 44, τ = 132 s, ambient 19.9 °C (more heat loss). Diagnosis `outflow_increased` (heat loss increased): correct, under a neutral run label. v2 cut post-change error from 0.125 (7.5 °C) to 0.018 (1.1 °C) on 10/10 scenarios, −85 %, zero violations; nominal G2 after repair: fail (reported, not gating). `scripts/audit_run.py` passes 7/7. $1.35, 80 min wall clock.
+**Measured on the board, not only on the twin.** After every run that promoted a repair, frozen v1 and the promoted v2 each ran on the physical board under the same change (cool below 30 °C → 480 s nominal → change → 600 s), scored by the frozen metrics, order alternated between runs, hashes checked against the registered candidates (`scripts/audit_run.py` check 8). Before each board trial, trusted code ran the same controller through the same protocol on that run's twin with the same change, so every measurement sits next to a forecast made before it.
 
-What this does and does not show. One hardware run is a demonstration, not a distribution. The v1-versus-v2 comparison is scored on the twin fitted from the changed machine, not by running both on the board; the deployed v1's drift to 34 °C under the fan is the only direct hardware measurement of the failure. The fan's strength was calibrated beforehand to 1.3× the natural heat loss (a stronger draft made 45 °C unreachable). Runbook and pre-flight: `docs/TCLAB_RUNBOOK.md`.
+| measure | result |
+|---|---|
+| runs attempted | 10 |
+| first controller passed G2 on the twin | 7 / 10 |
+| change detected by the trusted monitor | 8 / 8 deployments (66–153 s after the change) |
+| diagnosis correct | 7 / 7 |
+| repair promoted by the gate | 4 / 7 |
+| **promoted repair beat frozen v1 on the board** | **4 / 4** (cuts 58 %, 75 %, 66 %, 34 %), one-sided sign test p = 0.0625, 95 % Clopper–Pearson [0.40, 1.00] |
+| overrides or hard violations in 11 board trials | 0 |
+| twin forecast vs board, 11 trials | median error 0.57 °C (14 %); sensor noise ≈ 0.7 °C rms |
+
+The four board pairs, post-change mean error in °C and time in band after the change:
+
+| run | change | frozen v1 | promoted v2 |
+|---|---|---|---|
+| `hw2` | fan, operator, filmed | 8.99 °C, 0 % | 3.77 °C, 53 % |
+| `hwb5` | heater derate 55 % | 3.96 °C, 0 % | 0.99 °C, 99 % |
+| `hwb7` | heater derate 55 % | 6.18 °C, 0 % | 2.12 °C, 27 % |
+| `hwb8` | heater derate 55 % (v2 ran first) | 4.81 °C, 0 % | 3.18 °C, 68 % |
+
+The failures are kept and classified. `hw1`: every discovery experiment hit a 180 s cap on a board with a 200 s time constant, G2 failed on all five controllers; the cap was raised to 480 s, the only hardware fix. `hwb1`, `hwb2` (derate 35 %): diagnosis right, every repair rejected, because frozen v1's post-change error on the twin was already at the twin's noise floor, so the 20 % bar was unattainable; the derate was raised to 55 % for the remaining runs and the two cohorts are labelled per run. `hwb3`: model-API timeouts, kept as an infrastructure failure. `hwb4`: diagnosis right, three repairs each worse than v1 on the twin, v1 kept (on the board v1 alone measured 4.20 °C, 0 % in band; forecast 4.77 °C). `hwb6`: four nominal revisions used the run's five-controller budget before the fault arrived, so no repair could be written.
+
+What this does and does not show. Four board-verified pairs is a small distribution; the interval is the honest reading. Repair promotion is 4 of 7 attempts, not 4 of 4. Every promoted repair bought post-change performance with warm-up overshoot (peaks 54–57 °C against 45 °C, under the 66 °C soft limit); nominal performance is reported, never a promotion gate. The twin's forecast is close for the frozen controller and under-rates aggressive repairs (hwb5 v2: forecast 3.84 °C, board 0.99 °C), so the board measurement, not the forecast, is the claim. In three of four pairs the second trial started a few degrees warmer because the reset accepts the first reading below 30 °C; the fourth pair ran the repair first from the colder start and it still won. The derate is a software fault at the actuator, not a worn heater; the fan run is the one physical change. No PID or thermostat baseline has been measured on the board yet. Runbook: `docs/TCLAB_RUNBOOK.md`.
 
 ## Architecture
 
@@ -134,7 +155,7 @@ A control engineer's first objection is that a 1970s self-tuner solves the tank.
 
 Gate definitions are in `PRAXION_IMPLEMENTATION_PLAN.md` section 10 and frozen in `backend/evaluation/config.py`.
 
-- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
+- **G0 foundation:** tests green (415 passed at Phase 0 exit; 563 passed on 2026-11-02; 639 passed on 2026-11-04), baselines hold band, sandbox contains the hostile corpus (18/18), real API reply recorded.
 - **G1 discovery:** ≥ 3 distinct experiments tied to the ledger, ≥ 1 valid verbatim Muse controller.
 - **G2 performance:** ≥ 8/10 held-out scenarios, zero violations and overrides, ≥ 0.70 in-band after settling.
 - **G3 self-repair:** the repair cuts post-change MAE by ≥ 20% vs frozen v1 on ≥ 3/5 disturbance scenarios, with zero hard violations and zero invalid outputs.
@@ -150,7 +171,7 @@ Gate definitions are in `PRAXION_IMPLEMENTATION_PLAN.md` section 10 and frozen i
 
 Notes. v1.1 shows G3 1/1 because fresh scoring applies the current rule. That run (`spark3-20261031-010142-feac7f`) recorded FAILED under the rule then in force, and the recorded verdict stands. The v1.2 G3 4/5 counts `spark6-20261031-012958-e01d87` as not passed; it failed G2 and never deployed, so it is also the one run in *G3 not reached*. The Wonder run (`wonder1-20261031-010124-6130b3`) is skipped by the benchmark because it stopped before any evaluation.
 
-**Protocol v1.3, per machine** (source `docs/IMPLEMENTATION_STATUS.md`; prompt hash `0d19650e641cac11`; every bundle passes `scripts/audit_run.py` 7/7):
+**Protocol v1.3, per machine** (source `docs/IMPLEMENTATION_STATUS.md`; prompt hash `0d19650e641cac11`; every bundle passes `scripts/audit_run.py` 8/8):
 
 | Plant seed | Run | Discovery exps | v1 G2 (in-band) | Frozen v1 post-change MAE / hard viol. | Promoted repair | Post-change MAE / in-band / hard viol. | Median reduction | Nominal kept (in-band) | Diagnosis | Cost | Time |
 |---:|---|---:|---|---|---|---|---:|---|---|---:|---:|
@@ -259,7 +280,7 @@ Full list: [`docs/SAFETY_LIMITATIONS.md`](docs/SAFETY_LIMITATIONS.md).
 - The relay result rests on five machines: the 11 of 12 count includes three runs that deployed no repair, and the relay's values repeat per machine. Among the nine runs with a deployed repair the relay wins 8 (one-sided sign test p = 0.02); among the five protocol v1.3 runs it wins 4 (p = 0.19). The relay's nominal tune is also handicapped: its hysteresis correction identifies the gain at about −158° phase, not the ultimate gain, so its kp is about half a textbook tune.
 - Protocol v1.3 was revised on plant seeds 3, 7, 11, 14 and 18 and its 5 of 5 result was then measured on those same machines. That distribution is in-sample for protocol development; the exact 95% interval for 5 of 5 is [0.48, 1.0]. A fresh-seed batch is the first post-submission measurement.
 - The monitored rollout used until 2026-11-02 did not flush the actuator delay line on a hard-cutoff trip, so three recorded monitoring traces show the tank at 0.98 to 1.0 where the scored episode path holds 0.90. Scores are unaffected (they use the episode path); the recorded traces Muse diagnosed from are kept as recorded.
-- Simulation establishes nothing about real hardware, and one hardware run (above) establishes a demonstration, not a distribution. The hardware repair comparison is twin-scored; the first hardware run failed and is kept. No claim here transfers to any other physical machine without separate validation.
+- Simulation establishes nothing about real hardware. The hardware results are their own, smaller claim: ten runs on one heater board, four promoted repairs, all four better than the frozen controller when both ran on the board (p = 0.0625, interval 0.40–1.00), failures kept. The derate fault is a software change at the actuator; no PID baseline has been measured on the board; the twin's forecast under-rates aggressive repairs. See `docs/HARDWARE_RESULTS.md` and `docs/SAFETY_LIMITATIONS.md`.
 
 ## Model usage and cost
 
