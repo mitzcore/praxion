@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>04_hwnumbers</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  .title { position: absolute; left: 160px; top: 92px; width: 1600px; font-size: 44px; font-weight: 500; letter-spacing: -0.005em; }
+  .title-rule { position: absolute; left: 160px; width: 1600px; top: 172px; height: 1px; background: var(--line); }
+  .row { position: absolute; left: 160px; width: 1600px; }
+  .row .rl { font-size: 30px; color: var(--ink); font-weight: 500; }
+  .row .rl .who { font-weight: 600; }
+  .row .rl .what { color: var(--muted); font-weight: 400; }
+  .track { position: absolute; left: 0; top: 52px; width: 1300px; height: 72px; }
+  .bar { position: absolute; left: 0; top: 0; height: 72px; width: 0; border-radius: 4px; }
+  .bar.amber { background: var(--amber); }
+  .bar.green { background: var(--green); }
+  .val { position: absolute; top: 52px; font-size: 64px; line-height: 72px; font-weight: 600; white-space: pre; }
+  .val .u { font-size: 36px; font-weight: 500; margin-left: 8px; opacity: 0.85; }
+  .axis { position: absolute; left: 160px; top: 510px; width: 1300px; height: 1px; background: var(--line); }
+  .tick { position: absolute; top: 520px; font-size: 22px; color: var(--dim); font-family: var(--mono); transform: translateX(-50%); }
+  .gridl { position: absolute; top: 266px; width: 1px; height: 244px; background: var(--line); opacity: 0.6; }
+  /* removed-error span on the v2 row, revealed at t=8 */
+  .gap { position: absolute; top: 0; height: 72px; border: 2px dashed var(--green); border-left: none; border-radius: 0 4px 4px 0; background: transparent; box-sizing: border-box; }
+  .bar.rest { border-radius: 0 4px 4px 0; }
+  .bar.rest.removed { opacity: 0.3; }
+  .bar.first { border-radius: 4px 0 0 4px; }
+  .conn { position: absolute; width: 0; border-left: 2px dashed var(--green); }
+  .band { position: absolute; left: 160px; top: 610px; width: 1600px; }
+  .band .k { font-size: 30px; color: var(--muted); }
+  .band .vals { margin-top: 10px; font-size: 64px; font-weight: 600; white-space: pre; }
+  .band .pu { font-size: 40px; font-weight: 500; }
+  .band .arrow { color: var(--dim); font-family: var(--sans); font-weight: 400; margin: 0 28px; }
+  .verdict { position: absolute; left: 160px; top: 800px; width: 1600px; }
+  .verdict .tag { font-size: 28px; padding: 10px 22px; }
+  .verdict .heater { margin-top: 22px; font-size: 26px; color: var(--muted); font-family: var(--mono); }
+  .verdict .heater .a { color: var(--amber); } .verdict .heater .g { color: var(--green); }
+  [data-anim].off { transform: translateY(12px); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="title" class="off" data-anim>
+    <div class="title">Both controllers on the physical board, same fan, same 18 minutes</div>
+    <div class="title-rule"></div>
+  </div>
+
+  <div id="axis" class="off" data-anim>
+    <div class="gridl" style="left:420px"></div><div class="gridl" style="left:680px"></div>
+    <div class="gridl" style="left:940px"></div><div class="gridl" style="left:1200px"></div><div class="gridl" style="left:1460px"></div>
+    <div class="axis"></div>
+    <div class="tick" style="left:160px">0</div><div class="tick" style="left:420px">2</div><div class="tick" style="left:680px">4</div>
+    <div class="tick" style="left:940px">6</div><div class="tick" style="left:1200px">8</div><div class="tick" style="left:1460px">10 °C</div>
+  </div>
+
+  <div id="r1" class="row off" data-anim style="top:214px">
+    <div class="rl"><span class="who amber">frozen v1</span><span class="what"> — average error after the change</span></div>
+    <div class="track"><div id="b1" class="bar amber"></div><div id="b1r" class="bar amber rest" data-anim></div><div id="gap" class="gap off" data-anim></div></div>
+    <div id="v1" class="val num amber" style="left:0"><span id="v1n">0.00</span><span class="u">°C</span></div>
+  </div>
+
+  <div id="r2" class="row off" data-anim style="top:384px">
+    <div class="rl"><span class="who green">repaired v2</span></div>
+    <div class="track"><div id="b2" class="bar green"></div></div>
+    <div id="v2" class="val num green" style="left:0"><span id="v2n">0.00</span><span class="u">°C</span></div>
+  </div>
+
+  <div id="conn" class="conn off" data-anim></div>
+
+  <div id="band" class="band off" data-anim>
+    <div class="k">time in band after the change:</div>
+    <div class="vals num"><span class="amber">0<span class="pu"> %</span></span><span class="arrow">→</span><span class="green"><span id="ib">0</span><span class="pu"> %</span></span></div>
+  </div>
+
+  <div id="verdict" class="verdict off" data-anim>
+    <span class="tag green">−58 % · measured on the board, not a model</span>
+    <div class="heater">heater: <span class="a">v1 stopped at 46 %</span> · <span class="g">v2 went to 76 %</span></div>
+  </div>
+
+  <div class="src">artifacts/runs/hw2-20261103-074537-698ba8/board_verification.json</div>
+  <div class="brand">Praxion</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  const clamp = (p) => Math.max(0, Math.min(1, p));
+  const ease = (p) => 1 - Math.pow(1 - clamp(p), 3);
+  const PX = 130;                 // px per °C, one axis for both bars (0..10 °C = 1300 px)
+  const V1 = 8.99, V2 = 3.77, IB = 53;
+  const $ = (id) => document.getElementById(id);
+  $("gap").style.left = (V2 * PX) + "px";
+  $("gap").style.width = ((V1 - V2) * PX) + "px";
+  $("conn").style.left = (160 + V2 * PX - 1) + "px"; $("conn").style.top = (214 + 52) + "px"; $("conn").style.height = (384 - 214) + "px";
+  function bar(t, t0, dur, target, barId, numId, valId) {
+    const v = target * ease((t - t0) / dur);
+    if (barId === "b1") {
+      $("b1").style.width = (Math.min(v, V2) * PX).toFixed(1) + "px";
+      $("b1r").style.left = (V2 * PX) + "px";
+      $("b1r").style.width = (Math.max(0, v - V2) * PX).toFixed(1) + "px";
+      $("b1").className = "bar amber" + (v > V2 ? " first" : "");
+    } else $(barId).style.width = (v * PX).toFixed(1) + "px";
+    $(numId).textContent = v.toFixed(2);
+    $(valId).style.left = (v * PX + 28).toFixed(1) + "px";
+  }
+  Diagram.run({
+    name: "04_hwnumbers",
+    duration: 12,
+    steps: [
+      { t: 0, label: "title: both controllers on the board, same fan, same 18 min", on: ["title"] },
+      { t: 0.6, label: "axis 0..10 C shared by both bars", on: ["axis"] },
+      { t: 1.0, label: "frozen v1 bar grows to 8.99 C", on: ["r1"] },
+      { t: 2.8, label: "repaired v2 bar grows to 3.77 C (same axis)", on: ["r2"] },
+      { t: 5.0, label: "time in band after the change 0 % -> 53 %", on: ["band"] },
+      { t: 8.0, label: "removed error span; tag -58 % measured on the board; heater 46 % vs 76 %", on: ["gap", "conn", "verdict"], add: { b1r: "removed" } },
+      { t: 12, label: "end" },
+    ],
+    tick(t) {
+      bar(t, 1.2, 1.4, V1, "b1", "v1n", "v1");
+      bar(t, 3.0, 1.2, V2, "b2", "v2n", "v2");
+      $("ib").textContent = String(Math.round(IB * ease((t - 5.3) / 1.2))).padStart(2, " ");
+    },
+  });
+</script>
+</body>
+</html>

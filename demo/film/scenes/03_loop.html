@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>03_loop</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  svg text { fill: currentColor; }
+  :root { --zu: var(--blue); --zs: var(--amber); --zt: var(--green); }
+  [data-anim] { transition: opacity 0.6s cubic-bezier(.2,.7,.2,1), transform 0.6s cubic-bezier(.2,.7,.2,1); }
+
+  .zone rect { stroke: var(--line); stroke-width: 1.5; }
+  .zone.u rect { fill: rgba(121,178,255,0.035); }
+  .zone.s rect { fill: rgba(239,188,104,0.035); }
+  .zone.t rect { fill: rgba(101,201,159,0.035); }
+  .zone text { font-size: 24px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+
+  .node { opacity: 0.34; transition: opacity 0.6s ease; }
+  .node .box { fill: var(--panel); stroke: var(--line); stroke-width: 2; transition: stroke 0.6s ease, fill 0.6s ease, stroke-width 0.6s ease; }
+  .node .num { font-family: var(--mono); font-size: 22px; color: var(--muted); }
+  .node .lbl { font-size: 30px; font-weight: 600; color: var(--ink); }
+  .node .sub { font-family: var(--mono); font-size: 24px; color: var(--muted); }
+  .node.done, .node.lit { opacity: 1; }
+  .node.u.done .box { stroke: rgba(121,178,255,0.55); }
+  .node.s.done .box { stroke: rgba(239,188,104,0.55); }
+  .node.t.done .box { stroke: rgba(101,201,159,0.55); }
+  .node.u .num { color: var(--blue); } .node.s .num { color: var(--amber); } .node.t .num { color: var(--green); }
+  .node.lit .box { stroke-width: 3; }
+  .node.u.lit .box { stroke: var(--blue); fill: #15202f; }
+  .node.s.lit .box { stroke: var(--amber); fill: #211e19; }
+  .node.t.lit .box { stroke: var(--green); fill: #13211f; }
+  .node .sub.code { color: var(--ink); }
+
+  .wire { fill: none; stroke: var(--line); stroke-width: 2.5; }
+  .wireOn { fill: none; stroke: var(--muted); stroke-width: 2.5; }
+  .pulse { fill: var(--ink); }
+  #loopWire { fill: none; stroke: var(--green); stroke-width: 3; }
+  #loopLbl text { font-size: 26px; font-weight: 500; }
+  #sbTag text { font-family: var(--mono); font-size: 22px; }
+</style>
+</head>
+<body>
+<div id="stage">
+<svg id="svg" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="14" markerHeight="14" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#8b98a5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="ahDim" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="14" markerHeight="14" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#243040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="ahG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="16" markerHeight="16" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#65c99f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <g id="zones" class="off" data-anim></g>
+  <g id="wires"></g>
+  <g id="nodes" class="off" data-anim></g>
+  <g id="loop" class="off" data-anim>
+    <path id="loopWire" d="" marker-end="url(#ahG)"/>
+  </g>
+  <g id="loopLbl" class="off" data-anim>
+    <text x="1680" y="744" text-anchor="middle" style="color:var(--green)">repeat for the next change</text>
+  </g>
+  <g id="sbTag" class="off" data-anim></g>
+  <circle id="pulse" class="pulse" r="7" cx="-50" cy="-50"/>
+  <circle id="ringDot" r="7" cx="-50" cy="-50" fill="var(--green)"/>
+</svg>
+<div id="cap0" class="cap"></div>
+<div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const $ = (id) => document.getElementById(id);
+  function mk(tag, attrs, parent, text) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // ---- layout: three trust zones as horizontal bands, five columns
+  const W = 320, H = 132, COLW = 360, X0 = 80;
+  const colL = (c) => X0 + c * COLW, colC = (c) => colL(c) + W / 2, colR = (c) => colL(c) + W;
+  const Z = {
+    u: { top: 40,  h: 226, title: "UNTRUSTED", rest: " — the model", col: "var(--blue)" },
+    s: { top: 282, h: 258, title: "SEMI-TRUSTED", rest: " — sandbox", col: "var(--amber)" },
+    t: { top: 556, h: 254, title: "TRUSTED", rest: " — supervisor, evaluator, monitor", col: "var(--green)" },
+  };
+  const nodeTop = (z) => Z[z].top + 62;
+  const nodeMid = (z) => nodeTop(z) + H / 2;
+  const zones = $("zones");
+  Object.keys(Z).forEach((k) => {
+    const z = Z[k];
+    const g = mk("g", { class: "zone " + k }, zones);
+    mk("rect", { x: 40, y: z.top, width: 1840, height: z.h, rx: 20 }, g);
+    const t = mk("text", { x: 72, y: z.top + 42 }, g);
+    mk("tspan", { style: "color:" + z.col }, t, z.title);
+    mk("tspan", { style: "color:var(--muted)" }, t, z.rest);
+  });
+
+  const NODES = [
+    { z: "u", c: 0, lbl: ["Discover"], sub: "bounded experiments" },
+    { z: "u", c: 1, lbl: ["Write"], sub: "controller_v1.py", code: true },
+    { z: "s", c: 2, lbl: ["Sandbox +", "hidden tests"] },
+    { z: "t", c: 2, lbl: ["Deploy under", "supervisor"] },
+    { z: "t", c: 3, lbl: ["Monitor fires"] },
+    { z: "u", c: 3, lbl: ["Re-identify +", "diagnose"] },
+    { z: "u", c: 4, lbl: ["Write"], sub: "controller_v2.py", code: true },
+    { z: "s", c: 4, lbl: ["Re-gate, promote", "only if better"] },
+  ];
+  const nodesG = $("nodes");
+  NODES.forEach((n, i) => {
+    const x = colL(n.c), y = nodeTop(n.z);
+    const g = mk("g", { id: "n" + (i + 1), class: "node " + n.z }, nodesG);
+    mk("rect", { class: "box", x, y, width: W, height: H, rx: 16 }, g);
+    mk("text", { class: "num", x: x + 26, y: y + 38 }, g, String(i + 1));
+    let ly = y + 80;
+    n.lbl.forEach((l) => { mk("text", { class: "lbl", x: x + 26, y: ly }, g, l); ly += 36; });
+    if (n.sub) mk("text", { class: "sub" + (n.code ? " code" : ""), x: x + 26, y: ly - 2 }, g, n.sub);
+  });
+
+  // ---- wires into node k (k = 2..8); rounded orthogonal paths
+  const r = 18;
+  const top = (z) => nodeTop(z), bot = (z) => nodeTop(z) + H;
+  const WIRES = {
+    2: `M ${colR(0)} ${nodeMid("u")} H ${colL(1) - 4}`,
+    3: `M ${colR(1)} ${nodeMid("u")} H ${colC(2) - r} Q ${colC(2)} ${nodeMid("u")} ${colC(2)} ${nodeMid("u") + r} V ${top("s") - 4}`,
+    4: `M ${colR(2) - 56} ${bot("s")} V ${top("t") - 4}`,
+    5: `M ${colR(2)} ${nodeMid("t")} H ${colL(3) - 4}`,
+    6: `M ${colC(3)} ${top("t")} V ${bot("u") + 4}`,
+    7: `M ${colR(3)} ${nodeMid("u")} H ${colL(4) - 4}`,
+    8: `M ${colC(4)} ${bot("u")} V ${top("s") - 4}`,
+  };
+  const wiresG = $("wires");
+  const wire = {};
+  Object.keys(WIRES).forEach((k) => {
+    mk("path", { class: "wire", d: WIRES[k], "marker-end": "url(#ahDim)" }, wiresG);
+    const on = mk("path", { class: "wireOn", d: WIRES[k] }, wiresG);
+    const L = on.getTotalLength();
+    on.style.strokeDasharray = L + " " + L;
+    on.style.strokeDashoffset = L;
+    wire[k] = { el: on, L, arrowed: false };
+  });
+  // loop closes: from node 8 down into the trusted zone and back into the monitor
+  const loopD = `M ${colC(4)} ${bot("s")} V ${nodeMid("t") - r} Q ${colC(4)} ${nodeMid("t")} ${colC(4) - r} ${nodeMid("t")} H ${colR(3) + 4}`;
+  const loopWire = $("loopWire");
+  loopWire.setAttribute("d", loopD);
+  const LL = loopWire.getTotalLength();
+  loopWire.style.strokeDasharray = LL + " " + LL;
+
+  // sandbox tag, right-aligned left of the 3 -> 4 wire
+  const sb = $("sbTag");
+  const tagR = colR(2) - 76, tagW = 470, tagY = bot("s") + 14;
+  mk("rect", { x: tagR - tagW, y: tagY, width: tagW, height: 40, rx: 20, fill: "rgba(239,188,104,0.12)", stroke: "rgba(239,188,104,0.5)", "stroke-width": 1.5 }, sb);
+  mk("text", { x: tagR - tagW / 2, y: tagY + 28, "text-anchor": "middle", style: "color:var(--amber)" }, sb, "no network · read-only · non-root");
+
+  // ---- timing: node k lights at 1 + 2.4 (k - 1); its incoming wire draws in the 0.8 s before
+  const TK = (k) => 1 + 2.4 * (k - 1);
+  const CAP = [
+    "A Meta Muse model designs small, safe experiments; a trusted supervisor checks each one first.",
+    "From the data, Muse writes the controller itself. Python you can read.",
+    "That code runs in a sealed sandbox and is scored on hidden scenarios it never sees.",
+    "Only then is it deployed. Trusted code owns the actuator.",
+    "When the machine changes, a trusted monitor notices.",
+    "Muse re-identifies the machine and names what changed.",
+    "It writes a repair.",
+    "Promoted only if it beats the frozen original on the same hidden tests.",
+  ];
+  const steps = [{ t: 0.0, label: "zones + nodes", on: ["zones", "nodes"] }];
+  for (let k = 1; k <= 8; k++) {
+    const s = { t: TK(k), label: "node " + k, add: { ["n" + k]: "lit" }, caption: CAP[k - 1] };
+    if (k > 1) { s.remove = { ["n" + (k - 1)]: "lit" }; s.add["n" + (k - 1)] = "done"; }
+    steps.push(s);
+  }
+  steps.push({ t: 22.0, label: "loop closes", on: ["loop", "loopLbl", "sbTag"], remove: { n8: "lit" }, add: { n8: "done", n5: "lit" } });
+
+  // ring 5 -> 6 -> 7 -> 8 -> 5 for the circulating dot after the loop closes
+  const ringPaths = [6, 7, 8].map((k) => wire[k]).concat([{ el: loopWire, L: LL }]);
+  const ringLen = ringPaths.reduce((a, w) => a + w.L, 0);
+  function ringPoint(d) {
+    for (const w of ringPaths) { if (d <= w.L) return w.el.getPointAtLength(d); d -= w.L; }
+    return loopWire.getPointAtLength(LL);
+  }
+
+  Diagram.run({
+    name: "03_loop",
+    duration: 30,
+    steps,
+    tick(t) {
+      let pulseOn = false;
+      for (let k = 2; k <= 8; k++) {
+        const w = wire[k];
+        const p = ease((t - (TK(k) - 0.8)) / 0.8);
+        w.el.style.strokeDashoffset = (w.L * (1 - p)).toFixed(1);
+        if (p > 0.98 && !w.arrowed) { w.el.setAttribute("marker-end", "url(#ah)"); w.arrowed = true; }
+        if (p <= 0.98 && w.arrowed) { w.el.removeAttribute("marker-end"); w.arrowed = false; }
+        if (p > 0 && p < 1) {
+          const pt = w.el.getPointAtLength(p * w.L);
+          $("pulse").setAttribute("cx", pt.x); $("pulse").setAttribute("cy", pt.y);
+          pulseOn = true;
+        }
+      }
+      if (!pulseOn) { $("pulse").setAttribute("cx", -50); }
+
+      const lp = ease((t - 22.0) / 0.9);
+      loopWire.style.strokeDashoffset = (LL * (1 - lp)).toFixed(1);
+
+      // after the loop closes, a green dot keeps circulating the repair ring (period 4 s)
+      if (t >= 23) {
+        const d = (((t - 23) / 4) % 1) * ringLen;
+        const pt = ringPoint(d);
+        $("ringDot").setAttribute("cx", pt.x); $("ringDot").setAttribute("cy", pt.y);
+      } else {
+        $("ringDot").setAttribute("cx", -50);
+      }
+    },
+  });
+})();
+</script>
+</body>
+</html>

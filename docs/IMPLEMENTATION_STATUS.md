@@ -2,7 +2,7 @@
 
 Living document. Updated by Claude at the end of every work block. A line moves to **Verified** only when the named command proves it.
 
-_Last updated: 2026-11-04 04:05 — overnight hardware batch complete: 4/4 promoted repairs beat the frozen controller on the board (fan −58 %, derate −75 %, −66 %, −34 %); failures kept; submission day_
+_Last updated: 2026-11-04 14:30 — demo film cut (2:59.5, `artifacts/demo/film/praxion_demo.mp4`, tooling in `demo/film/`); submission day_
 
 ## Audit, 2026-11-02 (before the hardware run)
 
@@ -214,6 +214,8 @@ Phase 4 exit: distribution under the frozen evaluator across 5 plant seeds measu
 - None.
 
 ## Decisions log
+
+- **2026-11-04 14:30** — Demo film produced from scratch in one afternoon (Mithran's go: "use higgsfield we have 200 credits"). Structure: Meta theme quote → real fan-on footage → problem diagram → the loop in trust zones → tank replay → hardware footage → board numbers → ten-run distribution → honesty close. Motion graphics are deterministic HTML/SVG scenes rendered with headless Chromium (`demo/film/`), so every frame is reproducible and every number traceable (`demo/film/SPEC.md`). Generated media: two 6 s Veo 3.1 backgrounds labelled "background: illustration" (never evidence), an ElevenLabs instrumental bed, Seed Audio narration; about 95 Higgsfield credits. Video-length rule for the hackathon could not be found online; the film is kept under 3:00 per the plan.
 
 - **2026-11-04 04:05** — Batch closed at 8 runs; no further hardware runs before submission. Final hardware claim for README/film/submission: "4 of 4 promoted repairs beat the frozen controller on the physical board; 4 of 7 attempts produced a promotable repair; failures kept." Protocol stays v1.5 for everything cited.
 

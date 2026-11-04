@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>02_problem</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  svg text { fill: currentColor; }
+  .stroke { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .hair { fill: none; stroke: var(--line); stroke-width: 2; }
+  .sig { fill: none; stroke: var(--dim); stroke-width: 2.5; }
+  .sigdot { fill: var(--green); }
+  [data-anim] { transition: opacity 0.7s cubic-bezier(.2,.7,.2,1), transform 0.7s cubic-bezier(.2,.7,.2,1); }
+  .slide.off { transform: translateY(14px); }
+  .slide.on { transform: translateY(0); }
+
+  #ctrlBox { fill: var(--panel); stroke: var(--line); stroke-width: 2; }
+  #elem { stroke: var(--ink); transition: stroke 1.2s ease, opacity 1.2s ease; }
+  #elem.drift { stroke: var(--amber); opacity: 0.45; }
+  #waves { transition: opacity 1.4s ease; opacity: 1; }
+  #waves.weak { opacity: 0.28; }
+  .wave { fill: none; stroke: var(--ink); stroke-width: 3; opacity: 0.75; stroke-linecap: round; }
+
+  #band { fill: var(--green-fill); transition: fill 0.9s ease; }
+  #band.red { fill: var(--red-fill); }
+  #bandEdgeT, #bandEdgeB { stroke: rgba(101,201,159,0.45); stroke-width: 1.5; transition: stroke 0.9s ease; }
+  #bandEdgeT.red, #bandEdgeB.red { stroke: rgba(239,107,107,0.5); }
+  #bandLbl { transition: opacity 0.6s ease; }
+  #bandLbl.gone { opacity: 0; }
+  #sp { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 8; opacity: 0.7; }
+  #trace { fill: none; stroke: var(--ink); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+  #head { fill: var(--green); }
+  #head.out { fill: var(--red); }
+  #headHalo { fill: none; stroke: var(--green); stroke-width: 2; opacity: 0.5; }
+  #headHalo.out { stroke: var(--red); }
+  .tick { stroke: var(--line); stroke-width: 2; }
+</style>
+</head>
+<body>
+<div id="stage">
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="14" markerHeight="14" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#5b6775" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <clipPath id="plotClip"><rect x="960" y="150" width="860" height="560"/></clipPath>
+  </defs>
+
+  <!-- controller box -->
+  <g id="ctrl" class="slide off" data-anim>
+    <rect id="ctrlBox" x="110" y="176" width="660" height="124" rx="16"/>
+    <text x="440" y="250" text-anchor="middle"><tspan font-size="38" font-weight="600" style="color:var(--ink)">controller</tspan><tspan font-size="30" style="color:var(--muted)"> · tuned once by an engineer</tspan></text>
+  </g>
+  <!-- tag: unchanged since day one -->
+  <g id="frozen" class="slide off" data-anim>
+    <rect x="400" y="114" width="370" height="44" rx="22" fill="rgba(239,188,104,0.16)" stroke="rgba(239,188,104,0.55)" stroke-width="1.5"/>
+    <text x="585" y="144" text-anchor="middle" font-size="22" font-weight="600" letter-spacing="1.3" style="color:var(--amber)">UNCHANGED SINCE DAY ONE</text>
+    <line x1="585" y1="158" x2="585" y2="176" stroke="rgba(239,188,104,0.55)" stroke-width="1.5"/>
+  </g>
+
+  <!-- the machine: a heater block with a resistive element and rising heat -->
+  <g id="machine" class="slide off" data-anim>
+    <!-- signal loop between controller and machine -->
+    <path id="sigU" class="sig" d="M180 300 V 590 H 246" marker-end="url(#ah)"/>
+    <path id="sigY" class="sig" d="M634 590 H 700 V 304" marker-end="url(#ah)"/>
+    <circle id="dotU" class="sigdot" r="6"/>
+    <circle id="dotY" class="sigdot" r="6"/>
+
+    <g id="waves">
+      <path id="w1" class="wave" d=""/>
+      <path id="w2" class="wave" d=""/>
+      <path id="w3" class="wave" d=""/>
+    </g>
+    <rect x="250" y="500" width="380" height="200" rx="22" class="stroke"/>
+    <path id="elem" class="stroke" d="M 290 600 L 315 560 L 345 640 L 375 560 L 405 640 L 435 560 L 465 640 L 495 560 L 525 640 L 555 560 L 590 600"/>
+    <line x1="300" y1="700" x2="300" y2="740" class="stroke"/>
+    <line x1="580" y1="700" x2="580" y2="740" class="stroke"/>
+    <line x1="270" y1="740" x2="610" y2="740" class="stroke"/>
+  </g>
+  <!-- drift mark -->
+  <g id="drift" class="slide off" data-anim>
+    <path d="M 640 652 L 664 652" stroke="rgba(239,188,104,0.6)" stroke-width="1.5"/>
+    <rect x="664" y="632" width="108" height="42" rx="21" fill="rgba(239,188,104,0.16)" stroke="rgba(239,188,104,0.55)" stroke-width="1.5"/>
+    <text x="718" y="661" text-anchor="middle" font-size="22" font-weight="600" letter-spacing="1.3" style="color:var(--amber)">DRIFT</text>
+  </g>
+
+  <!-- chart -->
+  <g id="chart" class="slide off" data-anim>
+    <rect id="band" x="961" y="350" width="859" height="100"/>
+    <line id="bandEdgeT" x1="961" y1="350" x2="1820" y2="350"/>
+    <line id="bandEdgeB" x1="961" y1="450" x2="1820" y2="450"/>
+    <line id="sp" x1="961" y1="400" x2="1820" y2="400"/>
+    <path d="M960 150 V710 H1820" class="hair"/>
+    <text id="bandLbl" x="1800" y="336" text-anchor="end" font-size="26" font-weight="500" style="color:var(--green)">in band</text>
+    <text x="1820" y="744" text-anchor="end" font-size="22" class="mono" style="color:var(--dim)">illustration</text>
+  </g>
+  <g clip-path="url(#plotClip)">
+    <polyline id="trace" points=""/>
+  </g>
+  <circle id="headHalo" r="14" cx="-100" cy="-100"/>
+  <circle id="head" r="7" cx="-100" cy="-100"/>
+
+  <!-- timeline under the trace -->
+  <g id="timeline" class="slide off" data-anim>
+    <line x1="960" y1="800" x2="1820" y2="800" class="hair"/>
+    <g id="ticks"></g>
+  </g>
+  <g id="months" class="off" data-anim>
+    <g id="monthsPos">
+      <line x1="0" y1="788" x2="0" y2="812" stroke="var(--ink)" stroke-width="2.5"/>
+      <rect x="-96" y="822" width="192" height="42" rx="21" fill="var(--panel2)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="0" y="851" text-anchor="middle" font-size="24" font-weight="500" style="color:var(--ink)">months later</text>
+    </g>
+  </g>
+</svg>
+<div id="cap0" class="cap"></div>
+<div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+(function () {
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const $ = (id) => document.getElementById(id);
+
+  // ---- chart geometry. Illustrative closed-form trace (a shape, not data).
+  const X0 = 960, X1 = 1796, SP = 400;
+  const T0 = 5, T1 = 18, SPAN = T1 - T0;      // the pen crosses the chart from t=5 to t=18
+  const DROP = 9;                             // pen-seconds at which the drift shows (t = 14)
+  const X = (s) => X0 + (s / SPAN) * (X1 - X0);
+  function y(s) {
+    const settle = 240 * Math.exp(-s / 0.6) * Math.cos(1.6 * s);
+    const n = (6 * Math.sin(2.1 * s) + 4 * Math.sin(5.3 * s + 1.2) + 2.5 * Math.sin(11.7 * s + 0.4)) * (1 - Math.exp(-s / 0.5));
+    let v = SP + settle + n;
+    if (s > DROP) {
+      const u = s - DROP;
+      v += 122 * (1 - Math.exp(-u / 0.8)) + 14 * Math.exp(-u / 0.7) * Math.sin(2.4 * u);
+    }
+    return v;
+  }
+
+  // timeline ticks
+  const ticks = $("ticks");
+  for (let i = 0; i <= 12; i++) {
+    const x = X0 + i * (1820 - X0) / 12;
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", x); l.setAttribute("x2", x); l.setAttribute("y1", 800); l.setAttribute("y2", i % 3 === 0 ? 788 : 794);
+    l.setAttribute("class", "tick");
+    ticks.appendChild(l);
+  }
+
+  // heat waves rising from the element (period 2.4 s), weaker after the drift
+  function wavePath(x, phase, amp, top, bottom) {
+    let d = "";
+    for (let yy = bottom; yy >= top; yy -= 4) {
+      const xx = x + amp * Math.sin((yy / 22) + phase);
+      d += (d ? " L " : "M ") + xx.toFixed(1) + " " + yy.toFixed(1);
+    }
+    return d;
+  }
+
+  const sigU = $("sigU"), sigY = $("sigY");
+  const LU = sigU.getTotalLength(), LY = sigY.getTotalLength();
+  const trace = $("trace"), head = $("head"), halo = $("headHalo");
+
+  Diagram.run({
+    name: "02_problem",
+    duration: 26,
+    steps: [
+      { t: 0.0, label: "chart frame", on: ["chart", "timeline"] },
+      { t: 0.5, label: "machine + controller", on: ["ctrl", "machine"],
+        caption: "Every machine that holds something steady runs on a small piece of code." },
+      { t: 5.0, label: "trace starts, holds in band" },
+      { t: 9.0, label: "months later; heater drifts", on: ["months", "drift"], add: { elem: "drift", waves: "weak" },
+        caption: "Then the machine drifts: a heater weakens, a pump wears, a filter clogs." },
+      { t: 14.0, label: "trace leaves the band", add: { band: "red", bandEdgeT: "red", bandEdgeB: "red", bandLbl: "gone" },
+        caption: "The controller keeps yesterday's recipe." },
+      { t: 19.0, label: "controller unchanged", on: ["frozen"],
+        caption: "Nobody comes back to re-learn the machine." },
+    ],
+    tick(t) {
+      // heat waves: strength fades from 1 to 0.4 over the drift (9 s to 11 s)
+      const strength = 1 - 0.6 * ease((t - 9) / 2);
+      const amp = 9 * strength;
+      const top = 500 - 96 * strength - 14;
+      [["w1", 360, 0], ["w2", 440, 2.1], ["w3", 520, 4.2]].forEach(([id, x, ph]) => {
+        $(id).setAttribute("d", wavePath(x, ph - t * 2.6, amp, top, 486));
+      });
+
+      // control signals circulate (period 2 s): u down to the heater, y back up
+      const p = ((t * 0.5) % 1 + 1) % 1;
+      const pu = sigU.getPointAtLength(p * LU), py = sigY.getPointAtLength(p * LY);
+      $("dotU").setAttribute("cx", pu.x); $("dotU").setAttribute("cy", pu.y);
+      $("dotY").setAttribute("cx", py.x); $("dotY").setAttribute("cy", py.y);
+      const sigCol = t >= 14 ? "var(--dim)" : "var(--green)";
+      $("dotU").style.fill = sigCol; $("dotY").style.fill = sigCol;
+
+      // trace
+      const s = Math.max(0, Math.min(SPAN, t - T0));
+      if (t < T0) {
+        trace.setAttribute("points", "");
+        head.setAttribute("cx", -100); halo.setAttribute("cx", -100);
+      } else {
+        const pts = [];
+        for (let k = 0; k <= s + 1e-9; k += 0.025) pts.push(X(k).toFixed(1) + "," + y(k).toFixed(1));
+        pts.push(X(s).toFixed(1) + "," + y(s).toFixed(1));
+        trace.setAttribute("points", pts.join(" "));
+        const hx = X(s), hy = y(s);
+        head.setAttribute("cx", hx); head.setAttribute("cy", hy);
+        halo.setAttribute("cx", hx); halo.setAttribute("cy", hy);
+        const out = hy > 450 || hy < 350;
+        head.classList.toggle("out", out && s > 2); halo.classList.toggle("out", out && s > 2);
+        const r = 12 + 6 * (0.5 + 0.5 * Math.sin(t * 4));
+        halo.setAttribute("r", r.toFixed(1));
+      }
+
+      // "months later" rides the pen along the timeline from 9 s to 14 s, then stays at the drop
+      const mx = X(Math.max(9 - T0, Math.min(DROP, t - T0)));
+      $("monthsPos").setAttribute("transform", "translate(" + mx.toFixed(1) + ",0)");
+    },
+  });
+})();
+</script>
+</body>
+</html>

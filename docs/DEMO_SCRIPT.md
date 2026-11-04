@@ -1,70 +1,56 @@
-# Praxion demo script
+# Praxion demo film — script and edit (final, 2026-11-04)
 
-A screen recording of the real dashboard replaying recorded run `v13-s11-20261031-020922-a0e68e` (muse-spark-1.3, plant seed 11, protocol v1.3), plus one terminal shot of the audit. Every value on screen is read from the stored bundle. Nothing is recomputed or staged.
+Final film: `artifacts/demo/film/praxion_demo.mp4`, 1920×1080, 30 fps, 2:59.5, H.264 + AAC. Built by `demo/film/assemble.py` from the rendered scenes in `demo/film/scenes/` (see `demo/film/README.md`). Every number spoken or shown is listed with its source in `demo/film/SPEC.md`; the hardware numbers come from `docs/HARDWARE_RESULTS.md`, which is generated from the run bundles.
 
-## How the footage is made
+What is real and what is not: all dashboard shots are replays of recorded runs; all board footage is the phone recording of the filmed fan session on 2026-11-03 (fan on at 22:17:06 and 22:37:16 EST, matching `board_verification.json`); the terminal shot is the live readout of that session. Two backgrounds are generated clips (a pump room, a data-centre aisle) and carry the on-screen label "background: illustration"; they illustrate the problem and the next application and are never used as evidence. The trace in the problem diagram is labelled "illustration" as well.
 
-```bash
-cd frontend && npm install && npm run build && cd ..
-uv run python scripts/record_demo.py --run v13-s11-20261031-020922-a0e68e   # --speed-a 4 --speed-b 16 are the defaults
-```
+## Edit (segment · starts at · length · what is on screen)
 
-`scripts/record_demo.py` drives the dashboard in headless Chromium and writes `artifacts/demo/v13-s11-20261031-020922-a0e68e/`: `demo.webm`, one screenshot per segment, `audit.txt`, `audit.png`, and `segments.json` with the offsets used below. `artifacts/demo/` is gitignored. The video is attached to the submission separately.
-
-The recording has two passes:
-- **Pass A, 4×** (raw 0.00 to 85.92 s): intro and discovery.
-- **Pass B, 16×** (raw 85.92 to 131.79 s): authoring, gate, monitor, repair. Pass B starts with a replay restart that repeats discovery (raw 85.92 to 106.11 s). **Cut that stretch in editing.**
-- **Close-ups** (raw 131.79 to 175.48 s): held views of the final state, then the audit terminal.
-
-Raw `demo.webm` length is 175.44 s. After the 20.19 s cut, the edited video is about 2:35.
-
-Edit order: keep raw order, except place the audit shot (raw 168.79 to 175.48) before the closing header (raw 163.52 to 168.79). Then the honesty statement comes last.
-
-Keep the REPLAY badge (speed, run id, recording time) visible in every dashboard shot.
-
-## Script
-
-Edited times are after the cut and the audit swap. Raw offsets are seconds into `demo.webm` from `segments.json`.
-
-| Edited time | Raw offset (s) | Pass | On screen | Spoken line |
+| # | start | length | shot | narration |
 |---|---|---|---|---|
-| 0:00 to 0:15 | 0.00 to 15.0 | A, 4× | Header: "REPLAY 4x · v13-s11-20261031-020922-a0e68e", LIVE MUSE, protocol v1.3, docker sandbox, muse-spark-1.3. Plant panel starts empty, then E1. | "This is a recorded run of Praxion. A Meta Muse model gets a simulated water tank it has never seen. No parameters, no controller. It has to hold the level at 0.6 without overflowing." |
-| 0:15 to 0:50 | 15.0 to 50.0 | A, 4× | Timeline: E1 to E4 with stated uncertainty and safety argument. Hypothesis ledger revisions. Plant panel: measured level under each constant pump command. | "Muse proposes one bounded experiment at a time. Each says which uncertainty it targets and why it is safe. The supervisor checks a worst-case bound before anything runs. After each result, Muse revises its hypotheses. It sees only noisy measurements, never the true parameters." |
-| 0:50 to 1:20 | 50.0 to 80.45 | A, 4× | E5 to E12: shorter holds near the target, ledger revisions continuing (12 experiments, 12 ledger revisions). | "The later experiments probe the operating point near 0.6. The pump duty that holds the level there is the main unknown." |
-| 1:20 to 1:26 | 80.45 to 85.92 | A, 4× | Timeline: "experiment budget exhausted". | "Muse did not declare itself ready. The 12-experiment budget ran out, so the orchestrator moved on to authoring." |
-| (cut) | 85.92 to 106.11 | B | replay restart repeating discovery | (removed in editing) |
-| 1:26 to 1:52 | 106.11 to 131.79 | B, 16× | Live pass at 16×: v1 registered, held-out evaluation, disturbance marker, monitor fires, after-change experiments E13 to E16, v2 registered, final stage COMPLETE. | "At sixteen times speed: Muse writes a controller, it is scored on hidden scenarios and deployed. Then we change the machine. A monitor detects it, Muse runs experiments on the changed machine, and writes a repair." |
-| 1:52 to 2:02 | 131.79 to 141.81 | close-up | Code panel: `controller_v1.py`, sha256 686ea165e103e5ae "verified", 2326 bytes, prompt hash 0d19650e641cac11, static / sandbox pass / pass. Held-out table: v1 10/10, median MAE 0.0132, in-band 92.5%; fixed PID 0.0080, 100.0%. | "Muse wrote this controller. It is stored byte for byte and ran in a sandbox with no network. It passed 10 of 10 hidden scenarios. The fixed PID baseline tracked better here." |
-| 2:02 to 2:11 | 141.81 to 150.87 | close-up | Plant panel with disturbance marker. Trusted monitor: degraded at t = 89.5 s, baseline window MAE 0.0124, threshold 0.0500, recent window MAE 0.2635. | "We added a transport delay to the pump. Muse was not told. A trusted monitor, not the model, flagged the degradation at 89.5 seconds." |
-| 2:11 to 2:19 | 150.87 to 158.76 | close-up | Code panel: v1 to v2 diff (+91 −52). Muse diagnosis (`response_slower`): "Same u now acts ~24 s later …". | "From its own experiments on the changed machine, Muse measured the new delay at about 24 seconds, and detuned the controller for it." |
-| 2:19 to 2:23 | 158.76 to 163.52 | close-up | Repair v2 vs frozen v1: G3 PASS, 5/5 improved, median reduction 90.6%, diagnosis matched the injected family, nominal after repair PASS, recorded COMPLETE. | "On the same frozen scenarios, error after the change fell 90.6 percent, with zero violations." |
-| 2:23 to 2:30 | 168.79 to 175.48 | terminal | `audit_run.py` output: check 6 lines "v1 == call #12 … 2326 B", "v2 == call #17 … 3650 B", and `RESULT: PASS (7 pass, 0 warn, 0 fail)`. | "Anyone can audit the bundle. Every controller is byte-identical to what Muse returned. No view leaked hidden data." |
-| 2:30 to 2:35 | 163.52 to 168.79 | close-up | Header: "REPLAY 16x · v13-s11-20261031-020922-a0e68e". | See closing below. Hold the frame, or the final frame, until the line ends. |
+| 1 | 0:00 | 9.0 s | Meta theme lines over the dimmed pump-room background | N1 |
+| 2 | 0:08.6 | 5.0 s | phone footage, punched in: a hand switches the fan on | N1 |
+| 3 | 0:13.2 | 4.0 s | phone footage: the live terminal readout, temperature falling, heater rising | — |
+| 4 | 0:16.8 | 5.0 s | title card PRAXION + three tags | N2 |
+| 5 | 0:21.4 | 26.0 s | problem diagram: controller tuned once, machine drifts, trace leaves the band | N3 |
+| 6 | 0:46.9 | 30.0 s | the loop: eight steps across three trust zones | N4 |
+| 7 | 1:16.5 | 8.0 s | dashboard replay, simulated tank, run v13-s11 (REPLAY badge visible) | N4 |
+| 8 | 1:24.1 | 6.0 s | stat card: 90.6 % less post-change error | N5 |
+| 9 | 1:29.7 | 6.0 s | card: a $50 heater board, nothing changed but the driver | N6 |
+| 10 | 1:35.3 | 5.0 s | photo of the rig, slow push-in | N6 |
+| 11 | 1:39.9 | 6.5 s | phone footage, wide: fan switched on | N6 |
+| 12 | 1:46.0 | 7.0 s | phone footage: handheld approach to the board | N6 |
+| 13 | 1:52.6 | 7.0 s | phone footage: board close-up, heater LED | N6 |
+| 14 | 1:59.2 | 5.0 s | dashboard still: board A/B panel for hw2 | N6 |
+| 15 | 2:03.8 | 12.0 s | bars: 8.99 °C vs 3.77 °C, 0 % → 53 % in band, −58 %, heater 46 % vs 76 % | N7 |
+| 16 | 2:15.4 | 22.0 s | results: 7/10, 8/8, 7/7, 4/7, and 4/4 board wins (58, 75, 66, 34 %), zero safety events, 3 failures kept | N8 |
+| 17 | 2:36.9 | 5.0 s | the four board A/B tables stacked | N8 |
+| 18 | 2:41.5 | 18.0 s | close over the dimmed data-centre background: honesty lines, the theme quote, wordmark, repo | N9 |
 
-## Closing (spoken over the last shot; hold the frame as needed)
+Cross-dissolves of 0.4 s between segments. Music bed at −16 dB under the voice, 1.5 s fade in, 4 s fade out. Integrated loudness −18 LUFS, peak −1.2 dBFS.
 
-"This is our best run, not our typical one. Across five hidden machines, protocol v1.3 repaired all five, but only three kept working on the original machine. Our first full run failed to repair, and we kept that result. We used Spark, and tried Wonder only once. This is simulation only. Nothing here shows it works on real hardware."
+## Narration (Seed Audio TTS, voice "Reid"; every number is on screen in the same beat)
 
-The closing runs about 15 s over a held frame, which brings the edited video to about 2:50.
-
-## Rules for the recording
-
-- Use only recorded runs. Do not trim the replay to hide a failure.
-- Do not say: works on any machine, guaranteed safe, beats PID, deployed on hardware, Muse learned physics.
-- Every number spoken must appear on screen in that shot, or come from the sources below.
+- **N1 (0:01)** Last night, at ten seventeen, we broke a machine on purpose. By ten forty-five, an AI had repaired it, and we had measured the repair on the machine itself.
+- **N2 (0:17)** This is Praxion. An AI control engineer.
+- **N3 (0:23)** Every machine that holds something steady runs on a small piece of code called a controller. An engineer writes it once, after studying the machine. Then the machine drifts. A heater weakens, a pump wears, a filter clogs. The controller keeps yesterday's recipe, and nobody comes back to re-learn the machine.
+- **N4 (0:47)** Give Praxion a machine it has never seen. A Meta Muse model designs small, safe experiments, and a trusted supervisor checks each one first. From the data, Muse writes the controller itself, as Python you can read. The code runs in a sealed sandbox and is scored on hidden scenarios the model never sees. When the machine changes, a trusted monitor notices. Muse re-identifies the machine, names what changed, and writes a repair, promoted only if it beats the frozen original on the same hidden tests.
+- **N5 (1:24)** In simulation, on this tank, the repair cut the post-change error by ninety percent.
+- **N6 (1:30)** Then the real thing: a fifty-dollar heater board. Nothing in the agent changed, only the driver. Muse learned the board in thirty minutes, and its first controller passed. We switched a fan on. The monitor caught it within a minute. Muse diagnosed increased heat loss and rewrote its controller. Then we did what most demos skip: we ran the old controller and the repaired one on the physical board, under the same fan.
+- **N7 (2:04)** The old one gave up at forty-six percent power and slid to thirty-four degrees. The repair pushed to seventy-six, and climbed back. Fifty-eight percent less error, measured on the board.
+- **N8 (2:16)** One run is a story, so we ran it ten times, eight of them unattended overnight with a trusted fault at the heater. The monitor fired every time. The diagnosis was right seven of seven. The gate accepted a repair in four of seven attempts, and all four beat the original on the board, with zero safety interventions. The three that were not good enough are in the results too.
+- **N9 (2:42)** What it is not: a controller for any machine, or a safety guarantee. Every claim lives in a hashed bundle an audit script can replay. Praxion. The engineer who comes back.
 
 ## Numbers used, with sources
 
-| Number | Source |
+| spoken / shown | source |
 |---|---|
-| all raw offsets, 175.44 s video, 20.19 s cut (85.92 to 106.11) | `artifacts/demo/v13-s11-20261031-020922-a0e68e/segments.json` |
-| 12 experiments, budget exhausted, 12 ledger revisions | `segments.json` observed values; `artifacts/runs/v13-s11-20261031-020922-a0e68e/event_log.jsonl` |
-| v1 2326 bytes, sha256 686ea165e103e5ae | `artifacts/runs/v13-s11-20261031-020922-a0e68e/controller_v1.meta.json` |
-| v1 10/10, MAE 0.0132, in-band 92.5%; PID 0.0080, 100.0% | `artifacts/runs/v13-s11-20261031-020922-a0e68e/evaluation_v1.json` |
-| degraded at 89.5 s, 0.0124, 0.0500, 0.2635 | `artifacts/runs/v13-s11-20261031-020922-a0e68e/monitoring.json` |
-| delay about 24 s, `response_slower` | `artifacts/runs/v13-s11-20261031-020922-a0e68e/controller_v2.meta.json` |
-| diff +91 −52 | `segments.json` observed values (dashboard diff header) |
-| 5/5 improved, 90.6%, zero violations, nominal after repair PASS | `artifacts/runs/v13-s11-20261031-020922-a0e68e/adaptation_v2.json`, `evaluation_disturbance_v2.json` |
-| audit 7 pass, call #12 and #17 | `artifacts/demo/v13-s11-20261031-020922-a0e68e/audit.txt`; `scripts/audit_run.py` |
-| five machines repaired, three kept nominal | `docs/IMPLEMENTATION_STATUS.md` (protocol v1.3 batch) |
-| first full run failed repair | run `spark2-20261031-004636-3d012e`, `docs/IMPLEMENTATION_STATUS.md` |
+| 22:17, 22:45 (fan on, session complete) | `artifacts/runs/hw2-20261103-074537-698ba8/event_log.jsonl`, `board_verification.json` |
+| 90.6 % less post-change error, 5/5 scenarios, zero violations | run `v13-s11-20261031-020922-a0e68e`, `docs/BENCHMARKS.md`, README |
+| $50 board, 45 °C target, ±1.5 °C band, 30 min discovery, monitor within a minute (66 s), diagnosis "heat loss increased" | README "Real hardware", `docs/HARDWARE_RESULTS.md` |
+| 8.99 °C vs 3.77 °C, 0 % → 53 % in band, −58 %, heater 46 % vs 76 %, 34 °C | `artifacts/runs/hw2-…/board_verification.json`, fan-session terminal log |
+| 10 runs; 7/10; 8/8; 7/7; 4/7; 4/4 (58, 75, 66, 34 %); 0 overrides or violations in 11 board trials; 3 attempts with no acceptable repair | `docs/HARDWARE_RESULTS.md` Summary and per-run table |
+
+## Rules kept
+
+Nothing shown happened only in a model; where a model's forecast appears (dashed lines in the board panel) it sits next to the measurement. REPLAY badges stay visible in dashboard shots. Generated backgrounds are labelled. No "any machine", no "guaranteed safe", no "beats PID".

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>01_quote</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  #stage { background: #000; }
+  #quote { position: absolute; left: 50%; top: 452px; transform: translate(-50%, -50%); width: 1500px; text-align: center; }
+  .q { font-size: 60px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.22; color: var(--ink); margin: 0 0 54px 0; }
+  .q:last-child { margin-bottom: 0; }
+  .rise.off { transform: translateY(18px); }
+  .rise.on { transform: translateY(0); }
+  [data-anim] { transition: opacity 0.8s cubic-bezier(.2,.7,.2,1), transform 0.8s cubic-bezier(.2,.7,.2,1); }
+  #rule { position: absolute; left: 50%; top: 742px; width: 0; height: 2px; margin-left: 0; background: var(--line); }
+  #event { position: absolute; left: 0; right: 0; top: 776px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="quote">
+    <p id="q1" class="q rise off" data-anim>Give a machine a new capability.</p>
+    <p id="q2" class="q rise off" data-anim>Unlock a better way to understand and control a physical system.</p>
+    <p id="q3" class="q rise off" data-anim>Show us what becomes possible when these models meet the real world.</p>
+  </div>
+  <div id="rule"></div>
+  <div id="event" class="label rise off" data-anim>Meta Global AI Developer Hackathon 2026 · Push the Frontier</div>
+  <div class="src" style="left:auto;right:60px;">background: illustration</div>
+<div id="cap0" class="cap"></div>
+  <div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+(function () {
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const rule = document.getElementById("rule");
+  Diagram.run({
+    name: "01_quote",
+    duration: 9,
+    steps: [
+      { t: 0.5, label: "line 1", on: ["q1"] },
+      { t: 2.5, label: "line 2", on: ["q2"] },
+      { t: 4.5, label: "line 3", on: ["q3"] },
+      { t: 7.0, label: "event label", on: ["event"] },
+    ],
+    tick(t) {
+      // a short hairline grows between the quote and the event label (6.6 s - 7.4 s)
+      const w = 120 * ease((t - 6.6) / 0.8);
+      rule.style.width = w + "px";
+      rule.style.marginLeft = (-w / 2) + "px";
+    },
+  });
+})();
+</script>
+</body>
+</html>

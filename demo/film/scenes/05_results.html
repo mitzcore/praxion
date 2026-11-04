@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>05_results</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  .head { position: absolute; left: 120px; top: 74px; font-size: 64px; font-weight: 600; letter-spacing: -0.015em; }
+  .head-rule { position: absolute; left: 120px; right: 120px; top: 170px; height: 1px; background: var(--line); }
+  .col-rule { position: absolute; left: 960px; top: 214px; width: 1px; height: 556px; background: var(--line); }
+  .stat { position: absolute; left: 120px; width: 720px; height: 124px; }
+  .stat .n { position: absolute; left: 0; top: 0; font-size: 84px; font-weight: 600; line-height: 1; white-space: pre; }
+  .stat .n .d { color: var(--dim); font-weight: 500; font-size: 48px; }
+  .stat .k { position: absolute; left: 240px; top: 26px; white-space: nowrap; font-size: 30px; line-height: 1.25; color: var(--ink); }
+  .stat .k .q { color: var(--muted); }
+  .rh { position: absolute; left: 1010px; top: 214px; width: 790px; font-size: 28px; line-height: 1.3; color: var(--ink); white-space: nowrap; }
+  .rh .num { color: var(--green); font-weight: 600; font-size: 36px; margin-left: 12px; }
+  .chart { position: absolute; left: 1010px; top: 330px; width: 790px; height: 440px; }
+  .base { position: absolute; left: 0; right: 0; top: 380px; height: 2px; background: var(--line); }
+  .vb { position: absolute; bottom: 60px; width: 120px; height: 0; background: var(--green); border-radius: 4px 4px 0 0; }
+  .vp { position: absolute; width: 160px; text-align: center; font-size: 40px; font-weight: 600; color: var(--green); white-space: pre; }
+  .vp .pu { font-size: 26px; font-weight: 500; }
+  .vl { position: absolute; top: 398px; width: 160px; text-align: center; font-size: 24px; color: var(--muted); font-family: var(--mono); }
+  .foot { position: absolute; left: 120px; width: 1680px; }
+  .foot1 { top: 812px; font-size: 32px; color: var(--ink); }
+  .foot1 .mk { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--green); margin-right: 18px; vertical-align: 5px; }
+  .foot2 { top: 866px; font-size: 26px; color: var(--amber); }
+  .foot2 .mk { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--amber); box-sizing: border-box; margin-right: 18px; vertical-align: 3px; }
+  [data-anim].off { transform: translateY(12px); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="head">Ten runs, unattended overnight.</div>
+  <div class="head-rule"></div>
+  <div class="col-rule"></div>
+
+  <div id="s1" class="stat off" data-anim style="top:214px">
+    <div class="n num"><span id="c1">0</span><span class="d"> / 10</span></div>
+    <div class="k">first controller passed the hidden tests</div>
+  </div>
+  <div id="s2" class="stat off" data-anim style="top:358px">
+    <div class="n num"><span id="c2">0</span><span class="d"> / 8</span></div>
+    <div class="k">change detected by the monitor</div>
+  </div>
+  <div id="s3" class="stat off" data-anim style="top:502px">
+    <div class="n num"><span id="c3">0</span><span class="d"> / 7</span></div>
+    <div class="k">diagnosis correct</div>
+  </div>
+  <div id="s4" class="stat off" data-anim style="top:646px">
+    <div class="n num"><span id="c4">0</span><span class="d"> / 7</span></div>
+    <div class="k">repair promoted by the gate</div>
+  </div>
+
+  <div id="rh" class="rh off" data-anim>promoted repairs that beat the original on the board:<span class="num">4 / 4</span></div>
+  <div id="chart" class="chart off" data-anim>
+    <div class="base"></div>
+  </div>
+
+  <div id="f1" class="foot foot1 off" data-anim><span class="mk"></span>zero overrides or hard violations in 11 board trials</div>
+  <div id="f2" class="foot foot2 off" data-anim><span class="mk"></span>3 attempts produced no acceptable repair. They are in the results too.</div>
+
+  <div class="src">docs/HARDWARE_RESULTS.md (generated from the bundles)</div>
+  <div class="brand">Praxion</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  const clamp = (p) => Math.max(0, Math.min(1, p));
+  const ease = (p) => 1 - Math.pow(1 - clamp(p), 3);
+  const $ = (id) => document.getElementById(id);
+  // board-measured post-change MAE reduction of each promoted repair (docs/HARDWARE_RESULTS.md, per-run table)
+  const BARS = [["hw2 fan", 58], ["hwb5", 75], ["hwb7", 66], ["hwb8", 34]];
+  const H = 4.0;                       // px per percentage point (75 % -> 300 px)
+  const chart = $("chart");
+  const els = BARS.map(([name], i) => {
+    const cx = 100 + i * 196;
+    const b = document.createElement("div"); b.className = "vb"; b.style.left = (cx - 60) + "px";
+    const p = document.createElement("div"); p.className = "vp num"; p.style.left = (cx - 80) + "px";
+    const l = document.createElement("div"); l.className = "vl"; l.style.left = (cx - 80) + "px"; l.textContent = name;
+    chart.append(b, p, l);
+    return { b, p };
+  });
+  const COUNTS = [[1.0, 7, "c1"], [3.0, 8, "c2"], [5.0, 7, "c3"], [7.0, 4, "c4"]];
+  Diagram.run({
+    name: "05_results",
+    duration: 22,
+    steps: [
+      { t: 0, label: "heading: ten runs, unattended overnight" },
+      { t: 1, label: "first controller passed hidden tests 7/10", on: ["s1"] },
+      { t: 3, label: "change detected by monitor 8/8", on: ["s2"] },
+      { t: 5, label: "diagnosis correct 7/7", on: ["s3"] },
+      { t: 7, label: "repair promoted by gate 4/7", on: ["s4"] },
+      { t: 9, label: "board wins 4/4: bars 58, 75, 66, 34 %", on: ["rh", "chart"] },
+      { t: 15, label: "zero overrides or hard violations in 11 board trials", on: ["f1"] },
+      { t: 17, label: "3 attempts produced no acceptable repair; kept in results", on: ["f2"] },
+      { t: 22, label: "end" },
+    ],
+    tick(t) {
+      COUNTS.forEach(([t0, n, id]) => { $(id).textContent = String(Math.round(n * ease((t - t0 - 0.1) / 0.9))); });
+      BARS.forEach(([, pct], i) => {
+        const v = pct * ease((t - 9.5 - i * 0.45) / 1.0);
+        els[i].b.style.height = (v * H).toFixed(1) + "px";
+        els[i].p.style.top = (380 - v * H - 56).toFixed(1) + "px";
+        els[i].p.innerHTML = Math.round(v) + '<span class="pu"> %</span>';
+        els[i].p.style.opacity = v > 0.5 ? 1 : 0;
+      });
+    },
+  });
+</script>
+</body>
+</html>

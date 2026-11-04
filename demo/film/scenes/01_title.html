@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>01_title</title>
+<link rel="stylesheet" href="film.css">
+<style>
+  #block { position: absolute; left: 50%; top: 440px; transform: translate(-50%, -50%); width: 1400px; text-align: center; }
+  #mark { font-size: 148px; letter-spacing: 0.08em; margin: 0 0 0 0.08em; line-height: 1; }
+  #rule { height: 3px; width: 0; margin: 44px auto 44px auto; background: var(--green); }
+  #sub { max-width: 1300px; margin: 0 auto; color: var(--ink); opacity: 0.86; }
+  #sub.off { opacity: 0; }
+  #tags { margin-top: 56px; display: flex; justify-content: center; gap: 24px; }
+  .tag { font-size: 24px; padding: 9px 20px; }
+  .rise.off { transform: translateY(16px); }
+  .rise.on { transform: translateY(0); }
+  [data-anim] { transition: opacity 0.7s cubic-bezier(.2,.7,.2,1), transform 0.7s cubic-bezier(.2,.7,.2,1); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="block">
+    <div id="mark" class="h1 rise off" data-anim>PRAXION</div>
+    <div id="rule"></div>
+    <div id="sub" class="body rise off" data-anim>An AI control engineer that learns a machine, writes its own controller, and repairs it when the machine changes.</div>
+    <div id="tags">
+      <span id="tg1" class="tag green rise off" data-anim>Measured on real hardware</span>
+      <span id="tg2" class="tag blue rise off" data-anim>Muse-authored code</span>
+      <span id="tg3" class="tag amber rise off" data-anim>Failures kept</span>
+    </div>
+  </div>
+  <div id="cap0" class="cap"></div>
+  <div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+(function () {
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const rule = document.getElementById("rule");
+  Diagram.run({
+    name: "01_title",
+    duration: 5,
+    steps: [
+      { t: 0.3, label: "wordmark", on: ["mark"] },
+      { t: 1.4, label: "subtitle", on: ["sub"] },
+      { t: 3.0, label: "tag: measured on real hardware", on: ["tg1"] },
+      { t: 3.2, label: "tag: muse-authored code", on: ["tg2"] },
+      { t: 3.4, label: "tag: failures kept", on: ["tg3"] },
+    ],
+    tick(t) {
+      rule.style.width = (96 * ease((t - 0.7) / 0.7)) + "px";
+    },
+  });
+})();
+</script>
+</body>
+</html>

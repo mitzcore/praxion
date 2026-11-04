@@ -1,0 +1,41 @@
+/* Praxion demo film — shared look for every rendered scene (1920x1080). Dark, matches the dashboard. */
+:root {
+  --bg: #0b0f14; --panel: #121821; --panel2: #18212c; --line: #243040;
+  --ink: #e6edf3; --muted: #8b98a5; --dim: #5b6775;
+  --green: #65c99f; --amber: #efbc68; --blue: #79b2ff; --red: #ef6b6b;
+  --green-fill: rgba(101,201,159,0.16); --amber-fill: rgba(239,188,104,0.16); --blue-fill: rgba(121,178,255,0.16); --red-fill: rgba(239,107,107,0.16);
+  --sans: -apple-system, "SF Pro Display", "Helvetica Neue", Inter, Arial, sans-serif;
+  --mono: "SF Mono", Menlo, "JetBrains Mono", monospace;
+}
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+/* visibility states driven by diagram.js steps */
+.off { opacity: 0; }
+.on { opacity: 1; }
+[data-anim] { transition: opacity 0.6s ease, transform 0.6s ease; }
+.instant [data-anim], .instant * { transition: none !important; animation: none !important; }
+/* captions: two swapping slots at the bottom */
+.cap { position: absolute; left: 120px; right: 120px; bottom: 84px; font-size: 40px; line-height: 1.3; font-weight: 400; color: var(--ink); opacity: 0; transition: opacity 0.5s ease; text-align: left; }
+.cap.on { opacity: 1; }
+.cap.center { text-align: center; }
+.cap.small { font-size: 30px; color: var(--muted); }
+/* type scale */
+.h1 { font-size: 88px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+.h2 { font-size: 56px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.1; }
+.h3 { font-size: 40px; font-weight: 500; }
+.body { font-size: 34px; color: var(--muted); line-height: 1.35; }
+.label { font-size: 24px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.mono { font-family: var(--mono); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.green { color: var(--green); } .amber { color: var(--amber); } .blue { color: var(--blue); } .red { color: var(--red); } .muted { color: var(--muted); }
+/* cards */
+.card { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 36px 44px; box-sizing: border-box; }
+.tag { display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 22px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.tag.green { background: var(--green-fill); color: var(--green); border: 1px solid rgba(101,201,159,0.5); }
+.tag.amber { background: var(--amber-fill); color: var(--amber); border: 1px solid rgba(239,188,104,0.5); }
+.tag.blue  { background: var(--blue-fill);  color: var(--blue);  border: 1px solid rgba(121,178,255,0.5); }
+.tag.red   { background: var(--red-fill);   color: var(--red);   border: 1px solid rgba(239,107,107,0.5); }
+/* small source line, bottom-left, every scene that shows a number */
+.src { position: absolute; left: 60px; bottom: 28px; font-size: 20px; color: var(--dim); font-family: var(--mono); }
+/* brand mark, bottom-right */
+.brand { position: absolute; right: 60px; bottom: 28px; font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
