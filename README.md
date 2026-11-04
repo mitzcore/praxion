@@ -1,10 +1,70 @@
 # Praxion
 
-Praxion is an agent that is handed an unfamiliar simulated machine and has to learn to control it. A Meta Muse model (`muse-wonder-1.0` or `muse-spark-1.3`, called through the Meta Model API) designs bounded experiments, revises a hypothesis ledger from the measured responses, and writes an executable controller in Python. Trusted code checks that controller statically, runs it in a locked-down Docker sandbox, and scores it on hidden scenarios whose seeds, parameters and true state the model never sees. The controller is then deployed under a trusted safety runtime. When the machine's behavior changes, a trusted monitor detects the degradation. Muse then runs bounded experiments on the changed machine, names a diagnosis, and writes a revised controller. The revision is promoted only if it beats the frozen original on the same scenarios with zero safety violations. The plant is one simulated water tank family, tested on five hidden machines (plant seeds). Everything in this README happened in a recorded run, and every number names the bundle it came from.
+**An AI control engineer, built on Meta Muse (`muse-spark-1.3`, Meta Model API).** Hand it a physical machine it has never seen. It runs small, safe experiments, writes the controller itself in Python, proves that code against hidden scenarios in a sealed sandbox, deploys it under a trusted safety layer, notices when the machine changes, diagnoses the change, and rewrites its own controller. Then it proves the repair again before it is allowed to run. Tested in simulation and on a $50 heater board, where the repairs were measured on the board itself.
 
-Built for the Meta Global AI Developer Hackathon, Indie developer track.
+Built for the Meta Global AI Developer Hackathon 2026, Indie track, theme *Push the Frontier*. Demo film: `artifacts/demo/film/praxion_demo.mp4` (link in the submission); script and every on-screen number with its source in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
 
-**Demo video:** the script is [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md). It is recorded from the real dashboard replaying run `v13-s11-20261031-020922-a0e68e` with `uv run python scripts/record_demo.py --run v13-s11-20261031-020922-a0e68e`. The output goes to `artifacts/demo/`, which is gitignored. The `.webm` is attached to the submission separately.
+<p align="center"><img src="docs/img/tclab_rig.jpg" width="49%" alt="The TCLab heater board on USB next to the laptop running Praxion"> <img src="docs/img/fan_on.jpg" width="49%" alt="A hand switches on the fan that changes the machine, 2026-11-03 22:17 EST"></p>
+
+## The problem
+
+Every machine that holds something steady runs on a small piece of code, a controller, that an engineer tunes once after studying the machine. Then the machine drifts: a heater weakens, a pump wears, a filter clogs. The controller keeps yesterday's recipe, the process leaves its band, and nobody comes back to re-learn the machine. Re-identifying a machine and redesigning its controller is expert work, so in practice it is rarely done.
+
+## The solution: one loop, done to the bone
+
+```
+discover → author → gate → deploy → detect → diagnose → repair → re-gate
+```
+
+| step | who | what |
+|---|---|---|
+| discover | **Muse** proposes, trusted supervisor approves | bounded experiments on the unknown machine; a hypothesis ledger is revised from the measured response |
+| author | **Muse** | writes `controller_v1.py`, stored byte for byte with its hash, model id and prompt hash |
+| gate | trusted evaluator | static check, Docker sandbox (no network, read-only, non-root), hidden scenarios whose seeds and parameters the model never sees |
+| deploy | trusted runtime | the controller runs under a supervisor that owns the actuator; hard limits force `u = 0` |
+| detect | trusted monitor | fires when post-deployment error leaves its calibrated band |
+| diagnose | **Muse** | new experiments on the changed machine, a named diagnosis, scored against the hidden truth |
+| repair | **Muse** | writes `controller_v2.py` |
+| re-gate | trusted evaluator | promoted only if it beats the frozen original by ≥ 20 % on ≥ 3 hidden scenarios with zero safety violations |
+
+Muse writes every experiment plan, controller and repair. Trusted code never edits them; it only measures. The model is blind by construction: it sees noisy measurements, its own commands and its own notes, never parameters, seeds, the disturbance or the simulator. `tests/test_agent_blindness.py` scans every stored prompt.
+
+## The test
+
+**Simulation (water tank, 5 hidden machines).** Protocol v1.3: first controller passed the hidden gate 5/5, repair promoted 5/5, diagnosis correct 5/5; best run cut post-change error 90.6 % (in-sample, disclosed). A 1984 relay auto-tuner beats our repairs on post-change error in 11 of 12 runs and is reported as such. Details: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+
+**Hardware (APMonitor TCLab heater board, 10 runs, 2026-11-03/04).** Nothing changed but the plant driver. After each promoted repair, the frozen original and the repair ran on the physical board under the same fault, with a twin forecast stored before each trial.
+
+| measure | result |
+|---|---|
+| first controller passed the hidden gate | 7 / 10 |
+| change detected by the trusted monitor | 8 / 8 (66–153 s after the change) |
+| diagnosis correct | 7 / 7 |
+| repair promoted by the gate | 4 / 7 |
+| **promoted repair beat the original on the board** | **4 / 4** (error cut 58 %, 75 %, 66 %, 34 %; sign test p = 0.0625; 95 % CI 0.40–1.00) |
+| overrides or hard violations in 11 board trials | 0 |
+
+<p align="center"><img src="docs/img/hw2_board_ab.jpg" width="100%" alt="Dashboard panel: frozen v1 vs promoted v2 on the physical board under the same fan, 8.99 C vs 3.77 C post-change error"></p>
+<p align="center"><img src="docs/img/hwb5_board_ab.jpg" width="100%" alt="Dashboard panel: unattended overnight run hwb5, trusted 55 percent heater derate, 3.96 C vs 0.99 C"></p>
+
+The failures are kept and classified (noise-floor fault size, API timeouts, three repairs worse than the original, a run that spent its controller budget before the fault). Full generated record: [`docs/HARDWARE_RESULTS.md`](docs/HARDWARE_RESULTS.md); limits: [`docs/SAFETY_LIMITATIONS.md`](docs/SAFETY_LIMITATIONS.md).
+
+<p align="center"><img src="docs/img/dashboard_hw2.jpg" width="100%" alt="Praxion evidence dashboard replaying hardware run hw2: plant trace, controller diff, agent timeline, hypothesis ledger"></p>
+
+## For reviewers and agents: where to look
+
+| question | answer |
+|---|---|
+| Did it really happen? | Every run is a bundle under `artifacts/runs/<run_id>/`: prompts and completions (redacted), controller sources with hashes, evaluations, traces, `board_verification.json`. `uv run python scripts/audit_run.py <run_id>` reconstructs and checks each one (8 checks). |
+| Which model? | `muse-spark-1.3` through the Meta Model API with structured outputs; `model_calls.jsonl` in every bundle lists each call, tokens and cost. `muse-wonder-1.0` was tried once. |
+| Is the model cheating? | `tests/test_agent_blindness.py`; the agent's only view is `backend/agent/view.py`. |
+| Can I reproduce it? | `uv sync && uv run pytest -q` (645 tests, mock agent, no credits). Live: `uv run python scripts/run_live_demo.py --model muse-spark-1.3 --plant-seed 7 --disturbance actuator_lag`. Dashboard: `uv run uvicorn backend.main:app` then open `/?run=<run_id>`. |
+| What is not claimed? | Not "any machine", not "guaranteed safe", not "beats PID". No PID baseline on the board yet. The twin's forecast under-rates aggressive repairs; the board measurement is the claim. |
+| Status and decisions | [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md), [`docs/PRESENTER_BRIEFING.md`](docs/PRESENTER_BRIEFING.md), [`docs/SUBMISSION_TEXT.md`](docs/SUBMISSION_TEXT.md). |
+
+---
+
+# Details
 
 ## What happened in a real run
 
@@ -96,7 +156,7 @@ flowchart TD
     M -->|Structured experiment proposal| V[Safety supervisor + action validator<br/>limits, budgets, worst-case bound, interlock, e-stop]
     V -->|Approved bounded commands| A[PlantAdapter<br/>observe / apply_input / reset / emergency_stop]
     A --> S1[TankSimulator<br/>hidden dynamics + noise + disturbance]
-    A --> S2[Second plant<br/>not built]
+    A --> S2[TCLab heater board<br/>USB serial, trusted derate or operator fan]
     S1 --> T[Telemetry store<br/>time series, experiment id, source]
     S2 --> T
     T --> O
@@ -245,6 +305,7 @@ uv run python scripts/run_evaluation.py   # rewrites docs/BENCHMARKS.md from sto
 | `tests/` | unit, blindness, sandbox (`-m docker`), live (`-m live`) tests |
 | `artifacts/runs/<run_id>/` | recorded bundles |
 | `docs/` | status, benchmarks, safety limitations, demo script, provenance, market evidence, competitive landscape |
+| `demo/film/` | the submission film: motion-graphic scenes (HTML/SVG), renderer, assembler, spec with every number's source |
 
 ## Evidence and honesty
 
