@@ -1,0 +1,68 @@
+--- a/hwb6-20261103-225125-a494f2/controller_v3.py
++++ b/hwb6-20261103-225125-a494f2/controller_v4.py
+@@ -9,21 +9,21 @@
+ 
+ def control(obs, state):
+     Y_AMB = 0.14
+-    K_EST = 1.10
+-    KP = 0.45
+-    KI = 0.010
+-    KA = 0.008
+-    TF_F = 18.0
+-    TF_S = 60.0
+-    TR = 90.0
++    K_EST = 1.00
++    KP = 0.35
++    KI = 0.008
++    KA = 0.004
++    TF_F = 15.0
++    TF_S = 80.0
++    TR = 140.0
+     U_MIN = 0.0
+-    U_MAX = 0.60
+-    I_MIN = -0.20
+-    I_MAX = 0.20
++    U_MAX = 0.65
++    I_MIN = -0.25
++    I_MAX = 0.25
+     FF_MIN = 0.12
+-    FF_MAX = 0.55
+-    INT_GATE = 0.20
+-    FF_GATE = 0.08
++    FF_MAX = 0.60
++    INT_GATE = 0.15
++    FF_GATE = 0.06
+     try:
+         if isinstance(obs, dict):
+             y_in = obs.get("y", 0.5)
+@@ -175,12 +175,13 @@
+     e = ramp - yf
+     e_s = target - ys
+     p_term = KP * e
++    settled = abs(yf - ys) < 0.02
+     integ_cand = integ_prev
+-    if y_valid and abs(e) < INT_GATE:
++    if y_valid and abs(e) < INT_GATE and t_cur > 30.0 and settled:
+         integ_cand = integ_prev + KI * e * dt
+         integ_cand = _clamp(integ_cand, I_MIN, I_MAX)
+     uff_cand = uff_prev
+-    if y_valid and abs(e_s) < FF_GATE:
++    if y_valid and abs(e_s) < FF_GATE and t_cur > 60.0 and settled:
+         uff_cand = uff_prev + KA * e_s * dt
+         uff_cand = _clamp(uff_cand, FF_MIN, FF_MAX)
+     u_des_cand = uff_cand + p_term + integ_cand
+@@ -206,11 +207,11 @@
+         u_out = u_des
+     else:
+         up = _clamp(u_prev, U_MIN, U_MAX)
+-        max_du = 0.025 * dt
++        max_du = 0.02 * dt
+         if max_du < 0.01:
+             max_du = 0.01
+-        if max_du > 0.12:
+-            max_du = 0.12
++        if max_du > 0.10:
++            max_du = 0.10
+         du = u_des - up
+         if du > max_du:
+             du = max_du

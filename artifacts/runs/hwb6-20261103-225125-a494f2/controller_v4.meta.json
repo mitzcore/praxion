@@ -1,0 +1,20 @@
+{
+  "id": "hwb6-20261103-225125-a494f2-v4",
+  "run_id": "hwb6-20261103-225125-a494f2",
+  "version": 4,
+  "path": "artifacts/runs/hwb6-20261103-225125-a494f2/controller_v4.py",
+  "sha256": "4eeb531af682f96351feb50c73e6a16bf41a8a14befa704bffb059b830d98260",
+  "parent_id": "hwb6-20261103-225125-a494f2-v3",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T04:27:17.690543+00:00",
+  "byte_length": 6184,
+  "rationale": "Retuned for ~1.6x slower thermal dynamics: reference time-constant 90s->140s, KP 0.45->0.35, KI 0.010->0.008, KA 0.008->0.004, slow filter 60s->80s, fast filter 18s->15s, U_MAX 0.60->0.65, I limits +-0.20->+-0.25, FF limits 0.12-0.55->0.12-0.60. Structurally gated adaptation: uff/integral frozen for first 60s/30s and unless fast/slow filters agree (|yf-ys|<0.02), plus saturate anti-windup and 0.02/s slew limit kept. This prevents windup during the long lag that caused v3 late overshoot to 0.64 and persistent +0.02 bias, while still learning the higher hold duty needed if gain/loss shifts.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Revised assumption: y in [0,1] (0=15C,1=75C), u in [0,1] heater. y_ss = 0.14 + K*u with K~0.95-1.05 (nominal 1.04 from E4: 0.25->0.409). Ambient ~0.11-0.15. Dynamics now: first-order tau ~260-280s (was 150-190s) + pure delay ~28-35s (was 10-25s). Noise ~0.02-0.04 peak requires 12-15s fast + 80s slow filtering and 0.025 deadband. Nominal hold for 0.5 is ~0.34; allow 0.12-0.60 to cover weaker/loss cases. Soft limit 0.85, hard cutoff 0.90 respected via 0.72 cap + 0.78 cut.",
+    "predicted_behavior": "With tau~270s/delay~30s: rise without early kick, peak 0.53-0.56 at 250-350s, decay to 0.50+-0.015 by 450s, in_band after 300s >0.72, mae <0.025, energy 110-125, zero overrides/violations. On nominal plant (tau~170s): peak <0.55, settle by ~300s, in_band >0.72, mae ~0.018, same energy, confirming diagnosis if slow-plant overshoot disappears and nominal stays passing.",
+    "diagnosis": "Same gain, slower dynamics. Evidence: v3 starts at u=0.327 (nominal FF) but y rises slowly (0.117->0.133 in 36s vs E1 0.145->0.186 in 36s at higher u), error stays positive so uff+integral wind to ~0.52 by 150s, y then overshoots to 0.60-0.64 at 300-360s vs v1 0.57, stays high 0.55-0.60 for ~200s, and at 900s slope is still +0.0004 to +0.0008/s with y_mean 0.521-0.525 at u~0.383-0.389 (not settled, 5-tau not reached) whereas v1 slope ~0.0 and settled. Steady-state shift is small (expected 0.547 at u=0.383 with K=1.04, observed 0.521, -0.026) vs large transient prolongation, and zero-input decay test was not run but high-side persistence with low u in v2 (u~0.28 holding y~0.515) indicates retained heat / large tau, not larger leak (which would need more u and decay faster) nor uniformly weaker gain (which would give undershoot, not overshoot). Quantified as tau ~170-180s -> ~260-280s (x1.5-1.6) plus pure delay ~12-15s -> ~28-35s (+15-20s). This produces integral windup overshoot and in_band collapse 0.67->0.25, mae 0.019->0.054.",
+    "diagnosis_category": "response_slower"
+  }
+}

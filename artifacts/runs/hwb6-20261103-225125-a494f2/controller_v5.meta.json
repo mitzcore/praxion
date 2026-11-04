@@ -1,0 +1,20 @@
+{
+  "id": "hwb6-20261103-225125-a494f2-v5",
+  "run_id": "hwb6-20261103-225125-a494f2",
+  "version": 5,
+  "path": "artifacts/runs/hwb6-20261103-225125-a494f2/controller_v5.py",
+  "sha256": "8842d0a3aa1bd8d889a37bc66485869ee17738a80770b9de0d9b5d7ca2d26006",
+  "parent_id": "hwb6-20261103-225125-a494f2-v4",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T04:30:13.754284+00:00",
+  "byte_length": 6391,
+  "rationale": "Lowered base feedforward to mid-point 0.318 (amb 0.15/K 1.1) to split nominal need 0.34 and hot-plant need ~0.30, sped up hold-power adaptation KA 0.004->0.012 with tighter settled gate, raised KP 0.35->0.55 with lower KI gating for tighter band tracking, shortened reference ramp TR 140->115s and fast/slow filters 15/80->12/90s, added staged overshoot caps (0.53/0.55/0.58) and first-step 0.50 cap plus 0.025/s rate limit and conditional-integration anti-windup. This directly counters slow-lag overshoot: gentle start avoids initial 0.59 kick, caps dump heat when delayed response arrives late, fast adaptation learns new hold 0.30 without windup.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Assumed changed heater: y=amb+K*u steady, amb~0.15, K~1.15-1.20 (+12% vs 1.02), tau~210-250s (vs 150s), effective pure delay ~30-40s (vs ~15s). Hold for 0.5 is ~0.30 (vs 0.334 nominal). Noise ~0.02 pk. No deadzone. Safety caps 0.85/0.9 unchanged. Controller must acquire band by ~200s and stay within 0.475-0.525 despite +-0.02 noise on both nominal and slow-hot plants.",
+    "predicted_behavior": "Closed loop reaches 0.475-0.525 by ~180-250s without exceeding 0.58, then stays in band >0.78 fraction after 300s, MAE <0.018, energy ~95-115, zero overrides/violations on both nominal (hold ~0.34) and slow-hot (hold ~0.30) plants because adaptive FF converges in ~100-150s and overshoot caps prevent delay-induced limit cycle.",
+    "diagnosis": "Plant got hotter/slower, not weaker or leakier. E4 settled 0.409 at u 0.25 => K~1.02 (amb 0.155). Hidden steady: v1 u 0.299=>y 0.494 =>K~1.13-1.18; v4 u 0.274=>y 0.466 =>K~1.13-1.19, ~12-16% high. Required hold fell from ~0.334 to ~0.302 (-0.032, -10%). Yet transients overshoot 0.04-0.12 above band for 200-300s (v1 0.55-0.57 250-450s, v3 to 0.64, v4 to 0.58) then undershoot and oscillate, despite v4 gentle start 0.36. Initial slope with u~0.58 similar to nominal, but heat arrives late and persists, indicating longer lag/tau (~210s vs 150s, +60s) and extra delay ~25s. Previous fixed FF 0.36 + slow KA 0.004 could not learn 0.30 hold in time, integral wound up during ramp, then dumped late causing limit cycle and in-band 0.34-0.66 vs 0.70 needed.",
+    "diagnosis_category": "response_slower"
+  }
+}

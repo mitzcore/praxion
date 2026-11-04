@@ -1,0 +1,1 @@
+Heater slow-delay variant: Td~75s (+60s), tau~270s (1.6x), K~1.1 unchanged, amb~0.14 unchanged. Same hold u~0.30-0.34 but 0.10+ overshoot and 400s+ settle if driven aggressively.

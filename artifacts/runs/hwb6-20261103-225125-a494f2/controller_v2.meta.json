@@ -1,0 +1,20 @@
+{
+  "id": "hwb6-20261103-225125-a494f2-v2",
+  "run_id": "hwb6-20261103-225125-a494f2",
+  "version": 2,
+  "path": "artifacts/runs/hwb6-20261103-225125-a494f2/controller_v2.py",
+  "sha256": "702749a382a3cfdedf14f0232ee04b568607a144fa4443a509bb251a169f447c",
+  "parent_id": "hwb6-20261103-225125-a494f2-v1",
+  "model_id": "muse-spark-1.3",
+  "prompt_hash": "800a3f74457b2c8e",
+  "created_at": "2026-11-04T04:21:28.977373+00:00",
+  "byte_length": 5504,
+  "rationale": "Fixed high-side overshoot and slow low-side trim: lowered fixed feedforward from 0.340 (0.15/1.03) to ~0.318 (0.14/1.10), added slow online u* adaptation (KA=0.005) + stronger gated integral (KI 0.008->0.018, band 0.15->0.25, limits +-0.25->+-0.30), added filtered derivative-on-measurement braking (Kd=28, D+-0.12) with faster feedback filter (TF 15->8s) and slow reference filter (35s), raised U_MAX 0.65->0.68 for weaker-actuator headroom, kept safety cuts and rate limit. Targets the measured 0.04 hold-power overestimate and missing momentum braking.",
+  "extra": {
+    "kind": "revision",
+    "machine_card": "Small heater: y in [0,1] (0.15C-75C), u in [0,1]. First-order with delay: tau ~150-180s, pure delay ~10-20s, DC gain K~1.0-1.2, ambient y0~0.12-0.15 (E2 settled 0.155, eval starts 0.10-0.12). Hold power for y=0.5 is u*~0.30-0.34 (E4 0.25 holds 0.409 settled; eval holds 0.494 at 0.299). Short noise +-0.02-0.04 vs band half-width 0.025. Limits: soft 0.85, hard 0.9 forces u=0. Max safe rate ~0.006/s per unit u.",
+    "predicted_behavior": "Closed loop now: rise 0.12->0.475 in ~150-180s, peak <=0.53, re-enter 0.475-0.525 by ~230-260s, stay in band >85% after 300s (vs 66% before), MAE ~0.012-0.015 (vs 0.019), u_mean ~0.30-0.32 steady with +-0.05 moves, no hard violations/overrides. If plant truly weakened/leakier (needs +0.10 u) ff-adapt+integral will raise u* within ~200s; if unchanged, adaptation drifts <0.02 and D prevents new overshoot.",
+    "diagnosis": "No plant-change signature is available (no after_change decay test was run). Nominal mistuning explains all of the 0.669 in-band failure: v1 steady ff=(0.5-0.15)/1.03=0.340 vs observed need ~0.298-0.301 holding 0.492-0.497 (overestimate ~0.04, ~14% gain/ambient error). Integral KI=0.008 gated to |e|<0.15 gives only 0.00008/s at e=0.01, needing ~500s to unwind -0.04, so the initial 0.59 kick plus thermal momentum (tau~150s, delay~10-20s from E1/E2/E4/E5) drives y to 0.55-0.58 and it remains above 0.525 from ~210s to ~450s, then sags low as integral finally goes negative. End slope ~0 and u_mean 0.30 vs ff 0.34 confirms bias, not faster decay or sensor lag: decay at u=0 in E2 reaches 0.155 normally, evaluation noise ~0.02 unchanged, no oscillation/delay increase. Hence persistent high-side excursion + slow low-side recovery, MAE 0.019, in-band 0.66-0.68 <0.70.",
+    "diagnosis_category": "unknown"
+  }
+}

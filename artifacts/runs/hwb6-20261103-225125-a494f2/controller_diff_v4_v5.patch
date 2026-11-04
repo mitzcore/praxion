@@ -1,0 +1,92 @@
+--- a/hwb6-20261103-225125-a494f2/controller_v4.py
++++ b/hwb6-20261103-225125-a494f2/controller_v5.py
+@@ -8,22 +8,22 @@
+     return v
+ 
+ def control(obs, state):
+-    Y_AMB = 0.14
+-    K_EST = 1.00
+-    KP = 0.35
+-    KI = 0.008
+-    KA = 0.004
+-    TF_F = 15.0
+-    TF_S = 80.0
+-    TR = 140.0
++    Y_AMB = 0.15
++    K_EST = 1.10
++    KP = 0.55
++    KI = 0.012
++    KA = 0.012
++    TF_F = 12.0
++    TF_S = 90.0
++    TR = 115.0
+     U_MIN = 0.0
+-    U_MAX = 0.65
+-    I_MIN = -0.25
+-    I_MAX = 0.25
+-    FF_MIN = 0.12
+-    FF_MAX = 0.60
+-    INT_GATE = 0.15
+-    FF_GATE = 0.06
++    U_MAX = 0.60
++    I_MIN = -0.15
++    I_MAX = 0.15
++    FF_MIN = 0.15
++    FF_MAX = 0.55
++    INT_GATE = 0.10
++    FF_GATE = 0.04
+     try:
+         if isinstance(obs, dict):
+             y_in = obs.get("y", 0.5)
+@@ -177,11 +177,11 @@
+     p_term = KP * e
+     settled = abs(yf - ys) < 0.02
+     integ_cand = integ_prev
+-    if y_valid and abs(e) < INT_GATE and t_cur > 30.0 and settled:
++    if y_valid and abs(e) < INT_GATE and t_cur > 25.0 and settled and yf < 0.60:
+         integ_cand = integ_prev + KI * e * dt
+         integ_cand = _clamp(integ_cand, I_MIN, I_MAX)
+     uff_cand = uff_prev
+-    if y_valid and abs(e_s) < FF_GATE and t_cur > 60.0 and settled:
++    if y_valid and abs(e_s) < FF_GATE and t_cur > 80.0 and settled:
+         uff_cand = uff_prev + KA * e_s * dt
+         uff_cand = _clamp(uff_cand, FF_MIN, FF_MAX)
+     u_des_cand = uff_cand + p_term + integ_cand
+@@ -195,23 +195,31 @@
+         integ = integ_cand
+         uff = uff_cand
+         u_des = u_des_cand
+-    if yf > 0.78:
++    if yf > 0.58:
+         u_des = U_MIN
+         if integ > 0.0:
+             integ = integ - 0.02 * dt
+             integ = _clamp(integ, I_MIN, I_MAX)
++    elif yf > 0.55:
++        if u_des > 0.18:
++            u_des = 0.18
++    elif yf > 0.53:
++        if u_des > 0.25:
++            u_des = 0.25
+     elif yf > 0.72:
+         if u_des > 0.12:
+             u_des = 0.12
+     if u_prev < -0.5:
+         u_out = u_des
++        if u_out > 0.50:
++            u_out = 0.50
+     else:
+         up = _clamp(u_prev, U_MIN, U_MAX)
+-        max_du = 0.02 * dt
+-        if max_du < 0.01:
+-            max_du = 0.01
+-        if max_du > 0.10:
+-            max_du = 0.10
++        max_du = 0.025 * dt
++        if max_du < 0.015:
++            max_du = 0.015
++        if max_du > 0.08:
++            max_du = 0.08
+         du = u_des - up
+         if du > max_du:
+             du = max_du

@@ -1,0 +1,1 @@
+Assumed changed heater: y=amb+K*u steady, amb~0.15, K~1.15-1.20 (+12% vs 1.02), tau~210-250s (vs 150s), effective pure delay ~30-40s (vs ~15s). Hold for 0.5 is ~0.30 (vs 0.334 nominal). Noise ~0.02 pk. No deadzone. Safety caps 0.85/0.9 unchanged. Controller must acquire band by ~200s and stay within 0.475-0.525 despite +-0.02 noise on both nominal and slow-hot plants.
