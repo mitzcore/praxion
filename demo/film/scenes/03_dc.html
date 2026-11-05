@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1920, height=1080">
+<title>03_dc</title><link rel="stylesheet" href="film.css">
+<style>
+  #stage { background: #000; }
+  .top { position: absolute; left: 120px; top: 96px; }
+  .facts { position: absolute; left: 120px; right: 120px; top: 170px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+  .v { font-size: 110px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-family: var(--mono); }
+  .c { font-size: 30px; color: var(--ink); margin-top: 18px; line-height: 1.3; }
+  .s { font-size: 21px; color: var(--muted); margin-top: 14px; font-family: var(--mono); }
+  [data-anim].off { transform: translateY(16px); }
+  .math { position: absolute; left: 120px; right: 120px; top: 610px; border: 1px solid var(--line); border-radius: 18px; padding: 34px 44px; box-sizing: border-box; background: rgba(11,15,20,.6); }
+  .math .eq { font-size: 40px; font-family: var(--mono); margin-top: 16px; }
+  .math .note { font-size: 24px; color: var(--amber); margin-top: 16px; }
+  .out { position: absolute; left: 120px; right: 120px; top: 900px; font-size: 28px; color: var(--muted); }
+</style></head><body>
+<div id="stage">
+  <div class="top label" id="lab" data-anim>Take data centres</div>
+  <div class="facts">
+    <div id="f1" class="off" data-anim><div class="v">4.4%</div><div class="c">of U.S. electricity in 2023: 176 TWh</div><div class="s">LBNL, U.S. Data Center Energy Usage Report (2024)</div></div>
+    <div id="f2" class="off" data-anim><div class="v">+56%</div><div class="c">energy on top of the computing (average PUE 1.56), mostly cooling</div><div class="s">Uptime Institute, Global Data Center Survey (2024)</div></div>
+    <div id="f3" class="off" data-anim><div class="v green">−40%</div><div class="c">cooling energy when DeepMind's models ran Google's cooling</div><div class="s">Google / DeepMind (2016); −15% PUE overhead</div></div>
+  </div>
+  <div class="math off" id="math" data-anim>
+    <div class="label">What better control is worth</div>
+    <div class="eq">176 TWh × 0.56/1.56 overhead × 15% ≈ <span class="green">9 TWh a year</span> ≈ <span class="green">$0.75 B a year</span> at 8 ¢/kWh</div>
+    <div class="note">Arithmetic on the cited figures. Not a Praxion result.</div>
+  </div>
+  <div class="out off" id="out" data-anim>And downtime is costly: for 54% of operators, the most recent serious outage cost more than $100,000 (Uptime Institute, 2024).</div>
+  <div class="src" style="left:auto;right:60px;">background: illustration</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  Diagram.run({
+    name: "03_dc", duration: 20,
+    steps: [
+      { t: 0.2, label: "label", on: ["lab"] },
+      { t: 1.4, label: "4.4% of US electricity", on: ["f1"] },
+      { t: 6.0, label: "+56% overhead", on: ["f2"] },
+      { t: 10.5, label: "-40% cooling (DeepMind)", on: ["f3"] },
+      { t: 14.0, label: "arithmetic box", on: ["math"] },
+      { t: 16.5, label: "outage cost", on: ["out"] },
+      { t: 20, label: "end" },
+    ],
+  });
+</script></body></html>

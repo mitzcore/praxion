@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1920, height=1080">
+<title>06_close2</title><link rel="stylesheet" href="film.css">
+<style>
+  #stage { background: #000; }
+  .lines { position: absolute; left: 0; right: 0; top: 330px; text-align: center; transition: opacity .8s ease; }
+  .lines .h1 { font-size: 92px; margin-bottom: 30px; }
+  .where { display: flex; justify-content: center; gap: 70px; margin-top: 60px; font-size: 40px; color: var(--muted); }
+  .where span.on { color: var(--ink); }
+  [data-anim].off { transform: translateY(14px); }
+  .end { position: absolute; left: 0; right: 0; top: 360px; text-align: center; }
+  .wm { font-size: 132px; font-weight: 600; letter-spacing: 0.08em; line-height: 1; margin-right: -0.08em; }
+  .tagline { margin-top: 28px; font-size: 44px; font-weight: 400; color: var(--ink); }
+  .url { margin-top: 56px; font-size: 32px; color: var(--blue); }
+  .built { margin-top: 22px; font-size: 24px; color: var(--muted); }
+  .built .mono { color: var(--ink); }
+  .mark { display: block; width: 64px; height: 2px; background: var(--green); margin: 34px auto 0; }
+</style></head><body>
+<div id="stage">
+  <div class="lines" id="lines" data-anim>
+    <div class="h1 off" id="a" data-anim>A heater board is small.</div>
+    <div class="h1 off" id="b" data-anim>The loop is not.</div>
+    <div class="where"><span id="w1" class="off" data-anim>server halls</span><span id="w2" class="off" data-anim>reactors</span><span id="w3" class="off" data-anim>water mains</span></div>
+  </div>
+  <div id="end" class="end off" data-anim>
+    <div class="wm">PRAXION</div>
+    <div class="tagline">the engineer who comes back</div>
+    <span class="mark"></span>
+    <div class="url mono">github.com/mitzcore/praxion</div>
+    <div class="built">built on Meta Muse · <span class="mono">muse-spark-1.3</span> · Meta Model API · every claim in a hashed, replayable bundle</div>
+  </div>
+  <div class="src" style="left:auto;right:60px;">background: illustration</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  Diagram.run({
+    name: "06_close2", duration: 19,
+    steps: [
+      { t: 0.4, label: "small", on: ["a"] },
+      { t: 2.0, label: "loop is not", on: ["b"] },
+      { t: 3.6, label: "server halls", on: ["w1"] }, { t: 4.4, label: "reactors", on: ["w2"] }, { t: 5.2, label: "water mains", on: ["w3"] },
+      { t: 11.8, label: "lines out", off: ["lines"] },
+      { t: 12.4, label: "wordmark", on: ["end"] },
+      { t: 19, label: "end" },
+    ],
+  });
+</script></body></html>

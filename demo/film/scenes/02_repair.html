@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1920, height=1080">
+<title>02_repair</title><link rel="stylesheet" href="film.css">
+<style>
+  .top { position: absolute; left: 120px; top: 96px; }
+  .track { position: absolute; left: 120px; right: 120px; top: 180px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 26px; height: 210px; box-sizing: border-box; }
+  .step .k { font-family: var(--mono); color: var(--amber); font-size: 24px; }
+  .step .t { font-size: 32px; font-weight: 600; margin-top: 10px; line-height: 1.15; }
+  .step .d { font-size: 22px; color: var(--muted); margin-top: 10px; }
+  [data-anim].off { transform: translateY(16px); }
+  .again { position: absolute; left: 120px; right: 120px; top: 410px; font-size: 30px; color: var(--amber); text-align: right; font-family: var(--mono); }
+  .cost { left: 120px; right: 120px; top: 490px; height: 380px; }
+  .cost .row { display: flex; gap: 90px; margin-top: 26px; }
+  .cost .v { font-size: 96px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-family: var(--mono); }
+  .cost .c { font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .rare { position: absolute; left: 0; right: 0; top: 905px; text-align: center; font-size: 40px; font-weight: 500; }
+</style></head><body>
+<div id="stage">
+  <div class="top label" id="lab" data-anim>When a machine drifts: the repair today</div>
+  <div class="track">
+    <div class="step off" id="s1" data-anim><div class="k">01</div><div class="t">Drift noticed</div><div class="d">alarms, off-spec product, operator complaints</div></div>
+    <div class="step off" id="s2" data-anim><div class="k">02</div><div class="t">Specialist on site</div><div class="d">a control engineer, scheduled</div></div>
+    <div class="step off" id="s3" data-anim><div class="k">03</div><div class="t">Step tests on the live process</div><div class="d">bump, wait, record</div></div>
+    <div class="step off" id="s4" data-anim><div class="k">04</div><div class="t">Refit the model, retune</div><div class="d">by hand, loop by loop</div></div>
+    <div class="step off" id="s5" data-anim><div class="k">05</div><div class="t">Verify, sign off</div><div class="d">then the machine drifts again</div></div>
+  </div>
+  <div class="again off" id="again" data-anim>↺ next loop · a plant has hundreds to thousands</div>
+  <div class="card cost off" id="cost" data-anim>
+    <div class="label">Re-commissioning existing buildings · 643 buildings, 26 U.S. states</div>
+    <div class="row">
+      <div><div class="v green">16%</div><div class="c">median energy saved</div></div>
+      <div><div class="v">$0.30</div><div class="c">median cost per ft²</div></div>
+      <div><div class="v">1.1 yr</div><div class="c">median payback</div></div>
+    </div>
+    <div class="c" style="margin-top:30px">It pays. A 100,000 ft² building: about $30,000 of specialist work per pass (arithmetic on the median).</div>
+  </div>
+  <div class="rare off" id="rare" data-anim>It takes skilled hours, so it is rarely done.</div>
+  <div class="src off" id="src" data-anim>E. Mills, LBNL, “Building Commissioning: A Golden Opportunity…” (2009)</div>
+  <div class="brand">Praxion</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  Diagram.run({
+    name: "02_repair", duration: 18,
+    steps: [
+      { t: 0.2, label: "label", on: ["lab"] },
+      { t: 0.8, label: "1 drift noticed", on: ["s1"] }, { t: 1.8, label: "2 specialist", on: ["s2"] },
+      { t: 3.0, label: "3 step tests", on: ["s3"] }, { t: 4.4, label: "4 retune", on: ["s4"] },
+      { t: 5.6, label: "5 verify", on: ["s5"] }, { t: 6.6, label: "next loop", on: ["again"] },
+      { t: 8.0, label: "LBNL cost card", on: ["cost", "src"] },
+      { t: 13.6, label: "rarely done", on: ["rare"] },
+      { t: 18, label: "end" },
+    ],
+  });
+</script></body></html>

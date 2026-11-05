@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1920, height=1080">
+<title>04_bridge</title><link rel="stylesheet" href="film.css">
+<style>
+  .head { position: absolute; left: 0; right: 0; top: 110px; text-align: center; }
+  table { position: absolute; left: 160px; right: 160px; top: 260px; width: 1600px; border-collapse: collapse; }
+  th { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 500; text-align: left; padding: 0 30px 22px; }
+  td { font-size: 36px; padding: 30px; border-top: 1px solid var(--line); vertical-align: top; width: 50%; line-height: 1.25; }
+  td.lab { color: var(--green); }
+  tr { transition: opacity .6s ease; }
+  tr.off { opacity: 0; }
+  .foot { position: absolute; left: 0; right: 0; top: 860px; text-align: center; font-size: 34px; color: var(--muted); }
+</style></head><body>
+<div id="stage">
+  <div class="head off" id="head" data-anim><div class="h2">Praxion has not run in a data centre.</div><div class="body" style="margin-top:16px">So we built the same problem at home.</div></div>
+  <table>
+    <tr id="r0" class="off"><th>In a server hall</th><th>On a $50 lab kit (TCLab)</th></tr>
+    <tr id="r1" class="off"><td>a cooling loop holds the air at temperature</td><td class="lab">a heater loop holds the board at 45 °C</td></tr>
+    <tr id="r2" class="off"><td>airflow shifts, coils foul: the heat loss changes</td><td class="lab">a fan switches on: the heat loss changes</td></tr>
+    <tr id="r3" class="off"><td>a specialist re-tunes it by hand</td><td class="lab">Muse re-learns the machine and rewrites its controller</td></tr>
+  </table>
+  <div class="foot off" id="foot" data-anim>Same class of problem, far smaller machine. Nothing in the agent changed, only the driver.</div>
+  <div class="brand">Praxion</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+  Diagram.run({
+    name: "04_bridge", duration: 15,
+    steps: [
+      { t: 0.2, label: "not in a data centre", on: ["head"] },
+      { t: 2.8, label: "table head", on: ["r0"] },
+      { t: 4.4, label: "row 1", on: ["r1"] },
+      { t: 7.0, label: "row 2", on: ["r2"] },
+      { t: 9.6, label: "row 3", on: ["r3"] },
+      { t: 11.5, label: "foot", on: ["foot"] },
+      { t: 15, label: "end" },
+    ],
+  });
+</script></body></html>

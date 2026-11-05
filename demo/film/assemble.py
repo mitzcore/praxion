@@ -40,37 +40,36 @@ def blend_scene_over_broll(scene, broll, out, dim=0.26, pad_s=0.0):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(F / "praxion_demo.mp4"))
+    ap.add_argument("--out", default=str(F / "praxion_demo_v2.mp4"))
     ap.add_argument("--no-xfade", action="store_true")
     args = ap.parse_args()
     work = F / "work"; work.mkdir(exist_ok=True)
 
     # --- pre-composites
     quote_bg = blend_scene_over_broll(OUT / "01_quote.mp4", BROLL / "plant.mp4", work / "01_quote_bg.mp4")
-    close_bg = blend_scene_over_broll(OUT / "06_close.mp4", BROLL / "dc.mp4", work / "06_close_bg.mp4", pad_s=8.0)
+    dc_bg = blend_scene_over_broll(OUT / "03_dc.mp4", BROLL / "dc.mp4", work / "03_dc_bg.mp4", dim=0.18)
+    close_bg = blend_scene_over_broll(OUT / "06_close2.mp4", BROLL / "dc.mp4", work / "06_close2_bg.mp4", pad_s=1.5)
 
     # --- EDL: (file, in, dur). Durations of scenes are whatever was rendered.
     def scene(name):
         p = OUT / f"{name}.mp4"; return (p, 0.0, dur(p))
     edl = [
-        (quote_bg, 0.0, dur(quote_bg)),            # 1  quote over plant B-roll
-        (CUTS / "fan_tap_zoom.mp4", 2.0, 5.0),     # 2  hand switches the fan on (22:17)
-        (CUTS / "terminal.mp4", 0.0, 3.5),         # 3  temperature falling on the Mac
-        scene("01_title"),                          # 4
-        scene("02_problem"),                        # 5
-        scene("03_loop"),                           # 6
-        (CUTS / "tank_replay.mp4", 0.0, 8.0),      # 7  dashboard replay, simulated tank
-        scene("03_simstat"),                        # 8
-        scene("04_hwintro"),                        # 9
-        (CUTS / "photo_4807.mp4", 0.0, 5.0),       # 10 the rig
-        (CUTS / "fan_tap_wide.mp4", 1.5, 6.0),     # 11 fan on, wide
-        (CUTS / "approach.mp4", 2.0, 6.0),         # 12 handheld approach to the board
-        (CUTS / "board_close.mp4", 0.0, 6.0),      # 13 board close, heater LED
-        (CUTS / "still_hw2_ab.mp4", 0.0, 5.0),     # 14 board A/B panel
-        scene("04_hwnumbers"),                      # 15
-        scene("05_results"),                        # 16
-        (CUTS / "stills_strips.mp4", 0.0, 4.0),    # 17 four board pairs
-        (close_bg, 0.0, dur(close_bg)),            # 18 close over data-centre B-roll
+        (quote_bg, 0.0, 6.6),                       # 1  hackathon theme lines over plant B-roll (music only)
+        scene("02_world"),                          # 2  machines across industries + performance survey
+        scene("02_repair"),                         # 3  what a repair looks like today + LBNL cost card
+        (OUT / "01_title.mp4", 0.0, 4.0),           # 4  PRAXION title
+        (OUT / "03_loop.mp4", 0.0, 25.0),           # 5  the loop
+        (dc_bg, 0.0, dur(dc_bg)),                   # 6  data-centre facts over data-centre B-roll
+        scene("04_bridge"),                         # 7  server hall vs lab kit
+        (CUTS / "photo_4807.mp4", 0.0, 4.5),        # 8  the rig
+        (CUTS / "fan_tap_wide.mp4", 1.5, 6.0),      # 9  fan on, wide
+        (CUTS / "board_close.mp4", 0.0, 3.5),       # 10 board close, heater LED
+        (CUTS / "still_hw2_ab.mp4", 0.0, 4.5),      # 11 board A/B panel
+        scene("04_hwnumbers"),                      # 12 bars
+        (OUT / "05_results.mp4", 0.0, 19.0),        # 13 results over ten runs
+        (CUTS / "tank_replay.mp4", 0.0, 5.0),       # 14 simulated tank replay
+        (OUT / "03_simstat.mp4", 0.0, 5.0),         # 15 90.6 %
+        (close_bg, 0.0, dur(close_bg)),             # 16 close over data-centre B-roll
     ]
     # clamp every segment to what its file really holds (xfade breaks silently past an input's end)
     fixed = []
@@ -82,8 +81,8 @@ def main():
         fixed.append((src, ins, d))
     edl = fixed
     # narration: (file, start_s) — starts are computed from segment starts below
-    narr_at = {"n1": 1, "n2": 4, "n3": 5, "n4s": 6, "n5": 8, "n6s": 9, "n7": 15, "n8s": 16, "n9": 18}
-    narr_offset = {"n1": 0.8, "n2": 0.4, "n3": 1.7, "n4s": 0.4, "n5": 0.3, "n6s": 0.5, "n7": 0.4, "n8s": 0.6, "n9": 0.4}
+    narr_at = {"w2": 2, "r2": 3, "l2": 4, "d2": 6, "b2": 7, "h2": 8, "n7": 12, "n8": 13, "s": 14, "c": 16}
+    narr_offset = {"w2": 0.4, "r2": 0.4, "l2": 0.5, "d2": 0.4, "b2": 0.3, "h2": 0.4, "n7": 0.4, "n8": 0.5, "s": 0.4, "c": 0.4}
 
     # segment start times on the final timeline (xfade overlaps XF)
     xf = 0.0 if args.no_xfade else XF
@@ -117,8 +116,8 @@ def main():
     inputs += ["-i", str(AUDIO / "music.mp3")]
     music_in = ai; ai += 1
     narr_filters, narr_labels = [], []
-    voice_dir = AUDIO / os.environ.get("VOICE_DIR", "arthur")
-    tempo = {"n4s": 1.04, "n8s": 1.05}   # gentle time-stretch where a line would otherwise collide with the next
+    voice_dir = AUDIO / os.environ.get("VOICE_DIR", "v2")
+    tempo = {k: 1.1 for k in narr_at}   # gentle time-stretch where a line would otherwise collide with the next
     prev_end, placed = -1.0, []
     for k, (name, seg) in enumerate(narr_at.items()):
         p = voice_dir / f"{name}.wav"

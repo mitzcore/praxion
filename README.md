@@ -6,7 +6,25 @@
 
 ## The problem
 
-Every machine that holds something steady runs on a small piece of code, a controller, that an engineer tunes once after studying the machine. Then the machine drifts: a heater weakens, a pump wears, a filter clogs. The controller keeps yesterday's recipe, the process leaves its band, and nobody comes back to re-learn the machine. Re-identifying a machine and redesigning its controller is expert work, so in practice it is rarely done.
+Refineries, power plants, water works, steel mills, bioreactors and data centres are all held steady by control loops: small pieces of code that read a sensor and set a heater, valve, pump or fan. Almost all of them are PID loops (97 % of more than 11,000 regulatory controllers in one Honeywell study), and most are tuned once, by hand, when the plant is commissioned.
+
+Then the machine drifts. A heater weakens, a pump wears, a coil fouls, the airflow changes. The controller keeps the old tuning. In a Honeywell survey of installed controllers, 16 % performed excellently and 16 % acceptably; 22 % were fair, 10 % poor, and 36 % had been switched to manual.
+
+The repair today is a specialist on site: notice the drift, step-test the live process, refit a model, retune, verify, then move on to the next loop. A plant has hundreds to thousands of them. The work pays: across 643 existing buildings, re-commissioning cost a median $0.30 per ft², saved a median 16 % of energy and paid back in 1.1 years (LBNL). But it costs skilled hours, so it is done rarely and the drift comes back.
+
+## A use case: data-centre cooling
+
+US data centres used 176 TWh in 2023, 4.4 % of US electricity (LBNL, 2024). The average facility spends another 56 % on top of its computing, mostly on cooling (PUE 1.56, Uptime Institute, 2024). When DeepMind's models ran Google's data-centre cooling, cooling energy fell 40 % and the PUE overhead 15 % (Google, 2016). Applied across US data centres, a 15 % cut in that overhead is about 9 TWh, roughly $0.75 B a year at 8 ¢/kWh. That is arithmetic on the cited figures, not a Praxion result. Downtime is costly too: for 54 % of operators, the most recent serious outage cost more than $100,000 (Uptime Institute, 2024).
+
+Praxion has not run in a data centre. So we built the same kind of problem at home, at a tiny scale:
+
+| in a server hall | on the $50 lab kit (APMonitor TCLab) |
+|---|---|
+| a cooling loop holds the air at temperature | a heater loop holds the board at 45 °C (band ±1.5 °C) |
+| airflow shifts or coils foul, so the heat loss changes | a fan switches on, or a trusted heater derate applies, so the heat loss or heater strength changes |
+| a specialist re-tunes it by hand | Muse re-learns the machine and rewrites its controller |
+
+Same class of problem (a thermal loop whose physics changed), a far smaller machine. Nothing in the agent changed for the board, only the plant driver.
 
 ## The solution: one loop, done to the bone
 
@@ -30,6 +48,8 @@ Muse writes every experiment plan, controller and repair. Trusted code never edi
 ## The test
 
 **Simulation (water tank, 5 hidden machines).** Protocol v1.3: first controller passed the hidden gate 5/5, repair promoted 5/5, diagnosis correct 5/5; best run cut post-change error 90.6 % (in-sample, disclosed). A 1984 relay auto-tuner beats our repairs on post-change error in 11 of 12 runs and is reported as such. Details: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+
+**The fan run (`hw2`, 2026-11-03).** Muse learned the board in about 30 minutes of its own experiments, and its first controller passed the hidden gate. Then a fan was switched on beside the board. The trusted monitor fired 66 s later; Muse ran new experiments on the changed board, diagnosed increased heat loss, and wrote `controller_v2.py`, which the gate promoted. That evening (filmed, fan on at 22:17) the frozen v1 and the repair each ran on the physical board under the same fan. v1 settled near 46 % heater and slid to about 34 °C; v2 pushed to 76 % and climbed back toward 45 °C. Post-change error 8.99 °C vs 3.77 °C (−58 %), time in band 0 % vs 53 %, zero overrides. Source: `artifacts/runs/hw2-20261103-074537-698ba8/board_verification.json`.
 
 **Hardware (APMonitor TCLab heater board, 10 runs, 2026-11-03/04).** Nothing changed but the plant driver. After each promoted repair, the frozen original and the repair ran on the physical board under the same fault, with a twin forecast stored before each trial.
 
@@ -131,3 +151,5 @@ MIT License, Copyright (c) 2026 Mithran Selvaraj.
 How the code was written, what Muse authored, the protocol history, every run id, and which third-party libraries are used: [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
 
 Built for the Meta Global AI Developer Hackathon 2026 (Indie track). Demo film script, with every on-screen number and its source: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
+
+Sources for the industry figures: Honeywell installed-base survey (2000), reported in [Control Engineering](https://www.controleng.com/performance-monitoring-and-tuning-controllers); [Desborough & Miller, CPC-VI (2002)](https://skoge.folk.ntnu.no/prost/proceedings/cpc6-jan2002/desborough.pdf); [E. Mills, LBNL (2009)](https://cx.lbl.gov/2009-assessment.html); [LBNL 2024 US Data Center Energy Usage Report](https://eta-publications.lbl.gov/publications/2024-lbnl-data-center-energy-usage-report); [Uptime Institute Global Data Center Survey 2024](https://intelligence.uptimeinstitute.com/resource/uptime-institute-global-data-center-survey-2024); [Google / DeepMind (2016)](https://blog.google/topics/environment/deepmind-ai-reduces-energy-used-for/); [Uptime Institute Annual Outage Analysis 2024](https://uptimeinstitute.com/resources/research-and-reports/annual-outage-analysis-2024).

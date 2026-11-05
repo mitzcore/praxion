@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1920, height=1080">
+<title>02_world</title><link rel="stylesheet" href="film.css">
+<style>
+  .top { position: absolute; left: 120px; top: 96px; }
+  .grid { position: absolute; left: 120px; right: 120px; top: 200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; transition: opacity .8s ease, transform .8s ease; }
+  .grid.small { transform: translateY(-60px) scale(0.8); opacity: .16; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 30px 36px; height: 230px; box-sizing: border-box; position: relative; }
+  .tile .n { font-size: 40px; font-weight: 600; }
+  .tile .h { font-size: 26px; color: var(--muted); margin-top: 8px; }
+  .tile svg { position: absolute; left: 36px; right: 36px; bottom: 26px; width: calc(100% - 72px); height: 80px; }
+  .tile .loop { position: absolute; right: 30px; top: 30px; }
+  [data-anim].off { transform: translateY(16px); }
+  .stat { position: absolute; left: 120px; right: 120px; top: 560px; }
+  .big { font-size: 120px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .bar { display: flex; height: 74px; margin-top: 30px; border-radius: 10px; overflow: hidden; font-size: 24px; font-weight: 600; }
+  .bar div { display: flex; align-items: center; justify-content: center; color: #0b0f14; }
+  .legend { display: flex; margin-top: 12px; font-size: 24px; color: var(--muted); }
+  .legend div { text-align: center; }
+</style></head><body>
+<div id="stage">
+  <div class="top label" id="lab" data-anim>The machines that run the world</div>
+  <div class="grid" id="grid">
+    <div class="tile off" id="t1" data-anim><div class="n">Refinery</div><div class="h">holds column temperature</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+    <div class="tile off" id="t2" data-anim><div class="n">Power plant</div><div class="h">holds steam pressure</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+    <div class="tile off" id="t3" data-anim><div class="n">Water works</div><div class="h">holds flow and level</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+    <div class="tile off" id="t4" data-anim><div class="n">Steel mill</div><div class="h">holds furnace temperature</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+    <div class="tile off" id="t5" data-anim><div class="n">Bioreactor</div><div class="h">holds pH and oxygen</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+    <div class="tile off" id="t6" data-anim><div class="n">Data centre</div><div class="h">holds cold-aisle temperature</div><span class="tag green loop">loop</span><svg viewBox="0 0 400 80"><rect x="0" y="22" width="400" height="36" fill="rgba(101,201,159,.12)"/><path class="tr" d="" stroke="#65c99f" stroke-width="3" fill="none"/></svg></div>
+  </div>
+  <div class="stat off" id="stat" data-anim>
+    <div class="h2">Tuned once, by hand. How do they perform?</div>
+    <div class="bar">
+      <div style="width:16%;background:var(--green)">16%</div>
+      <div style="width:16%;background:#9ad9bd">16%</div>
+      <div style="width:22%;background:var(--amber)">22%</div>
+      <div style="width:10%;background:var(--red)">10%</div>
+      <div style="width:36%;background:var(--dim);color:var(--ink)">36%</div>
+    </div>
+    <div class="legend"><div style="width:16%">excellent</div><div style="width:16%">acceptable</div><div style="width:22%">fair</div><div style="width:10%">poor</div><div style="width:36%">switched to manual (open loop)</div></div>
+    <div class="body" style="margin-top:34px">PID feedback runs <span class="green num">97%</span> of regulatory controllers (survey of more than 11,000 controllers in refining, chemicals and pulp &amp; paper).</div>
+  </div>
+  <div class="src off" id="src" data-anim>Honeywell installed-base survey (2000), via Control Engineering · Desborough &amp; Miller, CPC-VI (2002)</div>
+  <div class="brand">Praxion</div>
+  <div id="cap0" class="cap"></div><div id="cap1" class="cap"></div>
+</div>
+<script src="diagram.js"></script>
+<script>
+(function(){
+  const paths = Array.from(document.querySelectorAll(".tr"));
+  const ph = paths.map((_, i) => i * 1.7);
+  Diagram.run({
+    name: "02_world", duration: 15,
+    steps: [
+      { t: 0.2, label: "label", on: ["lab"] },
+      { t: 0.6, label: "refinery", on: ["t1"] }, { t: 1.2, label: "power plant", on: ["t2"] },
+      { t: 1.8, label: "water works", on: ["t3"] }, { t: 2.4, label: "steel mill", on: ["t4"] },
+      { t: 3.0, label: "bioreactor", on: ["t5"] }, { t: 3.6, label: "data centre", on: ["t6"] },
+      { t: 6.6, label: "tiles recede; performance survey bar", add: { grid: "small" }, on: ["stat", "src"] },
+      { t: 15, label: "end" },
+    ],
+    tick(t) {
+      paths.forEach((p, i) => {
+        let d = "";
+        for (let x = 0; x <= 400; x += 8) {
+          const y = 40 + 9 * Math.sin((x / 40) + ph[i] + t * 1.6) + 4 * Math.sin((x / 13) + ph[i] * 2 + t);
+          d += (x ? "L" : "M") + x + " " + y.toFixed(1) + " ";
+        }
+        p.setAttribute("d", d);
+      });
+    },
+  });
+})();
+</script></body></html>
